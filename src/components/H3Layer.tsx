@@ -4,6 +4,7 @@ import type { Map as LeafletMap } from "leaflet";
 import { CoordPair, polygonToCells, cellToLatLng, cellToBoundary } from "h3-js";
 import "leaflet/dist/leaflet.css";
 import { HexCell } from "../objects/HexCell";
+import { fetchActiveTiles, fetchTileData } from "../helpers/tileDataFetcher";
 
 const zoomBreakpoints = [
   { maxZoom: 5, resolution: 2, boundsPadding: 1.5 },
@@ -36,6 +37,39 @@ function handleHexClick(map: LeafletMap, cellCoords: CoordPair) {
     map.flyTo([cellCoords[0], cellCoords[1]], getNextZoomFromResolution(getResolution(map.getZoom())));
 }
 
+function getFillColor(isActive: boolean, communitiesCount: number) {
+    if (communitiesCount > 0) {
+        return "#73197A";
+    }
+    else if (isActive) {
+        return "#5cb04fff";
+    }
+    else {
+        return "#626262ff";
+    }
+}
+
+function getFillOpacity(communitiesCount: number) {
+    return Math.min(communitiesCount, 10) * 0.05 + 0.3
+}
+
+function drawHexagon(cell: HexCell, map: LeafletMap) {
+  return <Polygon
+          key={cell.id} 
+          positions={cell.boundaries}
+          pathOptions={{
+            color: getFillColor(cell.isActive, cell.communitiesCount),
+            weight: 3,
+            fillOpacity: getFillOpacity(cell.communitiesCount),
+          }}
+          eventHandlers={{
+            click: (e) => {
+              handleHexClick(map, cell.centre);
+            },
+          }}
+        />
+}
+
 export default function H3Layer() {
   const map = useMap();
   const [hexes, setHexes] = useState<HexCell[]>([]);
@@ -55,12 +89,20 @@ export default function H3Layer() {
 
     const cells = polygonToCells(polygon, getResolution(map.getZoom()));
 
-    const boundaries = cells.map((cell) => new HexCell(
+    var activeTiles = fetchActiveTiles();
+    var cellsWithData = fetchTileData();
+
+    const hexes = cells.map((cell) => new HexCell(
         cell,
         cellToBoundary(cell),
-        cellToLatLng(cell)));
+        cellToLatLng(cell),
+        activeTiles.includes(cell),
+        cellsWithData[cell] || 0),
+    );
 
-    setHexes(boundaries);
+    console.log(hexes);
+
+    setHexes(hexes);
   };
 
   useEffect(() => {
@@ -74,21 +116,11 @@ export default function H3Layer() {
 
   return (
     <>
-      {hexes.map((cell, i) => (
-        <Polygon
-          key={i}
-          positions={cell.boundaries}
-          pathOptions={{
-            color: "#626262ff",
-            weight: 3,
-            fillOpacity: 0.3,
-          }}
-          eventHandlers={{
-            click: (e) => {
-              handleHexClick(map, hexes[i].centre);
-            },
-          }}
-        />
+      {hexes.filter((cell) => cell.communitiesCount === 0).map((cell) => (
+        drawHexagon(cell, map)
+      ))}
+      {hexes.filter((cell) => cell.communitiesCount > 0).map((cell) => (
+        drawHexagon(cell, map)
       ))}
     </>
   );
