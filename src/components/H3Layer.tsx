@@ -7,13 +7,11 @@ import { HexCell } from "../objects/HexCell";
 import { fetchActiveTiles, fetchTileData } from "../helpers/tileDataFetcher";
 
 const zoomBreakpoints = [
-  { maxZoom: 5, resolution: 2, boundsPadding: 1.5 },
   { maxZoom: 8, resolution: 4, boundsPadding: 0.2 },
   { maxZoom: 11, resolution: 6, boundsPadding: 0.1 }
 ];
 
 const resolutionBreakpoints = [
-  { resolution: 2, nextZoomLevel: 8 },
   { resolution: 4, nextZoomLevel: 11 },
   { resolution: 6, nextZoomLevel: 14 }
 ];
