@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Polygon, useMap } from "react-leaflet";
 import type { Map as LeafletMap } from "leaflet";
-import { CoordPair, polygonToCells, cellToLatLng, cellToBoundary } from "h3-js";
+import { CoordPair, polygonToCells, cellToLatLng, cellToBoundary, cellToChildren } from "h3-js";
 import "leaflet/dist/leaflet.css";
 import { HexCell } from "../objects/HexCell";
 import { fetchActiveTiles, fetchTileData } from "../helpers/tileDataFetcher";
@@ -92,13 +92,17 @@ export default function H3Layer() {
     var activeTiles = fetchActiveTiles();
     var cellsWithData = fetchTileData();
 
-    const hexes = cells.map((cell) => new HexCell(
+    const hexes = cells.map((cell) => 
+    {
+        const res8Children = cellToChildren(cell, 8);
+
+        return new HexCell(
         cell,
         cellToBoundary(cell),
         cellToLatLng(cell),
-        activeTiles.includes(cell),
-        cellsWithData[cell] || 0),
-    );
+        activeTiles.includes(cell) || res8Children.some((child) => activeTiles.includes(child)),
+        cellsWithData[cell] || res8Children.reduce((sum, child) => sum + (cellsWithData[child] || 0), 0));
+    });
 
     console.log(hexes);
 
@@ -114,12 +118,17 @@ export default function H3Layer() {
     };
   }, []);
 
+  // Need to render in this order to make sure the more "important" tiles are on top;
+  // mostly affects the visibility of tile borders
   return (
     <>
-      {hexes.filter((cell) => cell.communitiesCount === 0).map((cell) => (
+      {hexes.filter((cell) => !cell.isActive).map((cell) => (
         drawHexagon(cell, map)
       ))}
-      {hexes.filter((cell) => cell.communitiesCount > 0).map((cell) => (
+      {hexes.filter((cell) => cell.communitiesCount === 0 && cell.isActive).map((cell) => (
+        drawHexagon(cell, map)
+      ))}
+      {hexes.filter((cell) => cell.communitiesCount > 0 && cell.isActive).map((cell) => (
         drawHexagon(cell, map)
       ))}
     </>
