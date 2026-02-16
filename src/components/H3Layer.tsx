@@ -72,7 +72,7 @@ export default function H3Layer() {
   const map = useMap();
   const [hexes, setHexes] = useState<HexCell[]>([]);
 
-  const updateHexes = () => {
+  const updateHexes = async () => {
     const bounds = map.getBounds();
 
     const polygon = [
@@ -87,8 +87,8 @@ export default function H3Layer() {
 
     const cells = polygonToCells(polygon, getResolution(map.getZoom()));
 
-    var activeTiles = fetchActiveTiles();
-    var cellsWithData = fetchTileData();
+    var activeTiles = await fetchActiveTiles();
+    var cellsWithData = await fetchTileData();
 
     const hexes = cells.map((cell) => 
     {
@@ -98,11 +98,9 @@ export default function H3Layer() {
         cell,
         cellToBoundary(cell),
         cellToLatLng(cell),
-        activeTiles.includes(cell) || res8Children.some((child) => activeTiles.includes(child)),
+        activeTiles.has(cell) || res8Children.some((child) => activeTiles.has(child)),
         cellsWithData[cell] || res8Children.reduce((sum, child) => sum + (cellsWithData[child] || 0), 0));
     });
-
-    console.log(hexes);
 
     setHexes(hexes);
   };
