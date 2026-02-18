@@ -1,15 +1,15 @@
 import localforage from "localforage";
 import JSZip from "jszip";
 
-// TODO: actually fetch the data for the active tiles instead of hardcoding some ids here
 export async function fetchTileData(): Promise<{ [id: string]: number }> {
-    return Array.from(await fetchActiveTiles())
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 500)
-    .reduce((acc, id) => {
-        acc[id] = Math.floor(Math.random() * 20);
-        return acc;
-    }, {} as { [id: string]: number });
+    return await fetch(process.env.REACT_APP_BACKEND_URL! + "/communityCounts")
+    .then(response => response.json()).then(data => {
+        const result: { [id: string]: number } = {};
+        data.forEach((entry: any) => {
+            result[entry.cell_id] = entry.community_count;
+        });
+        return result;
+    });
 }
 
 // TODO: add error screen if load failed

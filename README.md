@@ -18,14 +18,17 @@ Main Hexlink app
     ```
 - Database setup
     - Run `docker compose up`
-    - Add the connection string of your db to `/prisma/.env` `DATABASE_URL` var - for the given docker-compose should be
+    - Add the connection string of your db to `backend/.env` `DATABASE_URL` var - for the given docker-compose should be
     ```
     DATABASE_URL="postgresql://postgres:postgres@localhost:5432/hexlink?schema=public"
     ```
     - Run migrations with `npx prisma migrate dev --name init`
     - Optional: download a Potgres viewer and connect to it to see the tables
+- To run backend, run `npx tsx server.ts` from `\backend`
+- Add local backend URL to `.env`
 
 
 # Running 
 - `docker compose up` (database)
+- `npx tsx server.ts`
 - `npm start`
