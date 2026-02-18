@@ -3,7 +3,6 @@ Main Hexlink app
 # First time set up
 
 ## Requirements
-- Node
 - Docker
 
 - `npm i`
@@ -16,19 +15,12 @@ Main Hexlink app
     REACT_APP_ACTIVE_TILE_FILE_LOCATION=/resources/your_file.zip
     REACT_APP_ACTIVE_TILE_FILE=your_file.txt
     ```
-- Database setup
-    - Run `docker compose up`
-    - Add the connection string of your db to `backend/.env` `DATABASE_URL` var - for the given docker-compose should be
-    ```
-    DATABASE_URL="postgresql://postgres:postgres@localhost:5432/hexlink?schema=public"
-    ```
-    - Run migrations with `npx prisma migrate dev --name init`
-    - Optional: download a Potgres viewer and connect to it to see the tables
-- To run backend, run `npx tsx server.ts` from `\backend`
-- Add local backend URL to `.env`
+- Create and populate the `.env` files from the templates in root and `/backend` 
+- Open the dev container. It should install everything automatically and run 2 containers - 1 for your DB and one for node apps
 
 
-# Running 
-- `docker compose up` (database)
-- `npx tsx server.ts`
-- `npm start`
+# Running (inside the dev container)
+- Backend:
+    - `cd backend`
+    - `npm run backend`
+- Frontend: `npm start`
