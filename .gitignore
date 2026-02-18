@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+public/resources/uk_res8_hex_ids.zip
+.env
+public/resources/uk_res8_hex_ids.txt
