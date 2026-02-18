@@ -48,7 +48,7 @@ function getFillColor(isActive: boolean, communitiesCount: number) {
 }
 
 function getFillOpacity(communitiesCount: number) {
-    return Math.min(communitiesCount, 10) * 0.05 + 0.3
+    return Math.min(communitiesCount * 2, 7) * 0.09 + 0.3
 }
 
 function drawHexagon(cell: HexCell, map: LeafletMap) {
