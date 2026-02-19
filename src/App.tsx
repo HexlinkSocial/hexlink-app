@@ -3,10 +3,8 @@ import './styles/App.css';
 import 'leaflet/dist/leaflet.css';
 import Map from './components/Map';
 
-function App() {
+export default function App() {
   return (
     <Map/>
   );
 }
-
-export default App;

@@ -2,7 +2,7 @@ import localforage from "localforage";
 import JSZip from "jszip";
 
 export async function fetchTileData(): Promise<{ [id: string]: number }> {
-    return await fetch(process.env.REACT_APP_BACKEND_URL! + "/communityCounts")
+    return await fetch(import.meta.env.VITE_BACKEND_URL! + "/communityCounts")
     .then(response => response.json()).then(data => {
         const result: { [id: string]: number } = {};
         data.forEach((entry: any) => {
@@ -20,14 +20,14 @@ export async function fetchActiveTiles(): Promise<Set<string>> {
     return new Set(cached);
   }
 
-  const response = await fetch(process.env.REACT_APP_ACTIVE_TILE_FILE_LOCATION!);
+  const response = await fetch(import.meta.env.VITE_ACTIVE_TILE_FILE_LOCATION!);
   if (!response.ok) {
     throw new Error("Failed to fetch active tiles zip");
   }
 
   const arrayBuffer = await response.arrayBuffer();
   const zip = await JSZip.loadAsync(arrayBuffer);
-  const file = zip.file(process.env.REACT_APP_ACTIVE_TILE_FILE!);
+  const file = zip.file(import.meta.env.VITE_ACTIVE_TILE_FILE!);
 
   if (!file) {
     throw new Error("Failed to find file in the zip");
