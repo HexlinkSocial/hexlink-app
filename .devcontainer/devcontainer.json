@@ -8,7 +8,7 @@
 
   "forwardPorts": [3000, 4000, 5432],
 
-  "postCreateCommand": "npm install && cd backend && npm install && npx prisma migrate dev",
+  "postCreateCommand": "npm install && cd backend && npm install && npx prisma migrate dev && npm run prisma:seed",
 
   "customizations": {
     "vscode": {

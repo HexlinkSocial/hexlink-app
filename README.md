@@ -15,8 +15,9 @@ Main Hexlink app
     REACT_APP_ACTIVE_TILE_FILE_LOCATION=/resources/your_file.zip
     REACT_APP_ACTIVE_TILE_FILE=your_file.txt
     ```
+- Update the min and max latitudes and longitudes in `\backend\prisma\seed.ts` to be in your desired defined area for correct seeding
 - Create and populate the `.env` files from the templates in root and `/backend` 
-- Open the dev container. It should install everything automatically and run 2 containers - 1 for your DB and one for node apps
+- Open the dev container. It should install everything automatically and run 2 containers - 1 for your DB and one for node apps. It will also seed the DB
 
 
 # Running (inside the dev container)

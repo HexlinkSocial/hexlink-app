@@ -6,6 +6,7 @@
   "scripts": {
     "backend": "tsx watch server.ts",
     "prisma:migrate": "prisma migrate deploy",
+    "prisma:seed": "tsx prisma/seed.ts",
     "prisma:studio": "prisma studio",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,11 +14,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^10.3.0",
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
     "cors": "^2.8.6",
     "dotenv": "^16.3.1",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "h3-js": "^4.4.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
