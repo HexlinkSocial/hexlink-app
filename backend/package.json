@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "backend": "tsx watch server.ts",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,10 +16,12 @@
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
     "cors": "^2.8.6",
+    "dotenv": "^16.3.1",
     "express": "^5.2.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
-    "prisma": "^7.4.0"
+    "prisma": "^7.4.0",
+    "tsx": "^4.7.0"
   }
 }
