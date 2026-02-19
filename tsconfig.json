@@ -21,6 +21,8 @@
     "types": ["vite/client"]
   },
   "include": [
-    "src"
+    "src",
+    "backend/**/*.ts",
+    "backend/**/*.tsx"
   ]
 }
