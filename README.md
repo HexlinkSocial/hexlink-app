@@ -5,6 +5,7 @@ Main Hexlink app
 ## Requirements
 - Docker
 
+## Instructions
 - `npm i`
 - To create local active tiles files:
     - Go to https://h3geo.org and select the tiles you wish to be active; default in the project is resolution 8 tiles. Those are quite small, so if you want to select a large area can select using a larger resolution and use h3's `cellToChildren(cell, 8)` to get the cells of the correct resolution. You'll need to manually clean up later as it's likely it will have undesired stuff at the edges
@@ -24,4 +25,5 @@ Main Hexlink app
 - Backend:
     - `cd backend`
     - `npm run backend`
+
 - Frontend: `npm start`
