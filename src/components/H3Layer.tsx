@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import { Polygon, useMap } from "react-leaflet";
 import type { Map as LeafletMap } from "leaflet";
 import {
@@ -7,6 +7,7 @@ import {
   cellToLatLng,
   cellToBoundary,
   cellToChildren,
+  H3Index,
 } from "h3-js";
 import "leaflet/dist/leaflet.css";
 import { HexCell } from "../objects/HexCell";
@@ -22,29 +23,30 @@ const resolutionBreakpoints = [
   { resolution: 6, nextZoomLevel: 14 },
 ];
 
-function getResolution(zoom: number) {
+function getResolution(zoom: number): number {
   const match = zoomBreakpoints.find((z) => zoom <= z.maxZoom);
-  return match?.resolution || 8;
+  return match?.resolution ?? 8;
 }
 
-function getBoundsPadding(zoom: number) {
+function getBoundsPadding(zoom: number): number {
   const match = zoomBreakpoints.find((z) => zoom <= z.maxZoom);
-  return match?.boundsPadding || 0.1;
+  return match?.boundsPadding ?? 0.1;
 }
 
-function getNextZoomFromResolution(resolution: number) {
+function getNextZoomFromResolution(resolution: number): number {
   const match = resolutionBreakpoints.find((z) => resolution === z.resolution);
-  return match?.nextZoomLevel || 14;
+  return match?.nextZoomLevel ?? 14;
 }
 
-function handleHexClick(map: LeafletMap, cellCoords: CoordPair) {
+function handleHexClick(map: LeafletMap, cellCoords: CoordPair): void {
+  const [lat, lng]: [number, number] = cellCoords;
   map.flyTo(
-    [cellCoords[0], cellCoords[1]],
+    [lat, lng],
     getNextZoomFromResolution(getResolution(map.getZoom())),
   );
 }
 
-function getFillColor(isActive: boolean, communitiesCount: number) {
+function getFillColor(isActive: boolean, communitiesCount: number): string {
   if (communitiesCount > 0) {
     return "#73197A";
   } else if (isActive) {
@@ -54,11 +56,11 @@ function getFillColor(isActive: boolean, communitiesCount: number) {
   }
 }
 
-function getFillOpacity(communitiesCount: number) {
+function getFillOpacity(communitiesCount: number): number {
   return Math.min(communitiesCount * 2, 7) * 0.09 + 0.3;
 }
 
-function drawHexagon(cell: HexCell, map: LeafletMap) {
+function drawHexagon(cell: HexCell, map: LeafletMap): JSX.Element {
   return (
     <Polygon
       key={cell.id}
@@ -69,7 +71,7 @@ function drawHexagon(cell: HexCell, map: LeafletMap) {
         fillOpacity: getFillOpacity(cell.communitiesCount),
       }}
       eventHandlers={{
-        click: (e) => {
+        click: () => {
           handleHexClick(map, cell.centre);
         },
       }}
@@ -77,11 +79,11 @@ function drawHexagon(cell: HexCell, map: LeafletMap) {
   );
 }
 
-export default function H3Layer() {
-  const map = useMap();
+export default function H3Layer(): JSX.Element {
+  const map: LeafletMap = useMap() as LeafletMap;
   const [hexes, setHexes] = useState<HexCell[]>([]);
 
-  const updateHexes = async () => {
+  const updateHexes = async (): Promise<void> => {
     const bounds = map.getBounds();
 
     const polygon = [
@@ -111,23 +113,23 @@ export default function H3Layer() {
 
     const cells = polygonToCells(polygon, getResolution(map.getZoom()));
 
-    const activeTiles = await fetchActiveTiles();
-    const cellsWithData = await fetchTileData();
+    const activeTiles: Set<H3Index> = await fetchActiveTiles();
+    const cellsWithData: Record<H3Index, number> = await fetchTileData();
 
-    const hexes = cells.map((cell) => {
-      const res8Children = cellToChildren(cell, 8);
+    const hexes: HexCell[] = cells.map((cell: H3Index): HexCell => {
+      const res8Children: H3Index[] = cellToChildren(cell, 8) as H3Index[];
 
       return new HexCell(
         cell,
-        cellToBoundary(cell),
-        cellToLatLng(cell),
+        cellToBoundary(cell) as CoordPair[],
+        cellToLatLng(cell) as CoordPair,
         activeTiles.has(cell) ||
           res8Children.some((child) => activeTiles.has(child)),
         cellsWithData[cell] ||
-          res8Children.reduce(
+          (res8Children.reduce(
             (sum, child) => sum + (cellsWithData[child] || 0),
             0,
-          ),
+          ) as number),
       );
     });
 
@@ -135,13 +137,19 @@ export default function H3Layer() {
   };
 
   useEffect(() => {
-    updateHexes();
-
-    map.on("moveend", updateHexes);
-    return () => {
-      map.off("moveend", updateHexes);
+    const handleUpdateHexes = (): void => {
+      updateHexes().catch((error) => {
+        console.error("Failed to update hexes:", error);
+      });
     };
-  }, []);
+
+    handleUpdateHexes();
+
+    map.on("moveend", handleUpdateHexes);
+    return () => {
+      map.off("moveend", handleUpdateHexes);
+    };
+  }, [map, updateHexes]);
 
   // Need to render in this order to make sure the more "important" tiles are on top;
   // mostly affects the visibility of tile borders

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { JSX } from "react";
 import { LatLngBoundsExpression } from "leaflet";
 import { MapContainer, TileLayer } from "react-leaflet";
 import H3Layer from "./H3Layer";
@@ -8,7 +8,7 @@ const europeBounds: LatLngBoundsExpression = [
   [72.0, 45.0],
 ];
 
-export default function Map() {
+export default function Map(): JSX.Element {
   return (
     <MapContainer
       center={[51.505, -0.09]}
