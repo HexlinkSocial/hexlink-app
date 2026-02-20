@@ -12,8 +12,8 @@ Main Hexlink app
     - Also zip the file and put it in the same folder
     - Create a `.env` file from the template and fill in the locations e.g.
     ```
-    REACT_APP_ACTIVE_TILE_FILE_LOCATION=/resources/your_file.zip
-    REACT_APP_ACTIVE_TILE_FILE=your_file.txt
+    VITE_ACTIVE_TILE_FILE_LOCATION=/resources/your_file.zip
+    VITE_ACTIVE_TILE_FILE=your_file.txt
     ```
 - Update the min and max latitudes and longitudes in `\backend\prisma\seed.ts` to be in your desired defined area for correct seeding
 - Create and populate the `.env` files from the templates in root and `/backend` 

@@ -1,12 +1,8 @@
-import React from 'react';
-import './styles/App.css';
-import 'leaflet/dist/leaflet.css';
-import Map from './components/Map';
+import React, { JSX } from "react";
+import "./styles/App.css";
+import "leaflet/dist/leaflet.css";
+import Map from "./components/Map";
 
-function App() {
-  return (
-    <Map/>
-  );
+export default function App(): JSX.Element {
+  return <Map />;
 }
-
-export default App;
