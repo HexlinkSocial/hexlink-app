@@ -25,17 +25,26 @@ async function main(): Promise<void> {
     await prisma.community.deleteMany();
 
     for (let i = 0; i < 20; i++) {
-      await prisma.community.create({
+      const newCommunity = await prisma.community.create({
         data: {
           name: faker.company.name(),
           description: faker.lorem.paragraph(),
-          cell_ids: generateConnectedH3Cells(
-            Math.floor(Math.random() * 10) + 1,
-          ),
           owner: faker.string.uuid(),
           community_link: faker.internet.url(),
         },
       });
+
+      const cellIds = generateConnectedH3Cells(
+        faker.number.int({ min: 3, max: 7 }),
+      );
+      for (const cellId of cellIds) {
+        await prisma.cellCommunity.create({
+          data: {
+            cellId,
+            communityId: newCommunity.id,
+          },
+        });
+      }
     }
 
     console.log("Seeding finished.");
