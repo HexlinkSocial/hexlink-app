@@ -19,29 +19,35 @@ function generateConnectedH3Cells(count: number): string[] {
 }
 
 async function main(): Promise<void> {
-  console.log("Seeding...");
+  try {
+    console.log("Seeding...");
 
-  await prisma.community.deleteMany();
+    await prisma.community.deleteMany();
 
-  for (let i = 0; i < 20; i++) {
-    await prisma.community.create({
-      data: {
-        name: faker.company.name(),
-        description: faker.lorem.paragraph(),
-        cell_ids: generateConnectedH3Cells(Math.floor(Math.random() * 10) + 1),
-        owner: faker.string.uuid(),
-        community_link: faker.internet.url(),
-      },
-    });
+    for (let i = 0; i < 20; i++) {
+      await prisma.community.create({
+        data: {
+          name: faker.company.name(),
+          description: faker.lorem.paragraph(),
+          cell_ids: generateConnectedH3Cells(
+            Math.floor(Math.random() * 10) + 1,
+          ),
+          owner: faker.string.uuid(),
+          community_link: faker.internet.url(),
+        },
+      });
+    }
+
+    console.log("Seeding finished.");
+  } catch (e) {
+    console.error(e);
+    throw e;
+  } finally {
+    await prisma.$disconnect();
   }
-
-  console.log("Seeding finished.");
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-  })
-  .finally(async (): Promise<void> => {
-    await prisma.$disconnect();
-  });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

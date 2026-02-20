@@ -83,60 +83,60 @@ export default function H3Layer(): JSX.Element {
   const map: LeafletMap = useMap() as LeafletMap;
   const [hexes, setHexes] = useState<HexCell[]>([]);
 
-  const updateHexes = async (): Promise<void> => {
-    const bounds = map.getBounds();
-
-    const polygon = [
-      [
-        [
-          bounds.getSouth() - getBoundsPadding(map.getZoom()),
-          bounds.getWest() - getBoundsPadding(map.getZoom()),
-        ],
-        [
-          bounds.getSouth() - getBoundsPadding(map.getZoom()),
-          bounds.getEast() + getBoundsPadding(map.getZoom()),
-        ],
-        [
-          bounds.getNorth() + getBoundsPadding(map.getZoom()),
-          bounds.getEast() + getBoundsPadding(map.getZoom()),
-        ],
-        [
-          bounds.getNorth() + getBoundsPadding(map.getZoom()),
-          bounds.getWest() - getBoundsPadding(map.getZoom()),
-        ],
-        [
-          bounds.getSouth() - getBoundsPadding(map.getZoom()),
-          bounds.getWest() - getBoundsPadding(map.getZoom()),
-        ],
-      ],
-    ];
-
-    const cells = polygonToCells(polygon, getResolution(map.getZoom()));
-
-    const activeTiles: Set<H3Index> = await fetchActiveTiles();
-    const cellsWithData: Record<H3Index, number> = await fetchTileData();
-
-    const hexes: HexCell[] = cells.map((cell: H3Index): HexCell => {
-      const res8Children: H3Index[] = cellToChildren(cell, 8) as H3Index[];
-
-      return new HexCell(
-        cell,
-        cellToBoundary(cell) as CoordPair[],
-        cellToLatLng(cell) as CoordPair,
-        activeTiles.has(cell) ||
-          res8Children.some((child) => activeTiles.has(child)),
-        cellsWithData[cell] ||
-          (res8Children.reduce(
-            (sum, child) => sum + (cellsWithData[child] || 0),
-            0,
-          ) as number),
-      );
-    });
-
-    setHexes(hexes);
-  };
-
   useEffect(() => {
+    const updateHexes = async (): Promise<void> => {
+      const bounds = map.getBounds();
+
+      const polygon = [
+        [
+          [
+            bounds.getSouth() - getBoundsPadding(map.getZoom()),
+            bounds.getWest() - getBoundsPadding(map.getZoom()),
+          ],
+          [
+            bounds.getSouth() - getBoundsPadding(map.getZoom()),
+            bounds.getEast() + getBoundsPadding(map.getZoom()),
+          ],
+          [
+            bounds.getNorth() + getBoundsPadding(map.getZoom()),
+            bounds.getEast() + getBoundsPadding(map.getZoom()),
+          ],
+          [
+            bounds.getNorth() + getBoundsPadding(map.getZoom()),
+            bounds.getWest() - getBoundsPadding(map.getZoom()),
+          ],
+          [
+            bounds.getSouth() - getBoundsPadding(map.getZoom()),
+            bounds.getWest() - getBoundsPadding(map.getZoom()),
+          ],
+        ],
+      ];
+
+      const cells = polygonToCells(polygon, getResolution(map.getZoom()));
+
+      const activeTiles: Set<H3Index> = await fetchActiveTiles();
+      const cellsWithData: Record<H3Index, number> = await fetchTileData();
+
+      const hexes: HexCell[] = cells.map((cell: H3Index): HexCell => {
+        const res8Children: H3Index[] = cellToChildren(cell, 8) as H3Index[];
+
+        return new HexCell(
+          cell,
+          cellToBoundary(cell) as CoordPair[],
+          cellToLatLng(cell) as CoordPair,
+          activeTiles.has(cell) ||
+            res8Children.some((child) => activeTiles.has(child)),
+          cellsWithData[cell] ||
+            (res8Children.reduce(
+              (sum, child) => sum + (cellsWithData[child] || 0),
+              0,
+            ) as number),
+        );
+      });
+
+      setHexes(hexes);
+    };
+
     const handleUpdateHexes = (): void => {
       updateHexes().catch((error) => {
         console.error("Failed to update hexes:", error);
@@ -149,7 +149,7 @@ export default function H3Layer(): JSX.Element {
     return () => {
       map.off("moveend", handleUpdateHexes);
     };
-  }, [map, updateHexes]);
+  }, [map]);
 
   // Need to render in this order to make sure the more "important" tiles are on top;
   // mostly affects the visibility of tile borders
