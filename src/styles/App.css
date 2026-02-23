@@ -2,3 +2,17 @@
   height: 100vh;
   width: 100wh;
 }
+
+.button {
+  background-color: purple;
+  border: 2px solid #a544b3;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.right {
+  margin-left: auto;
+}
