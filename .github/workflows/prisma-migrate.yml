@@ -6,14 +6,12 @@ on:
 jobs:
   migrate:
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: backend
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -23,12 +21,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Supabase CLI
+        run: npm install -g supabase
+
+      - name: Supabase login
+        run: supabase login --service-role-key ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      - name: Connect to Supabase DB
+        run: supabase db connect --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} &
+      
+      - name: Wait for tunnel
+        run: sleep 5
+
       - name: Generate Prisma Client
         run: npx prisma generate
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: postgres://postgres:${{ secrets.SUPABASE_DB_PASSWORD }}@localhost:5432/postgres?sslmode=require
 
-      - name: Run migrations
+      - name: Run Migrations
         run: npx prisma migrate deploy
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: postgres://postgres:${{ secrets.SUPABASE_DB_PASSWORD }}@localhost:5432/postgres?sslmode=require
