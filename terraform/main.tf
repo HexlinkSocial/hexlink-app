@@ -6,6 +6,24 @@ resource "aws_s3_bucket" "frontend" {
   bucket = "${var.project_name}-frontend"
 }
 
+resource "aws_s3_bucket_ownership_controls" "frontend" {
+  bucket = aws_s3_bucket.frontend.id
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "frontend" {
+
+  depends_on = [
+    aws_s3_bucket_ownership_controls.frontend
+  ]
+
+  bucket = aws_s3_bucket.frontend.id
+  acl    = "private"
+}
+
 resource "aws_s3_bucket_public_access_block" "frontend" {
   bucket = aws_s3_bucket.frontend.id
 
@@ -14,15 +32,42 @@ resource "aws_s3_bucket_public_access_block" "frontend" {
   restrict_public_buckets = true
 }
 
+resource "aws_s3_bucket_policy" "frontend_policy" {
+  bucket = aws_s3_bucket.frontend.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid = "AllowCloudFrontRead"
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Action = "s3:GetObject"
+        Resource = "${aws_s3_bucket.frontend.arn}/*"
+
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = aws_cloudfront_distribution.frontend.arn
+          }
+        }
+      }
+    ]
+  })
+}
+
 #################################
 # CLOUDFRONT
 #################################
 
 resource "aws_cloudfront_origin_access_control" "oac" {
+
   name                              = "${var.project_name}-oac"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
+
 }
 
 resource "aws_cloudfront_distribution" "frontend" {
@@ -31,9 +76,11 @@ resource "aws_cloudfront_distribution" "frontend" {
   default_root_object = "index.html"
 
   origin {
+
     domain_name              = aws_s3_bucket.frontend.bucket_regional_domain_name
     origin_id                = "s3-origin"
     origin_access_control_id = aws_cloudfront_origin_access_control.oac.id
+
   }
 
   default_cache_behavior {
@@ -45,12 +92,15 @@ resource "aws_cloudfront_distribution" "frontend" {
     cached_methods  = ["GET", "HEAD"]
 
     forwarded_values {
+
       query_string = false
 
       cookies {
         forward = "none"
       }
+
     }
+
   }
 
   custom_error_response {
@@ -62,9 +112,11 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   restrictions {
+
     geo_restriction {
       restriction_type = "none"
     }
+
   }
 
   viewer_certificate {
@@ -85,16 +137,20 @@ resource "aws_iam_role" "lambda_exec" {
 
     Version = "2012-10-17"
 
-    Statement = [{
+    Statement = [
 
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
+      {
 
-      Principal = {
-        Service = "lambda.amazonaws.com"
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+
       }
 
-    }]
+    ]
 
   })
 
@@ -171,7 +227,7 @@ resource "aws_apigatewayv2_route" "default" {
 
 resource "aws_lambda_permission" "api" {
 
-  statement_id  = "AllowAPIGateway"
+  statement_id = "AllowAPIGateway"
 
   action = "lambda:InvokeFunction"
 
