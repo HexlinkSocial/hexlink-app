@@ -26,3 +26,10 @@ Main Hexlink app
 
 - Frontend: `npm start`
 
+# Deployment
+- Install AWS CLI and log in, then assume terraform role
+- Configure AWS login details with the values from the role
+- Install terraform 
+- Zip `/backend/lamdba` and put it in `/terraform`
+- `terraform apply`
+
