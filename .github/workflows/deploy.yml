@@ -13,9 +13,9 @@ jobs:
 
     env:
       AWS_REGION: eu-west-2
-      S3_BUCKET: AWS_BUCKET_NAME
-      CLOUDFRONT_ID: AWS_CLOUDFRONT_DISTRIBUTION_ID
-      LAMBDA_NAME: AWS_LAMBDA_NAME
+      S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
+      CLOUDFRONT_ID: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+      LAMBDA_NAME: ${{ secrets.AWS_LAMBDA_NAME }}
 
     steps:
 
@@ -41,7 +41,7 @@ jobs:
 
     - name: Deploy frontend to S3
       run: |
-        aws s3 sync dist/ s3://$S3_BUCKET --delete
+        aws s3 sync /build/ s3://$S3_BUCKET --delete --quiet
 
     - name: Invalidate CloudFront
       run: |
@@ -50,17 +50,17 @@ jobs:
           --paths "/*"
 
     - name: Install backend dependencies
-      run: |
-        cd backend
-        npm install
+      run: npm install
+      working-directory: ./backend
 
     - name: Build Lambda package
       run: |
-        cd backend/lambda
         zip -r lambda.zip .
+      working-directory: ./backend/lambda
 
     - name: Deploy Lambda
       run: |
         aws lambda update-function-code \
           --function-name $LAMBDA_NAME \
-          --zip-file fileb://backend/lambda/lambda.zip
+          --zip-file fileb://lambda.zip
+      working-directory: ./backend/lambda
