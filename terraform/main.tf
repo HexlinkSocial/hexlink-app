@@ -253,6 +253,11 @@ resource "aws_cognito_user_pool" "users" {
 
 }
 
+resource "aws_cognito_user_pool_client" "web" {
+  name         = "${var.project_name}-client"
+  user_pool_id = aws_cognito_user_pool.users.id
+}
+
 #################################
 # GITHUB OIDC ROLE
 #################################
