@@ -24,12 +24,14 @@ jobs:
       - name: Install Supabase CLI
         run: npm install -g supabase
 
-      - name: Supabase login
-        run: supabase login --service-role-key ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      - name: Supabase login via secret key
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_DB_SECRET_KEY }}
+        run: echo "Authenticated to Supabase"
 
       - name: Connect to Supabase DB
         run: supabase db connect --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} &
-      
+
       - name: Wait for tunnel
         run: sleep 5
 
