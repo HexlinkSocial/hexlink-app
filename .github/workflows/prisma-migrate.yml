@@ -24,10 +24,13 @@ jobs:
         with:
           version: latest
 
-      - name: Copy Prisma migrations
+      - name: Copy Prisma migration
         run: |
           mkdir -p ./supabase/migrations
-          cp -r ./prisma/migrations/* ./supabase/migrations/
+          for dir in ./prisma/migrations/*; do
+            filename=$(basename "$dir")
+            cp "$dir/migration.sql" "./supabase/migrations/${filename}.sql"
+          done
 
       - name: Link Supabase project
         env:
