@@ -27,3 +27,7 @@ public/resources/uk_res8_hex_ids.txt
 
 .vscode
 aws
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/.terraform.lock.hcl
+terraform/lambda.zip
