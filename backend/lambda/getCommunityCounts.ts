@@ -25,7 +25,7 @@ export const handler = async (): Promise<APIGatewayProxyStructuredResultV2> => {
   } catch (e) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Internal server error" }),
+      body: JSON.stringify({ error: (e as Error).message }),
     };
   } finally {
     await prisma.$disconnect();
