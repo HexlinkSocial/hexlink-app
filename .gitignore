@@ -31,3 +31,5 @@ terraform/terraform.tfstate
 terraform/terraform.tfstate.backup
 terraform/.terraform.lock.hcl
 terraform/lambda.zip
+
+backend/dist

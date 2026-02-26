@@ -56,13 +56,15 @@ jobs:
           --paths "/*"
 
     - name: Install backend dependencies
-      run: npm install
-      working-directory: ./backend
+      run: npm ci
+      working-directory: backend
 
-    - name: Build Lambda
+    - name: Compile Lambda
+      run: npm run build
+      working-directory: backend
+
+    - name: Package Lambda
       run: |
-        npm ci
-        npm run build
         cp dist/*.js .
         zip -r lambda.zip *.js node_modules package.json
       working-directory: backend
