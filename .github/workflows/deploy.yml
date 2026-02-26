@@ -61,9 +61,11 @@ jobs:
       run: npm ci
       working-directory: backend
 
-    - name: Generate Prisma client
-      run: npx prisma generate
+    - name: Generate Prisma client for Lambda
+      run: npx prisma generate --generator client
       working-directory: backend
+      env:
+        PRISMA_CLI_BINARY_TARGETS: rhel-openssl-3.0.x
 
     - name: Compile Lambda
       run: npm run build
@@ -76,19 +78,20 @@ jobs:
       working-directory: backend
 
     - name: Prepare Lambda layer
+      working-directory: backend
       run: |
         rm -rf lambda-layer
-        mkdir -p lambda-layer/nodejs/node_modules
+        mkdir -p lambda-layer/nodejs/node_modules/@prisma
+        mkdir -p lambda-layer/nodejs/node_modules/.prisma
 
-        cp -r backend/node_modules/@prisma/client lambda-layer/nodejs/node_modules/
-        cp -r backend/node_modules/.prisma lambda-layer/nodejs/node_modules/
+        cp -r node_modules/@prisma/client lambda-layer/nodejs/node_modules/@prisma/
+        cp -r node_modules/.prisma/client lambda-layer/nodejs/node_modules/.prisma/
 
         cd lambda-layer
         zip -r prisma-layer.zip nodejs
-      working-directory: backend
 
     - name: Upload Lambda code to S3
-      run: aws s3 cp lambda-code.zip s3://$LAMBDA_S3_BUCKET/lambda-code.zip
+      run: aws s3 cp backend/lambda-code.zip s3://$LAMBDA_S3_BUCKET/lambda-code.zip
 
     - name: Upload Lambda layer to S3
       run: aws s3 cp backend/lambda-layer/prisma-layer.zip s3://$LAMBDA_S3_BUCKET/prisma-layer.zip
