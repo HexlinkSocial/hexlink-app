@@ -17,6 +17,7 @@ jobs:
       LAMBDA_S3_BUCKET: ${{ secrets.AWS_LAMBDA_S3_BUCKET_NAME }}
       CLOUDFRONT_ID: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
       LAMBDA_NAME: ${{ secrets.AWS_LAMBDA_NAME }}
+      PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
 
     steps:
 
@@ -77,10 +78,10 @@ jobs:
     - name: Prepare Lambda layer
       run: |
         rm -rf lambda-layer
-        mkdir -p lambda-layer/nodejs
+        mkdir -p lambda-layer/nodejs/node_modules
 
-        npm init -y --prefix lambda-layer/nodejs
-        npm install @prisma/client --prefix lambda-layer/nodejs
+        cp -r backend/node_modules/@prisma/client lambda-layer/nodejs/node_modules/
+        cp -r backend/node_modules/.prisma lambda-layer/nodejs/node_modules/
 
         cd lambda-layer
         zip -r prisma-layer.zip nodejs
