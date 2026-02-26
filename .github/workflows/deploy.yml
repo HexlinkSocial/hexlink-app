@@ -103,8 +103,9 @@ jobs:
         rm -rf lambda-layer/nodejs/node_modules/@prisma/engines
         rm -rf lambda-layer/nodejs/node_modules/@prisma/fetch-engine
         rm -rf lambda-layer/nodejs/node_modules/@prisma/get-platform
-        rm -rf lambda-layer/nodejs/node_modules/@prisma/debug
         rm -rf lambda-layer/nodejs/node_modules/@prisma/internals
+        rm -rf lambda-layer/nodejs/node_modules/@prisma/migrate
+        rm -rf lambda-layer/nodejs/node_modules/@prisma/cli
 
         cd lambda-layer
         zip -r prisma-layer.zip nodejs
