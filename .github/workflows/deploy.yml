@@ -72,10 +72,8 @@ jobs:
       working-directory: backend
 
     - name: Package Lambda code
-      run: |
-        cd dist
-        zip -r ../../lambda-code.zip lambda
-      working-directory: backend
+      working-directory: backend/dist
+      run: zip -r ../../lambda-code.zip lambda
 
     - name: Prepare Lambda layer
       working-directory: backend
@@ -91,7 +89,7 @@ jobs:
         zip -r prisma-layer.zip nodejs
 
     - name: Upload Lambda code to S3
-      run: aws s3 cp backend/lambda-code.zip s3://$LAMBDA_S3_BUCKET/lambda-code.zip
+      run: aws s3 cp lambda-code.zip s3://$LAMBDA_S3_BUCKET/lambda-code.zip
 
     - name: Upload Lambda layer to S3
       run: aws s3 cp backend/lambda-layer/prisma-layer.zip s3://$LAMBDA_S3_BUCKET/prisma-layer.zip
