@@ -112,5 +112,5 @@ jobs:
 
           aws lambda update-function-configuration \
             --function-name $fn \
-            --layers arn:aws:lambda:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:layer:prisma-layer:${{ env.LAYER_VERSION }}
+            --layers arn:aws:lambda:$AWS_REGION:${{ secrets.AWS_ACCOUNT_ID }}:layer:prisma-layer:${{ env.LAYER_VERSION }}
         done

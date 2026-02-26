@@ -433,6 +433,7 @@ resource "aws_iam_role_policy" "github_policy" {
         Effect = "Allow"
 
         Action = [
+          "s3:GetObject",
           "s3:PutObject",
           "s3:DeleteObject",
           "s3:ListBucket"
@@ -440,7 +441,9 @@ resource "aws_iam_role_policy" "github_policy" {
 
         Resource = [
           aws_s3_bucket.frontend.arn,
-          "${aws_s3_bucket.frontend.arn}/*"
+          "${aws_s3_bucket.frontend.arn}/*",
+          aws_s3_bucket.lambda_deployments.arn,
+          "${aws_s3_bucket.lambda_deployments.arn}/*"
         ]
       },
 
@@ -461,6 +464,7 @@ resource "aws_iam_role_policy" "github_policy" {
           "lambda:UpdateFunctionCode",
           "lambda:GetFunction",
           "lambda:ListFunctions",
+          "lambda:PublishLayerVersion",
         ]
 
         Resource = "*"

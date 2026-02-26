@@ -30,6 +30,5 @@ Main Hexlink app
 - Install terraform 
 - Install AWS CLI
 - Zip `/backend/lamdba` and put it in `/terraform`
-- To log in and run `terraform apply`, run `terraform\terraform_apply.sh` 
-- After you're logged in, you can use `terraform apply` in `\terraform` for about an hour, then you'll have to rerun the log in script again
+- To log in and run `terraform apply`, run `.\terraform\terraform_apply.sh` 
 
