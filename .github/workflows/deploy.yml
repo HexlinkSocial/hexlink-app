@@ -70,7 +70,8 @@ jobs:
 
     - name: Package Lambda code
       run: |
-        zip -r lambda-code.zip dist/lambda/*.js
+        cd dist
+        zip -r ../../lambda-code.zip lambda
       working-directory: backend
 
     - name: Prepare Lambda layer
@@ -82,7 +83,7 @@ jobs:
       working-directory: backend
 
     - name: Upload Lambda code to S3
-      run: aws s3 cp backend/lambda-code.zip s3://$LAMBDA_S3_BUCKET/lambda-code.zip
+      run: aws s3 cp lambda-code.zip s3://$LAMBDA_S3_BUCKET/lambda-code.zip
 
     - name: Upload Lambda layer to S3
       run: aws s3 cp backend/lambda-layer/prisma-layer.zip s3://$LAMBDA_S3_BUCKET/prisma-layer.zip
@@ -109,7 +110,11 @@ jobs:
             --s3-bucket $LAMBDA_S3_BUCKET \
             --s3-key lambda-code.zip
 
+          aws lambda wait function-updated --function-name $fn
+
           aws lambda update-function-configuration \
             --function-name $fn \
             --layers arn:aws:lambda:$AWS_REGION:${{ secrets.AWS_ACCOUNT_ID }}:layer:prisma-layer:${{ env.LAYER_VERSION }}
+
+          aws lambda wait function-updated --function-name $fn
         done

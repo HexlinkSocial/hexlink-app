@@ -202,29 +202,21 @@ locals {
 }
 
 resource "aws_lambda_function" "api" {
-
   for_each = local.lambdas
 
   function_name = "${var.project_name}-${each.value.name}"
-
   role = aws_iam_role.lambda_exec.arn
-
   runtime = "nodejs20.x"
-
-  handler = "${each.value.name}.handler"
-
+  handler = "lambda/${each.value.name}.handler"
   filename = "lambda.zip"
 
   source_code_hash = filebase64sha256("lambda.zip")
 
   environment {
-
     variables = {
       DATABASE_URL = var.supabase_database_url
     }
-
   }
-
 }
 
 #################################
