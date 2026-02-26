@@ -28,9 +28,8 @@ Main Hexlink app
 
 # Deployment
 - Install terraform 
-- Install AWS CLI and log in (`aws login`)
-- Assume terraform role (`aws sts assume-role --role-arn arn:aws:iam::<account_id>:role/<role_name> --role-session-name terraform-session --no-cli-pager`)
-- Configure AWS login details with the values from the role (`aws configure`)
+- Install AWS CLI
 - Zip `/backend/lamdba` and put it in `/terraform`
-- `terraform apply`
+- To log in and run `terraform apply`, run `terraform\terraform_apply.sh` 
+- After you're logged in, you can use `terraform apply` in `\terraform` for about an hour, then you'll have to rerun the log in script again
 
