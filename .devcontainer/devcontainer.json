@@ -8,7 +8,7 @@
 
   "forwardPorts": [5173, 4000, 5432],
 
-  "postCreateCommand": "chmod +x /workspace/terraform/terraform_apply.sh && npm install && cd backend && npm install && npx prisma migrate dev && npm run prisma:seed",
+  "postCreateCommand": "npm install && cd backend && npm install && npx prisma migrate dev && npm run prisma:seed",
 
   "customizations": {
     "vscode": {
