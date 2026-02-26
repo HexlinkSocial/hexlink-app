@@ -228,6 +228,39 @@ resource "aws_lambda_function" "api" {
 }
 
 #################################
+# LAMBDA S3 BUCKET
+#################################
+
+resource "aws_s3_bucket" "lambda_deployments" {
+  bucket = "${var.project_name}-lambda-deployments"
+}
+
+resource "aws_s3_bucket_ownership_controls" "lambda_deployments" {
+  bucket = aws_s3_bucket.lambda_deployments.id
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "lambda_deployments" {
+  bucket = aws_s3_bucket.lambda_deployments.id
+  acl    = "private"
+
+  depends_on = [
+    aws_s3_bucket_ownership_controls.lambda_deployments
+  ]
+}
+
+resource "aws_s3_bucket_public_access_block" "lambda_deployments" {
+  bucket = aws_s3_bucket.lambda_deployments.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  restrict_public_buckets = true
+}
+
+#################################
 # API GATEWAY
 #################################
 
@@ -426,7 +459,8 @@ resource "aws_iam_role_policy" "github_policy" {
 
         Action = [
           "lambda:UpdateFunctionCode",
-          "lambda:GetFunction"
+          "lambda:GetFunction",
+          "lambda:ListFunctions",
         ]
 
         Resource = "*"

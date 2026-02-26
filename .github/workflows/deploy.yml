@@ -13,7 +13,8 @@ jobs:
 
     env:
       AWS_REGION: eu-west-2
-      S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
+      FRONTEND_S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
+      LAMBDA_S3_BUCKET: ${{ secrets.AWS_LAMBDA_S3_BUCKET_NAME }}
       CLOUDFRONT_ID: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
       LAMBDA_NAME: ${{ secrets.AWS_LAMBDA_NAME }}
 
@@ -47,7 +48,7 @@ jobs:
 
     - name: Deploy frontend to S3
       run: |
-        aws s3 sync dist/ s3://$S3_BUCKET --delete --exclude "resources/*" --quiet
+        aws s3 sync dist/ s3://$FRONTEND_S3_BUCKET --delete --exclude "resources/*" --quiet
 
     - name: Invalidate CloudFront
       run: |
@@ -56,7 +57,7 @@ jobs:
           --paths "/*"
 
     - name: Install backend dependencies
-      run: npm ci
+      run: npm ci --production
       working-directory: backend
 
     - name: Generate Prisma client
@@ -67,20 +68,49 @@ jobs:
       run: npm run build
       working-directory: backend
 
-    - name: Package Lambda
+    - name: Package Lambda code
       run: |
         cp dist/*.js .
-        zip -r lambda.zip *.js node_modules package.json
+        zip -r lambda-code.zip *.js package.json
       working-directory: backend
 
-    - name: Deploy Lambdas
+    - name: Prepare Lambda layer
+      run: |
+        mkdir -p lambda-layer/nodejs
+        cp -R node_modules/@prisma lambda-layer/nodejs/
+        cd lambda-layer
+        zip -r prisma-layer.zip nodejs
+      working-directory: backend
+
+    - name: Upload Lambda code to S3
+      run: aws s3 cp backend/lambda-code.zip s3://$LAMBDA_S3_BUCKET/lambda-code.zip
+
+    - name: Upload Lambda layer to S3
+      run: aws s3 cp backend/lambda-layer/prisma-layer.zip s3://$LAMBDA_S3_BUCKET/prisma-layer.zip
+
+    - name: Publish Lambda layer
+      id: publish_layer
+      run: |
+        LAYER_VERSION=$(aws lambda publish-layer-version \
+          --layer-name prisma-layer \
+          --content S3Bucket=$LAMBDA_S3_BUCKET,S3Key=prisma-layer.zip \
+          --compatible-runtimes nodejs18.x \
+          --query Version --output text)
+        echo "LAYER_VERSION=$LAYER_VERSION" >> $GITHUB_ENV
+
+    - name: Update Lambdas
       run: |
         for fn in $(aws lambda list-functions \
-          --query "Functions[?starts_with(FunctionName, '${{ secrets.PROJECT_NAME }}')].FunctionName" \
+          --query "Functions[?starts_with(FunctionName, '$PROJECT_NAME')].FunctionName" \
           --output text)
         do
+          echo "Updating $fn..."
           aws lambda update-function-code \
             --function-name $fn \
-            --zip-file fileb://lambda.zip
+            --s3-bucket $LAMBDA_S3_BUCKET \
+            --s3-key lambda-code.zip
+
+          aws lambda update-function-configuration \
+            --function-name $fn \
+            --layers arn:aws:lambda:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:layer:prisma-layer:${{ env.LAYER_VERSION }}
         done
-      working-directory: backend
