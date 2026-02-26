@@ -83,7 +83,7 @@ jobs:
         npm init -y
         npm install @prisma/client
 
-        cd ../../
+        cd ../..
         zip -r prisma-layer.zip nodejs
       working-directory: backend
 
