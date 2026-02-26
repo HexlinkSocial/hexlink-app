@@ -78,34 +78,28 @@ jobs:
     - name: Prepare Lambda layer
       working-directory: backend
       run: |
-        rm -rf lambda-layer
-        mkdir -p lambda-layer/nodejs/node_modules/@prisma
-        mkdir -p lambda-layer/nodejs/node_modules/.prisma
+        rm -rf lambda-layer lambda-layer-build
+        mkdir lambda-layer-build
 
-        # Prisma packages
-        cp -r node_modules/@prisma/. lambda-layer/nodejs/node_modules/@prisma/
-        cp -r node_modules/.prisma/client lambda-layer/nodejs/node_modules/.prisma/
+        cp package.json package-lock.json lambda-layer-build/
+        cd lambda-layer-build
+        npm ci --omit=dev
+        cd ..
 
-        # pg and its dependencies
-        cp -r node_modules/pg lambda-layer/nodejs/node_modules/
-        cp -r node_modules/pg-connection-string lambda-layer/nodejs/node_modules/
-        cp -r node_modules/pg-pool lambda-layer/nodejs/node_modules/
-        cp -r node_modules/pg-protocol lambda-layer/nodejs/node_modules/
-        cp -r node_modules/pg-types lambda-layer/nodejs/node_modules/
-        cp -r node_modules/pgpass lambda-layer/nodejs/node_modules/
-        cp -r node_modules/postgres-array lambda-layer/nodejs/node_modules/
-        cp -r node_modules/postgres-bytea lambda-layer/nodejs/node_modules/
-        cp -r node_modules/postgres-date lambda-layer/nodejs/node_modules/
-        cp -r node_modules/postgres-interval lambda-layer/nodejs/node_modules/
+        cp -r node_modules/.prisma lambda-layer-build/node_modules/.prisma
 
-        # Remove CLI/dev-only parts to stay under 250MB limit
-        rm -rf lambda-layer/nodejs/node_modules/@prisma/client/generator-build
+        mkdir -p lambda-layer/nodejs
+        cp -r lambda-layer-build/node_modules lambda-layer/nodejs/node_modules
+
+        # Remove CLI-only heavy packages not needed at runtime
         rm -rf lambda-layer/nodejs/node_modules/@prisma/engines
         rm -rf lambda-layer/nodejs/node_modules/@prisma/fetch-engine
         rm -rf lambda-layer/nodejs/node_modules/@prisma/get-platform
         rm -rf lambda-layer/nodejs/node_modules/@prisma/internals
         rm -rf lambda-layer/nodejs/node_modules/@prisma/migrate
         rm -rf lambda-layer/nodejs/node_modules/@prisma/cli
+        rm -rf lambda-layer/nodejs/node_modules/@prisma/client/generator-build
+        rm -rf lambda-layer/nodejs/node_modules/prisma
 
         cd lambda-layer
         zip -r prisma-layer.zip nodejs
