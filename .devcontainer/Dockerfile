@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     gnupg \
     software-properties-common \
+    jq \
     && rm -rf /var/lib/apt/lists/*
 
 # Install AWS CLI
