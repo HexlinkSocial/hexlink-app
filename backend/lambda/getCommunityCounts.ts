@@ -7,15 +7,16 @@ import { Pool } from "pg";
 // default CA bundle. Disable verification for database connections only.
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL!,
+  ssl: true,
+  max: 1,
+});
+
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
+
 export const handler = async (): Promise<APIGatewayProxyStructuredResultV2> => {
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL!,
-    ssl: true,
-  });
-
-  const adapter = new PrismaPg(pool);
-  const prisma = new PrismaClient({ adapter });
-
   try {
     const communities = await prisma.cellCommunity.groupBy({
       by: ["cellId"],
@@ -33,7 +34,7 @@ export const handler = async (): Promise<APIGatewayProxyStructuredResultV2> => {
   } catch (e) {
     return {
       statusCode: 500,
-      body: "Error: " + JSON.stringify({ error: (e as Error).message }),
+      body: JSON.stringify({ error: "Internal Server Error" }),
     };
   } finally {
     await prisma.$disconnect();
