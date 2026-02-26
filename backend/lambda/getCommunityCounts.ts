@@ -1,25 +1,36 @@
-import "dotenv/config";
+import { APIGatewayProxyStructuredResultV2 } from "aws-lambda";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { CommunityCount } from "../../src/objects/CommunityCount";
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
+
 const prisma = new PrismaClient({ adapter });
 
-// TODO or returns error
-export const handler = async (): Promise<CommunityCount[]> => {
+export const handler = async (): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
     const communities = await prisma.cellCommunity.groupBy({
       by: ["cellId"],
-      _count: {
-        cellId: true,
-      },
+      _count: { cellId: true },
     });
-
-    return communities.map(
-      (c) => new CommunityCount(c.cellId, Number(c._count.cellId)),
-    );
-  } catch (error) {
-    throw new Error("Failed to fetch communities");
+    const result = communities.map((c) => ({
+      cellId: c.cellId,
+      communityCount: Number(c._count.cellId),
+    }));
+    return {
+      statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(result),
+    };
+  } catch (e) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: "Internal server error",
+      }),
+    };
   }
 };

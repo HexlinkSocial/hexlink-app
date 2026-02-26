@@ -163,15 +163,50 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
 
 }
 
+locals {
+
+  lambda_files = fileset("${path.module}/../backend/lambda", "*.js")
+
+  lambdas = {
+
+    for file in local.lambda_files :
+
+    replace(file, ".js", "") => {
+
+      name = replace(file, ".js", "")
+
+      method = upper(
+        regex("^([a-z]+)", replace(file, ".js", ""))
+      )
+
+      route = lower(
+        regexreplace(
+          replace(file, ".js", ""),
+          "^[a-z]+",
+          ""
+        )
+      )
+
+    }
+
+  }
+
+}
+
 resource "aws_lambda_function" "api" {
 
-  function_name = "${var.project_name}-api"
+  for_each = local.lambdas
 
-  role    = aws_iam_role.lambda_exec.arn
-  handler = "index.handler"
+  function_name = "${var.project_name}-${each.value.name}"
+
+  role = aws_iam_role.lambda_exec.arn
+
   runtime = "nodejs20.x"
 
-  filename         = "lambda.zip"
+  handler = "${each.value.name}.handler"
+
+  filename = "lambda.zip"
+
   source_code_hash = filebase64sha256("lambda.zip")
 
   environment {
@@ -199,39 +234,62 @@ resource "aws_apigatewayv2_api" "api" {
       "https://${aws_cloudfront_distribution.frontend.domain_name}"
     ]
 
-    allow_methods = ["GET","POST","OPTIONS"]
-    allow_headers = ["*"]
+    allow_methods = [
+      "GET", "POST"
+    ]
 
+    allow_headers = [
+      "content-type",
+      "authorization"
+    ]
+
+    max_age = 86400
   }
-
 }
 
 resource "aws_apigatewayv2_integration" "lambda" {
 
-  api_id           = aws_apigatewayv2_api.api.id
-  integration_type = "AWS_PROXY"
-
-  integration_uri = aws_lambda_function.api.invoke_arn
-
-}
-
-resource "aws_apigatewayv2_route" "default" {
+  for_each = aws_lambda_function.api
 
   api_id = aws_apigatewayv2_api.api.id
 
-  route_key = "ANY /{proxy+}"
+  integration_type = "AWS_PROXY"
 
-  target = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+  integration_uri = each.value.invoke_arn
+
+}
+
+resource "aws_apigatewayv2_route" "routes" {
+
+  for_each = local.lambdas
+
+  api_id = aws_apigatewayv2_api.api.id
+
+  route_key = "${each.value.method} /${each.value.route}"
+
+  target = "integrations/${aws_apigatewayv2_integration.lambda[each.key].id}"
+
+}
+
+resource "aws_apigatewayv2_stage" "default" {
+
+  api_id = aws_apigatewayv2_api.api.id
+
+  name = "$default"
+
+  auto_deploy = true
 
 }
 
 resource "aws_lambda_permission" "api" {
 
-  statement_id = "AllowAPIGateway"
+  for_each = aws_lambda_function.api
+
+  statement_id = "AllowAPIGateway-${each.key}"
 
   action = "lambda:InvokeFunction"
 
-  function_name = aws_lambda_function.api.function_name
+  function_name = each.value.function_name
 
   principal = "apigateway.amazonaws.com"
 

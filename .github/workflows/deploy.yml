@@ -59,10 +59,13 @@ jobs:
       run: npm install
       working-directory: ./backend
 
-    - name: Build Lambda package
+    - name: Build Lambda
       run: |
-        zip -r lambda.zip .
-      working-directory: ./backend/lambda
+        npm ci
+        npm run build
+        cd dist
+        zip -r ../lambda.zip .
+      working-directory: backend
 
     - name: Deploy Lambda
       run: |

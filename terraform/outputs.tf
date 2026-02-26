@@ -14,8 +14,11 @@ output "api_url" {
   value = aws_apigatewayv2_api.api.api_endpoint
 }
 
-output "lambda_function_name" {
-  value = aws_lambda_function.api.function_name
+output "lambda_function_names" {
+  value = {
+    for k, v in aws_lambda_function.api :
+    k => v.function_name
+  }
 }
 
 output "github_role_arn" {
