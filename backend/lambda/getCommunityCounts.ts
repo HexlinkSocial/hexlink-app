@@ -1,12 +1,15 @@
 import { APIGatewayProxyStructuredResultV2 } from "aws-lambda";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 
 export const handler = async (): Promise<APIGatewayProxyStructuredResultV2> => {
-  const adapter = new PrismaPg({
+  const pool = new Pool({
     connectionString: process.env.DATABASE_URL!,
     ssl: { rejectUnauthorized: false },
   });
+
+  const adapter = new PrismaPg(pool);
   const prisma = new PrismaClient({ adapter });
 
   try {
@@ -30,5 +33,6 @@ export const handler = async (): Promise<APIGatewayProxyStructuredResultV2> => {
     };
   } finally {
     await prisma.$disconnect();
+    await pool.end();
   }
 };
