@@ -76,9 +76,14 @@ jobs:
 
     - name: Prepare Lambda layer
       run: |
-        mkdir -p lambda-layer/nodejs/node_modules/@prisma
-        cp -R node_modules/@prisma/client lambda-layer/nodejs/node_modules/@prisma/
-        cd lambda-layer
+        rm -rf lambda-layer
+        mkdir -p lambda-layer/nodejs
+        cd lambda-layer/nodejs
+
+        npm init -y
+        npm install @prisma/client
+
+        cd ../../
         zip -r prisma-layer.zip nodejs
       working-directory: backend
 
