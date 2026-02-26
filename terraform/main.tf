@@ -165,26 +165,34 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
 
 locals {
 
-  lambda_files = fileset("${path.module}/../backend/lambda", "*.js")
+  lambda_files = fileset("${path.module}/../backend/lambda", "*.ts")
 
   lambdas = {
 
     for file in local.lambda_files :
 
-    replace(file, ".js", "") => {
+    trimsuffix(file, ".ts") => {
 
-      name = replace(file, ".js", "")
+      name = trimsuffix(file, ".ts")
 
-      method = upper(
-        regex("^([a-z]+)", replace(file, ".js", ""))
+      method = (
+        startswith(file, "get")    ? "GET" :
+        startswith(file, "post")   ? "POST" :
+        startswith(file, "put")    ? "PUT" :
+        startswith(file, "delete") ? "DELETE" :
+        "GET"
       )
 
-      route = lower(
-        regexreplace(
-          replace(file, ".js", ""),
-          "^[a-z]+",
+      route = substr(
+        trimsuffix(file, ".ts"),
+        length(
+          startswith(file,"get")    ? "get" :
+          startswith(file,"post")   ? "post" :
+          startswith(file,"put")    ? "put" :
+          startswith(file,"delete") ? "delete" :
           ""
-        )
+        ),
+        100
       )
 
     }

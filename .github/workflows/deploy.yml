@@ -63,13 +63,18 @@ jobs:
       run: |
         npm ci
         npm run build
-        cd dist
-        zip -r ../lambda.zip .
+        cp dist/*.js .
+        zip -r lambda.zip *.js node_modules package.json
       working-directory: backend
 
-    - name: Deploy Lambda
+    - name: Deploy Lambdas
       run: |
-        aws lambda update-function-code \
-          --function-name $LAMBDA_NAME \
-          --zip-file fileb://lambda.zip
-      working-directory: ./backend/lambda
+        for fn in $(aws lambda list-functions \
+          --query "Functions[?starts_with(FunctionName, '${{ secrets.PROJECT_NAME }}')].FunctionName" \
+          --output text)
+        do
+          aws lambda update-function-code \
+            --function-name $fn \
+            --zip-file fileb://lambda.zip
+        done
+      working-directory: backend
