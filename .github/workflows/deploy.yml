@@ -76,8 +76,8 @@ jobs:
 
     - name: Prepare Lambda layer
       run: |
-        mkdir -p lambda-layer/nodejs
-        cp -R node_modules/@prisma lambda-layer/nodejs/
+        mkdir -p lambda-layer/nodejs/node_modules/@prisma
+        cp -R node_modules/@prisma/client lambda-layer/nodejs/node_modules/@prisma/
         cd lambda-layer
         zip -r prisma-layer.zip nodejs
       working-directory: backend
@@ -94,7 +94,7 @@ jobs:
         LAYER_VERSION=$(aws lambda publish-layer-version \
           --layer-name prisma-layer \
           --content S3Bucket=$LAMBDA_S3_BUCKET,S3Key=prisma-layer.zip \
-          --compatible-runtimes nodejs18.x \
+          --compatible-runtimes nodejs20.x \
           --query Version --output text)
         echo "LAYER_VERSION=$LAYER_VERSION" >> $GITHUB_ENV
 
