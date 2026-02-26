@@ -82,7 +82,8 @@ jobs:
         npm init -y --prefix lambda-layer/nodejs
         npm install @prisma/client --prefix lambda-layer/nodejs
 
-        zip -r lambda-layer/prisma-layer.zip lambda-layer/nodejs
+        cd lambda-layer
+        zip -r prisma-layer.zip nodejs
       working-directory: backend
 
     - name: Upload Lambda code to S3
