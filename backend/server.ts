@@ -8,7 +8,7 @@ app.use(cors({ origin: process.env.FRONTEND_URL }));
 const port = 4000;
 
 app.get(
-  "/communityCounts",
+  "/CommunityCounts",
   async (req: express.Request, res: express.Response) => {
     try {
       const response = await handler();

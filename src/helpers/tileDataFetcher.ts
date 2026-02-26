@@ -3,7 +3,7 @@ import JSZip from "jszip";
 import { CommunityCount } from "../objects/CommunityCount";
 
 export async function fetchTileData(): Promise<{ [id: string]: number }> {
-  return await fetch(import.meta.env.VITE_BACKEND_URL! + "/communityCounts")
+  return await fetch(import.meta.env.VITE_BACKEND_URL! + "/CommunityCounts")
     .then((response) => response.json())
     .then((data) => {
       const result: { [id: string]: number } = {};
