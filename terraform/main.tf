@@ -208,9 +208,19 @@ resource "aws_lambda_function" "api" {
   role = aws_iam_role.lambda_exec.arn
   runtime = "nodejs20.x"
   handler = "lambda/${each.value.name}.handler"
-  filename = "lambda.zip"
+  timeout       = 30
 
-  source_code_hash = filebase64sha256("lambda.zip")
+  s3_bucket        = aws_s3_bucket.lambda_deployments.bucket
+  s3_key           = "lambda-code.zip"
+
+  lifecycle {
+    ignore_changes = [
+      s3_key,
+      s3_object_version,
+      source_code_hash,
+      layers
+    ]
+  }
 
   environment {
     variables = {
