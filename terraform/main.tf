@@ -224,7 +224,8 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      DATABASE_URL = var.supabase_database_url
+      DATABASE_URL = var.supabase_database_url,
+      NODE_ENV = "production"
     }
   }
 }

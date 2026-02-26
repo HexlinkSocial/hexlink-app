@@ -23,6 +23,7 @@ services:
       - ..:/workspace:cached
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/hexlink
+      NODE_ENV: development
     depends_on:
       - db
     command: sleep infinity
