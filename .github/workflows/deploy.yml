@@ -59,6 +59,9 @@ jobs:
       run: npm ci
       working-directory: backend
 
+    - name: Generate Prisma client
+      run: npx prisma generate
+
     - name: Compile Lambda
       run: npm run build
       working-directory: backend
