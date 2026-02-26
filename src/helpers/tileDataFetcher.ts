@@ -5,10 +5,9 @@ import { CommunityCount } from "../objects/CommunityCount";
 export async function fetchTileData(): Promise<{ [id: string]: number }> {
   return await fetch(import.meta.env.VITE_BACKEND_URL! + "/CommunityCounts")
     .then((response) => response.json())
-    .then((data: { body: string }) => {
-      const entries: CommunityCount[] = JSON.parse(data.body);
+    .then((data: CommunityCount[]) => {
       const result: { [id: string]: number } = {};
-      entries.forEach((entry: CommunityCount) => {
+      data.forEach((entry: CommunityCount) => {
         result[entry.cellId] = entry.communityCount;
       });
       return result;

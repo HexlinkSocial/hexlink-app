@@ -12,7 +12,9 @@ app.get(
   async (req: express.Request, res: express.Response) => {
     try {
       const response = await handler();
-      res.send(response);
+      res
+        .status(response.statusCode ?? 200)
+        .json(JSON.parse(response.body as string));
     } catch (err) {
       console.error(err);
       res.status(500).send({ error: "Internal Server Error" });
