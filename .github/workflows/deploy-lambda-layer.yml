@@ -10,7 +10,7 @@ on:
       - 'backend/package-lock.json'
 
 jobs:
-  deploy:
+  deploy_lambda_layer:
     runs-on: ubuntu-latest
 
     permissions:

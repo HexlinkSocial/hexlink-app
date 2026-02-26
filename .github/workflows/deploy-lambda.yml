@@ -8,7 +8,7 @@ on:
       - 'backend/lambda/**'
 
 jobs:
-  deploy:
+  deploy_lambda:
     runs-on: ubuntu-latest
 
     permissions:

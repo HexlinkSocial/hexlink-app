@@ -8,7 +8,7 @@ on:
       - 'src/**'
 
 jobs:
-  deploy:
+  deploy_frontend:
     runs-on: ubuntu-latest
 
     permissions:
