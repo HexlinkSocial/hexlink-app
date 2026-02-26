@@ -82,7 +82,7 @@ jobs:
         mkdir -p lambda-layer/nodejs/node_modules/@prisma
         mkdir -p lambda-layer/nodejs/node_modules/.prisma
 
-        cp -r node_modules/@prisma/client lambda-layer/nodejs/node_modules/@prisma/
+        cp -r node_modules/@prisma/. lambda-layer/nodejs/node_modules/@prisma/
         cp -r node_modules/.prisma/client lambda-layer/nodejs/node_modules/.prisma/
 
         cd lambda-layer
