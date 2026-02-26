@@ -70,8 +70,7 @@ jobs:
 
     - name: Package Lambda code
       run: |
-        cp dist/*.js .
-        zip -r lambda-code.zip *.js package.json
+        zip -r lambda-code.zip dist/lambda/*.js
       working-directory: backend
 
     - name: Prepare Lambda layer

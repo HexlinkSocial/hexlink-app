@@ -465,6 +465,8 @@ resource "aws_iam_role_policy" "github_policy" {
           "lambda:GetFunction",
           "lambda:ListFunctions",
           "lambda:PublishLayerVersion",
+          "lambda:UpdateFunctionConfiguration",
+          "lambda:GetLayerVersion"
         ]
 
         Resource = "*"
