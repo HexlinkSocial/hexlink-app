@@ -58,7 +58,7 @@ jobs:
           --paths "/*"
 
     - name: Install backend dependencies
-      run: npm ci --production
+      run: npm ci
       working-directory: backend
 
     - name: Generate Prisma client
