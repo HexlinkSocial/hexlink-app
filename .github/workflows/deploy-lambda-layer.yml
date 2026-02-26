@@ -1,0 +1,103 @@
+name: Deploy Lambda Layer
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/prisma/schema.prisma'
+      - 'backend/package.json'
+      - 'backend/package-lock.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      AWS_REGION: eu-west-2
+      LAMBDA_S3_BUCKET: ${{ secrets.AWS_LAMBDA_S3_BUCKET_NAME }}
+      PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: eu-west-2
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend
+
+      - name: Generate Prisma client for Lambda (Linux target)
+        run: npx prisma generate --generator client
+        working-directory: backend
+        env:
+          PRISMA_CLI_BINARY_TARGETS: rhel-openssl-3.0.x
+
+      - name: Prepare Lambda layer
+        working-directory: backend
+        run: |
+          rm -rf lambda-layer lambda-layer-build
+          mkdir lambda-layer-build
+
+          cp package.json package-lock.json lambda-layer-build/
+          cd lambda-layer-build
+          npm ci --omit=dev
+          cd ..
+
+          cp -r node_modules/.prisma lambda-layer-build/node_modules/.prisma
+
+          mkdir -p lambda-layer/nodejs
+          cp -r lambda-layer-build/node_modules lambda-layer/nodejs/node_modules
+
+          rm -rf lambda-layer/nodejs/node_modules/@prisma/engines
+          rm -rf lambda-layer/nodejs/node_modules/@prisma/fetch-engine
+          rm -rf lambda-layer/nodejs/node_modules/@prisma/get-platform
+          rm -rf lambda-layer/nodejs/node_modules/@prisma/internals
+          rm -rf lambda-layer/nodejs/node_modules/@prisma/migrate
+          rm -rf lambda-layer/nodejs/node_modules/@prisma/cli
+          rm -rf lambda-layer/nodejs/node_modules/@prisma/client/generator-build
+          rm -rf lambda-layer/nodejs/node_modules/prisma
+
+          cd lambda-layer
+          zip -r prisma-layer.zip nodejs
+
+      - name: Upload Lambda layer to S3
+        run: aws s3 cp backend/lambda-layer/prisma-layer.zip s3://$LAMBDA_S3_BUCKET/prisma-layer.zip
+
+      - name: Publish Lambda layer
+        id: publish_layer
+        run: |
+          LAYER_VERSION=$(aws lambda publish-layer-version \
+            --layer-name prisma-layer \
+            --content S3Bucket=$LAMBDA_S3_BUCKET,S3Key=prisma-layer.zip \
+            --compatible-runtimes nodejs20.x \
+            --query Version --output text)
+          echo "LAYER_VERSION=$LAYER_VERSION" >> $GITHUB_ENV
+
+      - name: Attach layer to all Lambdas
+        run: |
+          for fn in $(aws lambda list-functions \
+            --query "Functions[?starts_with(FunctionName, '$PROJECT_NAME')].FunctionName" \
+            --output text)
+          do
+            echo "Attaching layer to $fn..."
+            aws lambda update-function-configuration \
+              --function-name $fn \
+              --layers arn:aws:lambda:$AWS_REGION:${{ secrets.AWS_ACCOUNT_ID }}:layer:prisma-layer:${{ env.LAYER_VERSION }}
+
+            aws lambda wait function-updated --function-name $fn
+          done

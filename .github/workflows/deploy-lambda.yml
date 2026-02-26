@@ -1,0 +1,70 @@
+name: Deploy Lambdas
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/lambda/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      AWS_REGION: eu-west-2
+      LAMBDA_S3_BUCKET: ${{ secrets.AWS_LAMBDA_S3_BUCKET_NAME }}
+      PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: eu-west-2
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend
+
+      - name: Generate Prisma client
+        run: npx prisma generate --generator client
+        working-directory: backend
+
+      - name: Compile Lambda
+        run: npm run build
+        working-directory: backend
+
+      - name: Package Lambda code
+        working-directory: backend/dist
+        run: zip -r ../../lambda-code.zip lambda
+
+      - name: Upload Lambda code to S3
+        run: aws s3 cp lambda-code.zip s3://$LAMBDA_S3_BUCKET/lambda-code.zip
+
+      - name: Update Lambdas
+        run: |
+          for fn in $(aws lambda list-functions \
+            --query "Functions[?starts_with(FunctionName, '$PROJECT_NAME')].FunctionName" \
+            --output text)
+          do
+            echo "Updating $fn..."
+            aws lambda update-function-code \
+              --function-name $fn \
+              --s3-bucket $LAMBDA_S3_BUCKET \
+              --s3-key lambda-code.zip
+
+            aws lambda wait function-updated --function-name $fn
+          done
