@@ -36,8 +36,5 @@ export const handler = async (): Promise<APIGatewayProxyStructuredResultV2> => {
       statusCode: 500,
       body: JSON.stringify({ error: (e as Error).message }),
     };
-  } finally {
-    await prisma.$disconnect();
-    await pool.end();
   }
 };
