@@ -7,12 +7,15 @@ import {
   cellToLatLng,
   cellToBoundary,
   cellToChildren,
+  getResolution,
   H3Index,
 } from "h3-js";
 import "leaflet/dist/leaflet.css";
 import { HexCell } from "../objects/HexCell";
 import { fetchActiveTiles, fetchTileData } from "../helpers/tileDataFetcher";
 import CommunitiesCard from "./communities/CommunitiesCard";
+
+const CARD_RESOLUTION = 8;
 
 const zoomBreakpoints = [
   { maxZoom: 8, resolution: 4, boundsPadding: 0.2 },
@@ -24,7 +27,7 @@ const resolutionBreakpoints = [
   { resolution: 6, nextZoomLevel: 14 },
 ];
 
-function getResolution(zoom: number): number {
+function getCurrentResolution(zoom: number): number {
   const match = zoomBreakpoints.find((z) => zoom <= z.maxZoom);
   return match?.resolution ?? 8;
 }
@@ -46,11 +49,17 @@ function handleHexClick(
   setSelectedCellId: (id: H3Index) => void,
 ): void {
   const [lat, lng]: [number, number] = cellCoords;
+  const resolution = getResolution(cellId);
+
   map.flyTo(
     [lat, lng],
-    getNextZoomFromResolution(getResolution(map.getZoom())),
+    getNextZoomFromResolution(getCurrentResolution(map.getZoom())),
   );
-  setSelectedCellId(cellId);
+
+  // Only open the communities card at the smallest resolution
+  if (resolution === CARD_RESOLUTION) {
+    setSelectedCellId(cellId);
+  }
 }
 
 function getFillColor(isActive: boolean, communitiesCount: number): string {
@@ -124,7 +133,10 @@ export default function H3Layer(): JSX.Element {
         ],
       ];
 
-      const cells = polygonToCells(polygon, getResolution(map.getZoom()));
+      const cells = polygonToCells(
+        polygon,
+        getCurrentResolution(map.getZoom()),
+      );
 
       const activeTiles: Set<H3Index> = await fetchActiveTiles();
       const cellsWithData: Record<H3Index, number> = await fetchTileData();

@@ -1,7 +1,7 @@
 import { JSX, useEffect, useRef, useState } from "react";
 import { Community } from "./types";
 import CommunityItem from "./CommunityItem";
-import "../../styles/CommunitiesCards.css";
+import "../../styles/CommunitiesCard.css";
 
 interface CommunitiesCardProps {
   cellId: string | null;
@@ -52,14 +52,19 @@ export default function CommunitiesCard({
     };
   }, [cellId]);
 
-  // loading = we have an open cell but no result for it yet
+  // Prevent wheel events on the card body from reaching the map
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const stop = (e: WheelEvent): void => e.stopPropagation();
+    el.addEventListener("wheel", stop, { passive: true });
+    return () => el.removeEventListener("wheel", stop);
+  }, []);
+
   const loading = isOpen && result?.cellId !== cellId;
   const communities =
     !loading && result?.cellId === cellId ? result.communities : [];
   const error = !loading && result?.cellId === cellId ? result.error : null;
-
-  const shortId =
-    cellId !== null ? `${cellId.slice(0, 6)}…${cellId.slice(-4)}` : "";
 
   return (
     <>
@@ -76,18 +81,14 @@ export default function CommunitiesCard({
         aria-modal="true"
       >
         <div className="communities-card-header">
-          <div className="communities-card-header-text">
-            <span className="communities-card-eyebrow">Hex tile</span>
-            <h2 className="communities-card-title">{shortId}</h2>
-          </div>
           <button
             className="communities-card-close"
             onClick={onClose}
             aria-label="Close panel"
           >
             <svg
-              width="18"
-              height="18"
+              width="16"
+              height="16"
               viewBox="0 0 18 18"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -101,6 +102,7 @@ export default function CommunitiesCard({
             </svg>
           </button>
         </div>
+
         <div className="communities-card-body" ref={scrollRef}>
           {loading && (
             <div className="communities-card-state">

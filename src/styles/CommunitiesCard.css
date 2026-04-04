@@ -1,9 +1,9 @@
 /* ── Tokens ── */
 .communities-card {
-  --card-bg: #141418;
-  --card-border: rgba(255, 255, 255, 0.08);
-  --card-text: #e8e8ec;
-  --card-muted: #7a7a8a;
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.08);
+  --card-text: #1a1a1a;
+  --card-muted: #6b6b7a;
   --card-accent: #73197a;
   --card-accent-light: #a83db0;
   --card-radius: 16px;
@@ -19,33 +19,40 @@
   flex-direction: column;
   overflow: hidden;
   box-shadow:
-    0 24px 64px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(115, 25, 122, 0.2);
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(115, 25, 122, 0.1);
 
-  /* Desktop: left panel */
+  /* Desktop: right panel, slides in from right */
   top: 80px;
-  left: 16px;
+  right: 16px;
   bottom: 80px;
-  width: min(420px, 45vw);
+  width: min(380px, 40vw);
   border-radius: var(--card-radius);
-  transform: translateX(calc(-100% - 24px));
+  transform: translateX(calc(100% + 24px));
   transition: transform var(--transition);
+  pointer-events: none;
 }
 
 .communities-card--open {
   transform: translateX(0);
+  pointer-events: all;
 }
 
-/* Mobile: bottom sheet — breakpoint 640px */
+/* Prevent map scroll events leaking through the card */
+.communities-card-body {
+  overscroll-behavior: contain;
+}
+
+/* Mobile: full-screen bottom sheet — breakpoint 640px */
 @media (max-width: 639px) {
   .communities-card {
-    top: auto;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     width: 100%;
-    max-height: 90dvh;
-    border-radius: var(--card-radius) var(--card-radius) 0 0;
+    max-height: 100dvh;
+    border-radius: 0;
     transform: translateY(110%);
     transition: transform var(--transition);
   }
@@ -57,6 +64,10 @@
 /* ── Backdrop (mobile only) ── */
 .communities-card-backdrop {
   display: none;
+  border: none;
+  padding: 0;
+  background: transparent;
+  cursor: default;
 }
 
 @media (max-width: 639px) {
@@ -65,94 +76,49 @@
     position: fixed;
     inset: 0;
     z-index: 999;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(2px);
   }
 }
 
-/* ── Header ── */
+/* ── Header (close button row only) ── */
 .communities-card-header {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 20px 20px 16px;
-  border-bottom: 1px solid var(--card-border);
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 12px 0;
   flex-shrink: 0;
-}
-
-@media (max-width: 639px) {
-  .communities-card-header {
-    position: relative;
-    padding-top: 26px;
-  }
-  .communities-card-header::before {
-    content: "";
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 36px;
-    height: 4px;
-    border-radius: 2px;
-    background: rgba(255, 255, 255, 0.15);
-  }
-}
-
-.communities-card-header-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.communities-card-eyebrow {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--card-accent-light);
-}
-
-.communities-card-title {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--card-muted);
-  margin: 0;
-  font-variant-numeric: tabular-nums;
-  font-family: "DM Mono", "Courier New", monospace;
 }
 
 /* ── Close button ── */
 .communities-card-close {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--card-border);
+  background: none;
+  border: none;
   color: var(--card-muted);
-  border-radius: 8px;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
   flex-shrink: 0;
-  transition:
-    background 0.15s,
-    color 0.15s;
 }
 
 .communities-card-close:hover {
-  background: rgba(255, 255, 255, 0.12);
   color: var(--card-text);
+  background: rgba(0, 0, 0, 0.06);
 }
 
 /* ── Scrollable body ── */
 .communities-card-body {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 20px 24px;
+  padding: 8px 16px 24px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+  overscroll-behavior: contain;
 }
 
 .communities-card-body::-webkit-scrollbar {
@@ -162,7 +128,7 @@
   background: transparent;
 }
 .communities-card-body::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 2px;
 }
 
@@ -179,12 +145,12 @@
 }
 
 .communities-card-state--error {
-  color: #e05c5c;
+  color: #c0392b;
 }
 
 .communities-card-empty-hex {
   font-size: 36px;
-  opacity: 0.25;
+  opacity: 0.2;
   line-height: 1;
 }
 
@@ -192,8 +158,8 @@
 .communities-card-spinner {
   width: 28px;
   height: 28px;
-  border: 2px solid rgba(255, 255, 255, 0.08);
-  border-top-color: var(--card-accent-light);
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  border-top-color: var(--card-accent);
   border-radius: 50%;
   animation: communities-card-spin 0.7s linear infinite;
 }
@@ -221,7 +187,7 @@
   justify-content: space-between;
   gap: 14px;
   padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.04);
+  background: #f8f7f9;
   border: 1px solid var(--card-border);
   border-radius: 12px;
   transition:
@@ -230,8 +196,8 @@
 }
 
 .community-item:hover {
-  background: rgba(115, 25, 122, 0.12);
-  border-color: rgba(115, 25, 122, 0.35);
+  background: #f3edf4;
+  border-color: rgba(115, 25, 122, 0.25);
 }
 
 .community-item__info {
@@ -274,7 +240,7 @@
   cursor: pointer;
   text-decoration: none;
   background: var(--card-accent);
-  color: #fff;
+  color: #fff !important;
   transition:
     background 0.15s,
     transform 0.1s;
@@ -287,7 +253,7 @@
 }
 
 .community-item__join--disabled {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.08);
   color: var(--card-muted);
   cursor: not-allowed;
   transform: none !important;
