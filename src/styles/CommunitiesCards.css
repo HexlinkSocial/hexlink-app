@@ -1,0 +1,294 @@
+/* ── Tokens ── */
+.communities-card {
+  --card-bg: #141418;
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-text: #e8e8ec;
+  --card-muted: #7a7a8a;
+  --card-accent: #73197a;
+  --card-accent-light: #a83db0;
+  --card-radius: 16px;
+  --transition: 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+
+  font-family: "DM Sans", "Helvetica Neue", sans-serif;
+  position: fixed;
+  z-index: 1000;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--card-text);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(115, 25, 122, 0.2);
+
+  /* Desktop: left panel */
+  top: 80px;
+  left: 16px;
+  bottom: 80px;
+  width: min(420px, 45vw);
+  border-radius: var(--card-radius);
+  transform: translateX(calc(-100% - 24px));
+  transition: transform var(--transition);
+}
+
+.communities-card--open {
+  transform: translateX(0);
+}
+
+/* Mobile: bottom sheet — breakpoint 640px */
+@media (max-width: 639px) {
+  .communities-card {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: 90dvh;
+    border-radius: var(--card-radius) var(--card-radius) 0 0;
+    transform: translateY(110%);
+    transition: transform var(--transition);
+  }
+  .communities-card--open {
+    transform: translateY(0);
+  }
+}
+
+/* ── Backdrop (mobile only) ── */
+.communities-card-backdrop {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .communities-card-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+  }
+}
+
+/* ── Header ── */
+.communities-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--card-border);
+  flex-shrink: 0;
+}
+
+@media (max-width: 639px) {
+  .communities-card-header {
+    position: relative;
+    padding-top: 26px;
+  }
+  .communities-card-header::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.15);
+  }
+}
+
+.communities-card-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.communities-card-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--card-accent-light);
+}
+
+.communities-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--card-muted);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-family: "DM Mono", "Courier New", monospace;
+}
+
+/* ── Close button ── */
+.communities-card-close {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--card-border);
+  color: var(--card-muted);
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.communities-card-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--card-text);
+}
+
+/* ── Scrollable body ── */
+.communities-card-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px 24px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.communities-card-body::-webkit-scrollbar {
+  width: 4px;
+}
+.communities-card-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.communities-card-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+/* ── State views ── */
+.communities-card-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 0;
+  color: var(--card-muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+.communities-card-state--error {
+  color: #e05c5c;
+}
+
+.communities-card-empty-hex {
+  font-size: 36px;
+  opacity: 0.25;
+  line-height: 1;
+}
+
+/* ── Spinner ── */
+.communities-card-spinner {
+  width: 28px;
+  height: 28px;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-top-color: var(--card-accent-light);
+  border-radius: 50%;
+  animation: communities-card-spin 0.7s linear infinite;
+}
+
+@keyframes communities-card-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Community list ── */
+.communities-card-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── CommunityItem ── */
+.community-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.community-item:hover {
+  background: rgba(115, 25, 122, 0.12);
+  border-color: rgba(115, 25, 122, 0.35);
+}
+
+.community-item__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.community-item__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--card-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.community-item__description {
+  font-size: 12px;
+  color: var(--card-muted);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.community-item__join {
+  flex-shrink: 0;
+  appearance: none;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-decoration: none;
+  background: var(--card-accent);
+  color: #fff;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+  align-self: center;
+}
+
+.community-item__join:hover {
+  background: var(--card-accent-light);
+  transform: translateY(-1px);
+}
+
+.community-item__join--disabled {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--card-muted);
+  cursor: not-allowed;
+  transform: none !important;
+}
