@@ -15,3 +15,8 @@ variable "supabase_database_url" {
   description = "Supabase Postgres connection string"
   sensitive   = true
 }
+
+variable "prisma_layer_arn" {
+  description = "ARN of the Prisma Lambda layer"
+  type        = string
+}

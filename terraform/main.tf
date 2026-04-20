@@ -209,27 +209,28 @@ resource "aws_lambda_function" "api" {
   for_each = local.lambdas
 
   function_name = "${var.project_name}-${each.value.name}"
-  role = aws_iam_role.lambda_exec.arn
-  runtime = "nodejs20.x"
-  handler = "lambda/${each.value.name}.handler"
+  role          = aws_iam_role.lambda_exec.arn
+  runtime       = "nodejs20.x"
+  handler       = "lambda/${each.value.name}.handler"
   timeout       = 30
 
-  s3_bucket        = aws_s3_bucket.lambda_deployments.bucket
-  s3_key           = "lambda-code.zip"
+  s3_bucket = aws_s3_bucket.lambda_deployments.bucket
+  s3_key    = "lambda-code.zip"
+
+  layers = [var.prisma_layer_arn]
 
   lifecycle {
     ignore_changes = [
       s3_key,
       s3_object_version,
       source_code_hash,
-      layers
     ]
   }
 
   environment {
     variables = {
-      DATABASE_URL = var.supabase_database_url,
-      NODE_ENV = "production"
+      DATABASE_URL = var.supabase_database_url
+      NODE_ENV     = "production"
     }
   }
 }
@@ -479,6 +480,12 @@ resource "aws_iam_role_policy" "github_policy" {
         ]
 
         Resource = "*"
+      },
+
+      {
+        Effect = "Allow"
+        Action = "iam:PassRole"
+        Resource = aws_iam_role.lambda_exec.arn
       }
 
     ]

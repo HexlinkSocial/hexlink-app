@@ -19,9 +19,7 @@ jobs:
       AWS_REGION: eu-west-2
       LAMBDA_S3_BUCKET: ${{ secrets.AWS_LAMBDA_S3_BUCKET_NAME }}
       PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
-      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
-      PRISMA_LAYER_ARN: ${{ secrets.PRISMA_LAYER_ARN }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,11 +28,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Debug secrets
-        run: |
-          echo "Layer ARN length: ${#PRISMA_LAYER_ARN}"
-          echo "Layer ARN prefix: ${PRISMA_LAYER_ARN:0:20}"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -61,33 +54,17 @@ jobs:
       - name: Upload Lambda code to S3
         run: aws s3 cp lambda-code.zip s3://$LAMBDA_S3_BUCKET/lambda-code.zip
 
-      - name: Deploy Lambdas
+      - name: Update Lambdas
         run: |
-          for handler_file in backend/dist/lambda/*.js; do
-            fn_short=$(basename "$handler_file" .js)
-            fn="${PROJECT_NAME}-${fn_short}"
-            echo "Deploying $fn..."
+          for fn in $(aws lambda list-functions \
+            --query "Functions[?starts_with(FunctionName, '$PROJECT_NAME')].FunctionName" \
+            --output text)
+          do
+            echo "Updating $fn..."
+            aws lambda update-function-code \
+              --function-name $fn \
+              --s3-bucket $LAMBDA_S3_BUCKET \
+              --s3-key lambda-code.zip
 
-            if aws lambda get-function --function-name "$fn" > /dev/null 2>&1; then
-              echo "  → Updating existing function"
-              aws lambda update-function-code \
-                --function-name "$fn" \
-                --s3-bucket "$LAMBDA_S3_BUCKET" \
-                --s3-key lambda-code.zip
-            else
-              echo "  → Creating new function"
-              aws lambda create-function \
-                --function-name "$fn" \
-                --runtime nodejs20.x \
-                --role "$AWS_ROLE_ARN" \
-                --handler "lambda/${fn_short}.handler" \
-                --code "S3Bucket=${LAMBDA_S3_BUCKET},S3Key=lambda-code.zip" \
-                --layers "$PRISMA_LAYER_ARN" \
-                --environment "Variables={DATABASE_URL=${DATABASE_URL},NODE_ENV=production}" \
-                --timeout 30 \
-                --memory-size 128
-            fi
-
-            aws lambda wait function-updated --function-name "$fn"
-            echo "  ✓ $fn deployed"
+            aws lambda wait function-updated --function-name $fn
           done

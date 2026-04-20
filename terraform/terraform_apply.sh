@@ -27,4 +27,4 @@ export AWS_SESSION_TOKEN=$(echo $CREDENTIALS_JSON | jq -r '.Credentials.SessionT
 echo "AWS credentials set."
 
 echo "Running terraform apply..."
-terraform apply -var="supabase_database_url=${SUPABASE_DATABASE_URL}"
+terraform apply -var="supabase_database_url=${SUPABASE_DATABASE_URL}" -var="prisma_layer_arn=${PRISMA_LAYER_ARN}"
