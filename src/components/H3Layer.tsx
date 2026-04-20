@@ -7,11 +7,15 @@ import {
   cellToLatLng,
   cellToBoundary,
   cellToChildren,
+  getResolution,
   H3Index,
 } from "h3-js";
 import "leaflet/dist/leaflet.css";
 import { HexCell } from "../objects/HexCell";
 import { fetchActiveTiles, fetchTileData } from "../helpers/tileDataFetcher";
+import CommunitiesCard from "./communities/CommunitiesCard";
+
+const CARD_RESOLUTION = 8;
 
 const zoomBreakpoints = [
   { maxZoom: 8, resolution: 4, boundsPadding: 0.2 },
@@ -23,7 +27,7 @@ const resolutionBreakpoints = [
   { resolution: 6, nextZoomLevel: 14 },
 ];
 
-function getResolution(zoom: number): number {
+function getCurrentResolution(zoom: number): number {
   const match = zoomBreakpoints.find((z) => zoom <= z.maxZoom);
   return match?.resolution ?? 8;
 }
@@ -38,12 +42,24 @@ function getNextZoomFromResolution(resolution: number): number {
   return match?.nextZoomLevel ?? 14;
 }
 
-function handleHexClick(map: LeafletMap, cellCoords: CoordPair): void {
+function handleHexClick(
+  map: LeafletMap,
+  cellCoords: CoordPair,
+  cellId: H3Index,
+  setSelectedCellId: (id: H3Index) => void,
+): void {
   const [lat, lng]: [number, number] = cellCoords;
+  const resolution = getResolution(cellId);
+
   map.flyTo(
     [lat, lng],
-    getNextZoomFromResolution(getResolution(map.getZoom())),
+    getNextZoomFromResolution(getCurrentResolution(map.getZoom())),
   );
+
+  // Only open the communities card at the smallest resolution
+  if (resolution === CARD_RESOLUTION) {
+    setSelectedCellId(cellId);
+  }
 }
 
 function getFillColor(isActive: boolean, communitiesCount: number): string {
@@ -60,7 +76,11 @@ function getFillOpacity(communitiesCount: number): number {
   return Math.min(communitiesCount * 2, 7) * 0.09 + 0.3;
 }
 
-function drawHexagon(cell: HexCell, map: LeafletMap): JSX.Element {
+function drawHexagon(
+  cell: HexCell,
+  map: LeafletMap,
+  setSelectedCellId: (id: H3Index) => void,
+): JSX.Element {
   return (
     <Polygon
       key={cell.id}
@@ -72,7 +92,7 @@ function drawHexagon(cell: HexCell, map: LeafletMap): JSX.Element {
       }}
       eventHandlers={{
         click: () => {
-          handleHexClick(map, cell.centre);
+          handleHexClick(map, cell.centre, cell.id, setSelectedCellId);
         },
       }}
     />
@@ -82,6 +102,7 @@ function drawHexagon(cell: HexCell, map: LeafletMap): JSX.Element {
 export default function H3Layer(): JSX.Element {
   const map: LeafletMap = useMap() as LeafletMap;
   const [hexes, setHexes] = useState<HexCell[]>([]);
+  const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
 
   useEffect(() => {
     const updateHexes = async (): Promise<void> => {
@@ -112,7 +133,10 @@ export default function H3Layer(): JSX.Element {
         ],
       ];
 
-      const cells = polygonToCells(polygon, getResolution(map.getZoom()));
+      const cells = polygonToCells(
+        polygon,
+        getCurrentResolution(map.getZoom()),
+      );
 
       const activeTiles: Set<H3Index> = await fetchActiveTiles();
       const cellsWithData: Record<H3Index, number> = await fetchTileData();
@@ -157,13 +181,18 @@ export default function H3Layer(): JSX.Element {
     <>
       {hexes
         .filter((cell) => !cell.isActive)
-        .map((cell) => drawHexagon(cell, map))}
+        .map((cell) => drawHexagon(cell, map, setSelectedCellId))}
       {hexes
         .filter((cell) => cell.communitiesCount === 0 && cell.isActive)
-        .map((cell) => drawHexagon(cell, map))}
+        .map((cell) => drawHexagon(cell, map, setSelectedCellId))}
       {hexes
         .filter((cell) => cell.communitiesCount > 0 && cell.isActive)
-        .map((cell) => drawHexagon(cell, map))}
+        .map((cell) => drawHexagon(cell, map, setSelectedCellId))}
+
+      <CommunitiesCard
+        cellId={selectedCellId}
+        onClose={() => setSelectedCellId(null)}
+      />
     </>
   );
 }
