@@ -4,7 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
 // Supabase pooler uses a self-signed cert chain not trusted by Node's
-// default CA bundle. Disable verification for database connections only.
+// default CA bundle. Disable verification for database connections only
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const pool = new Pool({
