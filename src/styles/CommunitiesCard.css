@@ -22,19 +22,21 @@
     0 8px 32px rgba(0, 0, 0, 0.12),
     0 0 0 1px rgba(115, 25, 122, 0.1);
 
-  /* Desktop: right panel, slides in from right */
-  top: 80px;
-  right: 16px;
-  bottom: 80px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-20%, -50%) translateX(calc(100% + 24px));
+  opacity: 0;
   width: min(380px, 40vw);
+  min-height: 160px;
+  max-height: calc(100dvh - 160px);
   border-radius: var(--card-radius);
-  transform: translateX(calc(100% + 24px));
-  transition: transform var(--transition);
+  transition: transform var(--transition), opacity var(--transition);
   pointer-events: none;
 }
 
 .communities-card--open {
-  transform: translateX(0);
+  transform: translate(25%, -50%);
+  opacity: 1;
   pointer-events: all;
 }
 
@@ -43,8 +45,8 @@
   overscroll-behavior: contain;
 }
 
-/* Mobile: full-screen bottom sheet — breakpoint 640px */
-@media (max-width: 639px) {
+/* Mobile: full-screen bottom sheet — breakpoint 960px */
+@media (max-width: 959px) {
   .communities-card {
     top: 0;
     left: 0;
@@ -52,8 +54,10 @@
     bottom: 0;
     width: 100%;
     max-height: 100dvh;
+    min-height: unset;
     border-radius: 0;
     transform: translateY(110%);
+    opacity: 1;
     transition: transform var(--transition);
   }
   .communities-card--open {
@@ -70,7 +74,7 @@
   cursor: default;
 }
 
-@media (max-width: 639px) {
+@media (max-width: 959px) {
   .communities-card-backdrop {
     display: block;
     position: fixed;
@@ -137,8 +141,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;   /* vertically centre within the card body */
   gap: 12px;
-  padding: 48px 0;
+  min-height: 100px;         /* fills available space so justify-content works */
+  height: 100%;
+  padding: 24px 0;
   color: var(--card-muted);
   font-size: 14px;
   text-align: center;
