@@ -12,7 +12,7 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "";
 
 async function fetchCommunitiesForCell(cellId: string): Promise<Community[]> {
   const res = await fetch(
-    `${BACKEND_URL}/getCommunitiesByCellId?cellId=${encodeURIComponent(cellId)}`,
+    `${BACKEND_URL}/getCommunitiesByCellId?cellId=${cellId}`,
   );
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json() as Promise<Community[]>;

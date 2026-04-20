@@ -5,6 +5,7 @@ import {
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
+import { Request } from "express";
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -21,12 +22,25 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
 };
 
-export const handler = async (
-  event: APIGatewayProxyEventV2,
-): Promise<APIGatewayProxyStructuredResultV2> => {
-  const cellId = event.queryStringParameters?.cellId;
+function getQueryParam(
+  event: APIGatewayProxyEventV2 | Request,
+  key: string,
+): string | undefined {
+  if ("queryStringParameters" in event) {
+    return event.queryStringParameters?.[key];
+  } else if ("query" in event) {
+    const val = event.query[key];
+    return typeof val === "string" ? val : undefined;
+  }
+  return undefined;
+}
 
-  if (cellId === null) {
+export const handler = async (
+  event: APIGatewayProxyEventV2 | Request,
+): Promise<APIGatewayProxyStructuredResultV2> => {
+  const cellId = getQueryParam(event, "cellId");
+
+  if (cellId === undefined) {
     return {
       statusCode: 400,
       headers: CORS_HEADERS,
