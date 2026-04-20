@@ -31,6 +31,11 @@ jobs:
         with:
           node-version: 20
 
+      - name: Debug secrets
+        run: |
+          echo "Layer ARN length: ${#PRISMA_LAYER_ARN}"
+          echo "Layer ARN prefix: ${PRISMA_LAYER_ARN:0:20}"
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
