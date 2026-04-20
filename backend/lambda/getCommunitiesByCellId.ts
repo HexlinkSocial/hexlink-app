@@ -75,7 +75,7 @@ export const handler = async (
       body: JSON.stringify(communities),
     };
   } catch (e) {
-    console.error("getCommunitiesByCellId error:", e);
+    console.error("CommunitiesByCellId error:", e);
     return {
       statusCode: 500,
       headers: CORS_HEADERS,

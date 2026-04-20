@@ -24,7 +24,7 @@ app.get(
 );
 
 app.get(
-  "/getCommunitiesByCellId",
+  "/CommunitiesByCellId",
   async (req: express.Request, res: express.Response) => {
     try {
       const response = await communitiesByCellIdHandler(
