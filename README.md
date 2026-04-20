@@ -27,6 +27,7 @@ Main Hexlink app
 - Frontend: `npm start`
 
 # Deployment
+You will need to run this if you create any new lambdas
 - Install terraform 
 - Install AWS CLI
 - Zip `/backend/lamdba` and put it in `/terraform`
