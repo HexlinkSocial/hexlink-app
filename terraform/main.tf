@@ -469,6 +469,7 @@ resource "aws_iam_role_policy" "github_policy" {
 
         Action = [
           "lambda:UpdateFunctionCode",
+          "lambda:CreateFunction",
           "lambda:GetFunction",
           "lambda:ListFunctions",
           "lambda:PublishLayerVersion",
