@@ -1,27 +1,32 @@
-import React, { JSX } from "react";
-import { LatLngBoundsExpression } from "leaflet";
-import { MapContainer, TileLayer } from "react-leaflet";
-import H3Layer from "./H3Layer";
+import React, { useRef } from "react";
+import CommunitiesCard from "./communities/CommunitiesCard";
+import { useMapOverlay } from "../hooks/useMapOverlay";
+import { useH3LayerStack } from "../hooks/useH3LayerStack";
 
-const europeBounds: LatLngBoundsExpression = [
-  [34.0, -25.0],
-  [72.0, 45.0],
-];
+const Map: React.FC = () => {
+  const mapContainer = useRef<HTMLDivElement | null>(null);
 
-export default function Map(): JSX.Element {
+  const { map, isMapReady, selectedCellId, setSelectedCellId } =
+    useMapOverlay(mapContainer);
+
+  useH3LayerStack(map, isMapReady);
+
   return (
-    <MapContainer
-      center={[51.505, -0.09]}
-      zoom={8}
-      scrollWheelZoom={true}
-      minZoom={8}
-      maxBounds={europeBounds}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    <div style={{ width: "100%", height: "100vh", position: "relative" }}>
+      <div
+        ref={mapContainer}
+        style={{
+          width: "100%",
+          height: "100%",
+        }}
       />
-      <H3Layer />
-    </MapContainer>
+
+      <CommunitiesCard
+        cellId={selectedCellId}
+        onClose={() => setSelectedCellId(null)}
+      />
+    </div>
   );
-}
+};
+
+export default Map;
