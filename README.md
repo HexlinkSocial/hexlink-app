@@ -6,18 +6,17 @@ Main Hexlink app
 - Docker
 
 ## Instructions
-- To create local active tiles files:
-    - Go to https://h3geo.org and select the tiles you wish to be active; default in the project is resolution 8 tiles. Those are quite small, so if you want to select a large area can select using a larger resolution and use h3's `cellToChildren(cell, 8)` to get the cells of the correct resolution. You'll need to manually clean up later as it's likely it will have undesired stuff at the edges
-    - Save the res 8 cells IDs in a comma separated file (e.g. `8819484001fffff,8819484003fffff,8819484005fffff,...`) and put it somewhere in the `/public` folder, e.g. `/public/resources`
-    - Also zip the file and put it in the same folder
-    - Create a `.env` file from the template and fill in the locations e.g.
-    ```
-    VITE_ACTIVE_TILE_FILE_LOCATION=/resources/your_file.zip
-    VITE_ACTIVE_TILE_FILE=your_file.txt
-    ```
-- Update the min and max latitudes and longitudes in `\backend\prisma\seed.ts` to be in your desired defined area for correct seeding
-- Create and populate the `.env` files from the templates in root and `/backend` 
+- Create and populate the `.env` files from the templates in root and `/backend` // TODO backend will be replaced by sam local invoke
 - Open the dev container. It should install everything automatically and run 2 containers - 1 for your DB and one for node apps. It will also seed the DB
+- To create local active tiles files:
+    // TODO make a util for this
+    - Go to https://h3geo.org and select the tiles you wish to be active; default in the project is resolution 8 tiles. Those are quite small, so if you want to select a large area can select using a larger resolution and use h3's `cellToChildren(cell, 8)` to get the cells of the correct resolution. You'll need to manually clean up later as it's likely it will have undesired stuff at the edges
+    - Save the res 8 cells IDs in a comma separated file (e.g. `8819484001fffff,8819484003fffff,8819484005fffff,...`) and put it in the `utils` folder
+    - Update the min and max latitudes and longitudes in `utils\generateGrid.ts` to define your desired defined area. Run the script with `npm run tiles:grid` - this will generate a layer for the background, separating active tiles from your comma separated file from background tiles that aren't in use
+        - This takes a while and it is recommended to run it outside of docker so that max power can be used. If using WSL you might need to update the limits using `.wslconfig`. Either way it can still take a while to generate
+    - Update the file name in `utils\generateCounts.ts` to match your comma separate file name and run `npm run tile:counts` - this will get the counts from the DB and create a map layer with your communities
+    - Update the bounds in `components\Map.tsx` to match those you defined in `utils\generateGrid.ts` when generating the map
+
 
 # Running (inside the dev container)
 - Backend:

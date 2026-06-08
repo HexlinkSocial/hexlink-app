@@ -31,7 +31,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --max-warnings 0",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "tiles:count": "tsx utils/generateCounts.ts",
+    "tiles:grid": "tsx utils/generateGrid.ts"
   },
   "browserslist": {
     "production": [
