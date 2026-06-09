@@ -1,20 +1,64 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import type { LngLatLike } from "maplibre-gl";
 import { Protocol } from "pmtiles";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 const protocol = new Protocol();
 maplibregl.addProtocol("pmtiles", protocol.tile);
 
-const zoomBreakpoints = [
-  { maxZoom: 8, nextZoom: 11 },
-  { maxZoom: 11, nextZoom: 14 },
-] as const;
+const zoomBreakpoints = [9, 12] as const;
 
 function getNextZoom(currentZoom: number): number {
-  const match = zoomBreakpoints.find((z) => currentZoom <= z.maxZoom);
-  return match?.nextZoom ?? 14;
+  const match = zoomBreakpoints.find((z) => currentZoom < z);
+  return match ? match + 0.5 : 14;
 }
+
+const getCentre = (f: maplibregl.MapGeoJSONFeature): maplibregl.LngLatLike => {
+  const coords = (f.geometry as GeoJSON.Polygon).coordinates[0];
+
+  const center: [number, number] = [
+    coords.reduce((s: number, c: number[]) => s + c[0], 0) / coords.length,
+    coords.reduce((s: number, c: number[]) => s + c[1], 0) / coords.length,
+  ];
+
+  return center;
+};
+
+const closeCard = (
+  setSelectedCellId: React.Dispatch<React.SetStateAction<string | null>>,
+): void => setSelectedCellId(null);
+
+const flyToFeature = (
+  e: maplibregl.MapLayerMouseEvent,
+  map: maplibregl.Map,
+): void => {
+  const f = e.features?.[0];
+  if (f === undefined) return;
+
+  map.flyTo({
+    center: getCentre(f),
+    zoom: getNextZoom(map.getZoom() as number),
+  });
+};
+
+const openCard = (
+  e: maplibregl.MapLayerMouseEvent,
+  map: maplibregl.Map,
+  setSelectedCellId: React.Dispatch<React.SetStateAction<string | null>>,
+): void => {
+  const f = e.features?.[0];
+  if (f === undefined) return;
+
+  const id = f.properties?.cell_id as string;
+
+  map.flyTo({
+    center: getCentre(f),
+    zoom: map.getZoom(),
+  });
+
+  setSelectedCellId(id);
+};
 
 const europeBounds: maplibregl.LngLatBoundsLike = [
   [-25.0, 34.0],
@@ -23,6 +67,7 @@ const europeBounds: maplibregl.LngLatBoundsLike = [
 const mapCenter: LngLatLike = [-0.1276, 51.5072];
 
 type MapInfo = {
+  /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
   map: maplibregl.Map | null;
   isMapReady: boolean;
   selectedCellId: string | null;
@@ -32,14 +77,12 @@ type MapInfo = {
 export function useMapOverlay(
   containerRef: React.RefObject<HTMLDivElement | null>,
 ): MapInfo {
-  // do we need both map ref and map instance?
-  const mapRef = useRef<maplibregl.Map | null>(null);
   const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const [isMapReady, setIsMapReady] = useState(false);
 
   useEffect(() => {
-    if (!containerRef.current || mapRef.current !== null) return;
+    if (!containerRef.current) return;
 
     const map = new maplibregl.Map({
       container: containerRef.current,
@@ -51,9 +94,6 @@ export function useMapOverlay(
       maxBounds: europeBounds,
     });
 
-    // why are we doing this?
-    mapRef.current = map;
-    (window as any)._map = map;
     setMapInstance(map);
 
     map.addControl(
@@ -65,48 +105,8 @@ export function useMapOverlay(
       setIsMapReady(true);
     });
 
-    // TODO might need some tinkering
-    const getCentre = (
-      f: maplibregl.MapGeoJSONFeature,
-    ): maplibregl.LngLatLike => {
-      const coords = (f.geometry as GeoJSON.Polygon).coordinates[0];
-
-      const center: [number, number] = [
-        coords.reduce((s, c) => s + c[0], 0) / coords.length,
-        coords.reduce((s, c) => s + c[1], 0) / coords.length,
-      ];
-
-      return center;
-    };
-
-    const closeCard = (): void => setSelectedCellId(null);
-
-    const flyToFeature = (e: maplibregl.MapLayerMouseEvent): void => {
-      const f = e.features?.[0];
-      if (f === undefined) return;
-
-      map.flyTo({
-        center: getCentre(f),
-        zoom: getNextZoom(map.getZoom() as number), // TODO zooms might need tinkering too
-      });
-    };
-
-    const openCard = (e: maplibregl.MapLayerMouseEvent): void => {
-      const id = (f.properties?.cell_id || f.properties?.h3) as
-        | string
-        | undefined;
-      if (id === undefined) return;
-
-      map.flyTo({
-        center: getCentre(f),
-        zoom: map.getZoom(),
-      });
-
-      setSelectedCellId(id);
-    };
-
-    map.on("dragstart", closeCard);
-    map.on("zoomstart", closeCard);
+    map.on("dragstart", () => closeCard(setSelectedCellId));
+    map.on("zoomstart", () => closeCard(setSelectedCellId));
 
     map.on("load", () => {
       const coarseLayers = [
@@ -117,23 +117,15 @@ export function useMapOverlay(
       ] as const;
 
       coarseLayers.forEach((layer) => {
-        if (map.getLayer(layer)) map.on("click", layer, flyToFeature);
+        map.on("click", layer, (e) => flyToFeature(e, map));
       });
 
       const fineLayers = ["h3-active-r8", "h3-counts-r8"] as const;
 
-      // active cards don't work - check if IDs are right?
       fineLayers.forEach((layer) => {
-        if (map.getLayer(layer)) map.on("click", layer, openCard);
+        map.on("click", layer, (e) => openCard(e, map, setSelectedCellId));
       });
     });
-
-    return () => {
-      // what does all the removing do
-      map.remove();
-      mapRef.current = null;
-      setMapInstance(null);
-    };
   }, [containerRef]);
 
   return {
