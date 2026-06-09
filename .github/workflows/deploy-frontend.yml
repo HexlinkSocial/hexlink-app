@@ -42,14 +42,12 @@ jobs:
       - name: Build React App
         run: npm run build
         env:
-          VITE_ACTIVE_TILE_FILE_LOCATION: /resources/uk_res8_hex_ids.zip
-          VITE_ACTIVE_TILE_FILE: uk_res8_hex_ids.txt
           VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
           VITE_COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_POOL }}
           VITE_COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_CLIENT }}
 
       - name: Deploy frontend to S3
-        run: aws s3 sync dist/ s3://$FRONTEND_S3_BUCKET --delete --exclude "resources/*" --quiet
+        run: aws s3 sync dist/ s3://$FRONTEND_S3_BUCKET --delete --exclude "tiles/*" --quiet
 
       - name: Deploy public/style.json to S3 (if changed)
         run: aws s3 cp public/style.json s3://$FRONTEND_S3_BUCKET/style.json
