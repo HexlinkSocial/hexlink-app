@@ -1,13 +1,13 @@
 import React, { useRef } from "react";
 import CommunitiesCard from "./communities/CommunitiesCard";
-import { useMapOverlay } from "../hooks/useMapOverlay";
+import { useMap } from "../hooks/useMap";
 import { useH3LayerStack } from "../hooks/useH3LayerStack";
 
-const Map: React.FC = () => {
+const MapContainer: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
 
   const { map, isMapReady, selectedCellId, setSelectedCellId } =
-    useMapOverlay(mapContainer);
+    useMap(mapContainer);
 
   useH3LayerStack(map, isMapReady);
 
@@ -29,4 +29,4 @@ const Map: React.FC = () => {
   );
 };
 
-export default Map;
+export default MapContainer;

@@ -81,7 +81,7 @@ type MapInfo = {
   setSelectedCellId: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
-export function useMapOverlay(
+export function useMap(
   containerRef: React.RefObject<HTMLDivElement | null>,
 ): MapInfo {
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
