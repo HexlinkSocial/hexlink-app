@@ -20,7 +20,7 @@ services:
       dockerfile: .devcontainer/Dockerfile
     container_name: hexlink_devcontainer
     volumes:
-      - ..:/workspace:cached
+      - ..:/workspace:delegated 
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/hexlink
       NODE_ENV: development

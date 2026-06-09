@@ -24,6 +24,8 @@ RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/sh
     && apt-get update && apt-get install -y terraform \
     && rm -rf /var/lib/apt/lists/*
 
+# TODO install tippecanoe
+
 WORKDIR /workspace
 
 USER node
