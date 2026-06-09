@@ -48,7 +48,7 @@
       "maxzoom": 9.5,
       "filter": ["==", ["get", "resolution"], 4],
       "paint": {
-        "fill-color": "#FF0000",
+        "fill-color": "#73197A",
         "fill-opacity": [
           "interpolate", ["linear"], ["zoom"],
           8.5, [
