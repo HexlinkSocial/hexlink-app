@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import maplibregl from "maplibre-gl";
+import { useEffect, useRef } from "react";
+import maplibregl, { FilterSpecification } from "maplibre-gl";
 
 const GRID_LAYER_ID = "h3-grid-fill";
 
@@ -10,9 +10,12 @@ const LAYER_ZOOM_RULES = [
 ];
 
 export function useH3LayerStack(
+  /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
   map: maplibregl.Map | null,
   isMapReady: boolean,
 ): void {
+  const lastFilterStrRef = useRef<string>("");
+
   useEffect(() => {
     if (map === null || !isMapReady) return;
 
@@ -20,29 +23,55 @@ export function useH3LayerStack(
       const zoom = map.getZoom();
 
       const activePurpleLayers = LAYER_ZOOM_RULES.filter(
-        (layer) =>
-          zoom >= layer.minZoom &&
-          zoom <= layer.maxZoom &&
-          map.getLayer(layer.id),
+        (layer) => zoom >= layer.minZoom && zoom <= layer.maxZoom,
       ).map((layer) => layer.id);
+
+      if (activePurpleLayers.length === 0) {
+        if (lastFilterStrRef.current !== "null") {
+          map.setFilter(GRID_LAYER_ID, null);
+          lastFilterStrRef.current = "null";
+        }
+        return;
+      }
 
       const features = map.queryRenderedFeatures({
         layers: activePurpleLayers,
       });
 
       const purpleH3Ids = Array.from(
-        new Set(features.map((x) => x.properties?.cell_id)),
+        new Set(
+          features
+            .map((x) => x.properties?.cell_id)
+            .filter(Boolean) as string[],
+        ),
       );
 
-      const filterExpression =
-        purpleH3Ids.length > 0
-          ? ["!", ["in", ["string", ["get", "h3"]], ["literal", purpleH3Ids]]]
-          : null;
-      map.setFilter(GRID_LAYER_ID, filterExpression);
+      let filterExpression: FilterSpecification | null = null;
+      if (purpleH3Ids.length > 0) {
+        filterExpression = [
+          "match",
+          ["string", ["get", "h3"]],
+          purpleH3Ids.map(String),
+          false,
+          true,
+        ];
+      }
+
+      const currentFilterStr = JSON.stringify(filterExpression);
+      if (currentFilterStr !== lastFilterStrRef.current) {
+        map.setFilter(GRID_LAYER_ID, filterExpression);
+        lastFilterStrRef.current = currentFilterStr;
+      }
     };
 
-    map.on("moveend", updateEraseFilter);
+    map.on("move", updateEraseFilter);
+    map.on("sourcedata", updateEraseFilter);
 
     updateEraseFilter();
+
+    return () => {
+      map.off("move", updateEraseFilter);
+      map.off("sourcedata", updateEraseFilter);
+    };
   }, [map, isMapReady]);
 }
