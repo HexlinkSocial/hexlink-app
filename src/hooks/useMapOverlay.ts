@@ -51,6 +51,12 @@ const openCard = (
   const f = e.features?.[0];
   if (f === undefined) return;
 
+  const resolution = f.properties?.resolution;
+  if (resolution !== undefined && Number(resolution) !== 8) {
+    flyToFeature(e, map);
+    return;
+  }
+
   const id = f.properties?.cell_id as string;
 
   map.flyTo({
@@ -68,7 +74,7 @@ const europeBounds: maplibregl.LngLatBoundsLike = [
 const mapCenter: LngLatLike = [-0.1276, 51.5072];
 
 type MapInfo = {
-  /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   map: maplibregl.Map | null;
   isMapReady: boolean;
   selectedCellId: string | null;
@@ -78,6 +84,7 @@ type MapInfo = {
 export function useMapOverlay(
   containerRef: React.RefObject<HTMLDivElement | null>,
 ): MapInfo {
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const [isMapReady, setIsMapReady] = useState(false);
@@ -127,18 +134,13 @@ export function useMapOverlay(
     map.on("zoomstart", () => closeCard(setSelectedCellId));
 
     map.on("load", () => {
-      const coarseLayers = [
-        "h3-active-r4",
-        "h3-active-r6",
-        "h3-counts-r4",
-        "h3-counts-r6",
-      ] as const;
+      const coarseLayers = ["h3-counts-r4", "h3-counts-r6"] as const;
 
       coarseLayers.forEach((layer) => {
         map.on("click", layer, (e) => flyToFeature(e, map));
       });
 
-      const fineLayers = ["h3-active-r8", "h3-counts-r8"] as const;
+      const fineLayers = ["h3-counts-r8", "h3-grid-fill"] as const;
 
       fineLayers.forEach((layer) => {
         map.on("click", layer, (e) => openCard(e, map, setSelectedCellId));

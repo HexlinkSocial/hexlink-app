@@ -20,7 +20,7 @@ async function fetchCommunitiesForCell(cellId: string): Promise<Community[]> {
 
 interface FetchResult {
   cellId: string;
-  communities: Community[];
+  communities?: Community[];
   error: string | null;
 }
 
@@ -63,8 +63,13 @@ export default function CommunitiesCard({
 
   const loading = isOpen && result?.cellId !== cellId;
   const communities =
-    !loading && result?.cellId === cellId ? result.communities : [];
-  const error = !loading && result?.cellId === cellId ? result.error : null;
+    !loading && result?.cellId === cellId && result?.communities
+      ? result.communities
+      : [];
+  const error =
+    !loading && result?.cellId === cellId && result?.error != null
+      ? result.error
+      : null;
 
   return (
     <>
