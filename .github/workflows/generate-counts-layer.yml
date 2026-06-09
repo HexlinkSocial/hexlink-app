@@ -42,7 +42,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --include=dev
 
       - name: Generate PMTiles
         run: npx tsx utils/generateCounts.ts
