@@ -32,3 +32,7 @@ You will need to run this if you create any new lambdas
 - Zip `/backend/lamdba` and put it in `/terraform`
 - To log in and run `terraform apply`, run `.\terraform\terraform_apply.sh` 
 
+## First time deployment
+- Upload the `h3-grid.pmtiles` you generated earlier manually to S3 in the `/tiles` folder. `h3-counts.pmtiles` will run automatically from GitHub actions 
+
+
