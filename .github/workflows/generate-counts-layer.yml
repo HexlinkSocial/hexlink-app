@@ -1,0 +1,58 @@
+name: Generate and Deploy H3 Counts Tiles
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate_tiles:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      AWS_REGION: eu-west-2
+      FRONTEND_S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
+      CLOUDFRONT_ID: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+      VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Tippecanoe dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libsqlite3-dev zlib1g-dev
+
+      - name: Install Tippecanoe
+        run: |
+          git clone https://github.com/felt/tippecanoe.git
+          cd tippecanoe
+          make -j$(nproc)
+          sudo make install
+          cd ..
+          rm -rf tippecanoe
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate PMTiles
+        run: npx tsx utils/generateCounts.ts
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload PMTiles to S3 tiles folder
+        run: |
+          aws s3 cp public/tiles/h3-counts.pmtiles s3://$FRONTEND_S3_BUCKET/tiles/h3-counts.pmtiles
