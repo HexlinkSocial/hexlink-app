@@ -9,14 +9,6 @@
         "https://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
       ],
       "tileSize": 256
-    },
-    "h3_counts": {
-      "type": "vector",
-      "url": "pmtiles:///tiles/h3-counts.pmtiles"
-    },
-    "h3_grid_source": {
-      "type": "vector",
-      "url": "pmtiles:///tiles/h3-grid.pmtiles"
     }
   },
   "layers": [

@@ -3,6 +3,7 @@ import * as maplibregl from "maplibre-gl";
 import type { LngLatLike } from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import "maplibre-gl/dist/maplibre-gl.css";
+import baseStyle from "../../public/style.json";
 
 const protocol = new Protocol();
 maplibregl.addProtocol("pmtiles", protocol.tile);
@@ -84,9 +85,26 @@ export function useMapOverlay(
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const baseUrl = window.location.origin;
+
+    const style = {
+      ...baseStyle,
+      sources: {
+        ...baseStyle.sources,
+        h3_counts: {
+          type: "vector",
+          url: `pmtiles://${baseUrl}/tiles/h3-counts.pmtiles`,
+        },
+        h3_grid_source: {
+          type: "vector",
+          url: `pmtiles://${baseUrl}/tiles/h3-grid.pmtiles`,
+        },
+      },
+    } as maplibregl.StyleSpecification;
+
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: "/style.json",
+      style: style,
       center: mapCenter,
       zoom: 8,
       minZoom: 4,
