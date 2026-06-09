@@ -1,5 +1,4 @@
 FROM node:20
-
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -9,6 +8,9 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     software-properties-common \
     jq \
+    build-essential \
+    libsqlite3-dev \
+    zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install AWS CLI
@@ -24,8 +26,17 @@ RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/sh
     && apt-get update && apt-get install -y terraform \
     && rm -rf /var/lib/apt/lists/*
 
-# TODO install tippecanoe
+# Install tippecanoe v2.x (from felt/tippecanoe)
+RUN git clone https://github.com/felt/tippecanoe.git /tmp/tippecanoe \
+    && cd /tmp/tippecanoe \
+    && make -j$(nproc) \
+    && make install \
+    && rm -rf /tmp/tippecanoe
+
+# Install pmtiles CLI
+RUN curl -L "https://github.com/protomaps/go-pmtiles/releases/download/v1.30.3/go-pmtiles_1.30.3_Linux_x86_64.tar.gz" \
+    | tar -xz -C /usr/local/bin pmtiles \
+    && chmod +x /usr/local/bin/pmtiles
 
 WORKDIR /workspace
-
 USER node
