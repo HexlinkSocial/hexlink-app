@@ -117,6 +117,7 @@ export function useMap(
       minZoom: 4,
       maxZoom: 16,
       maxBounds: europeBounds,
+      dragRotate: false,
     });
 
     setMapInstance(map);
