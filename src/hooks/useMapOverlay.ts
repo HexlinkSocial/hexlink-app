@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import maplibregl, { LngLatLike } from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import type { LngLatLike } from "maplibre-gl";
 import { Protocol } from "pmtiles";
 
 const protocol = new Protocol();
