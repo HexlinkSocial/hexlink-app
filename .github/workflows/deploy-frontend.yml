@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'src/**'
+      - 'public/style.json'
 
 jobs:
   deploy_frontend:
@@ -49,6 +50,9 @@ jobs:
 
       - name: Deploy frontend to S3
         run: aws s3 sync dist/ s3://$FRONTEND_S3_BUCKET --delete --exclude "resources/*" --quiet
+
+      - name: Deploy public/style.json to S3 (if changed)
+        run: aws s3 cp public/style.json s3://$FRONTEND_S3_BUCKET/style.json
 
       - name: Invalidate CloudFront
         run: |
