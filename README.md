@@ -15,7 +15,7 @@ Main Hexlink app
     - Update the min and max latitudes and longitudes in `utils\generateGrid.ts` to define your desired defined area. Run the script with `npm run tiles:grid` - this will generate a layer for the background, separating active tiles from your comma separated file from background tiles that aren't in use
         - This takes a while and it is recommended to run it outside of docker so that max power can be used. If using WSL you might need to update the limits using `.wslconfig`. Either way it can still take a while to generate
     - Update the file name in `utils\generateCounts.ts` to match your comma separate file name and run `npm run tile:counts` - this will get the counts from the DB and create a map layer with your communities
-    - Update the bounds in `components\Map.tsx` to match those you defined in `utils\generateGrid.ts` when generating the map
+    - Update the bounds in `hooks\useMapOverlay.tsx` to match those you defined in `utils\generateGrid.ts` when generating the map
 
 
 # Running (inside the dev container)

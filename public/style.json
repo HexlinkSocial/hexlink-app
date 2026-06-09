@@ -1,0 +1,147 @@
+{
+  "version": 8,
+  "sources": {
+    "osm": {
+      "type": "raster",
+      "tiles": [
+        "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "https://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      ],
+      "tileSize": 256
+    },
+    "h3_counts": {
+      "type": "vector",
+      "url": "pmtiles:///tiles/h3-counts.pmtiles"
+    },
+    "h3_grid_source": {
+      "type": "vector",
+      "url": "pmtiles:///tiles/h3-grid.pmtiles"
+    }
+  },
+  "layers": [
+    { "id": "osm", "type": "raster", "source": "osm" },
+    {
+      "id": "h3-grid-fill",
+      "type": "fill",
+      "source": "h3_grid_source",
+      "source-layer": "h3_grid",
+      "paint": {
+        "fill-color": [
+          "match", ["get", "isActive"],
+          1, "#5cb04f",
+          0, "#626262",
+          "#626262"
+        ],
+        "fill-opacity": [
+          "match", ["get", "isActive"],
+          1, 0.5,
+          0, 0.3,
+          0.3
+        ],
+        "fill-outline-color": [
+          "match", ["get", "isActive"],
+          1, "rgba(76, 160, 63, 0.5)",
+          0, "rgba(82, 82, 82, 0.4)",
+          "rgba(82, 82, 82, 0.4)"
+        ]
+      }
+    },
+    {
+      "id": "h3-counts-r4",
+      "type": "fill",
+      "source": "h3_counts",
+      "source-layer": "h3_counts",
+      "minzoom": 0,
+      "maxzoom": 9.5,
+      "filter": ["==", ["get", "resolution"], 4],
+      "paint": {
+        "fill-color": "#73197A",
+        "fill-opacity": [
+          "interpolate", ["linear"], ["zoom"],
+          8.5, [
+            "+", 0.3,
+            ["*", ["min", ["get", "communities_count"], 7], 0.09]
+          ],
+          9.5, 0.0
+        ]
+      }
+    },
+    {
+      "id": "h3-counts-outline-r4",
+      "type": "line",
+      "source": "h3_counts",
+      "source-layer": "h3_counts",
+      "minzoom": 0,
+      "maxzoom": 9.5,
+      "filter": ["==", ["get", "resolution"], 4],
+      "paint": {
+        "line-color": "#73197A",
+        "line-width": 3,
+        "line-opacity": [
+          "interpolate", ["linear"], ["zoom"],
+          8.5, 1.0,
+          9.5, 0.0
+        ]
+      }
+    },
+    {
+      "id": "h3-counts-r6",
+      "type": "fill",
+      "source": "h3_counts",
+      "source-layer": "h3_counts",
+      "minzoom": 8.5,
+      "maxzoom": 12.5,
+      "filter": ["==", ["get", "resolution"], 6],
+      "paint": {
+        "fill-color": "#73197A",
+        "fill-opacity": [
+          "+", 0.3,
+          ["*", ["min", ["get", "communities_count"], 7], 0.09]
+        ]
+      }
+    },
+    {
+      "id": "h3-counts-outline-r6",
+      "type": "line",
+      "source": "h3_counts",
+      "source-layer": "h3_counts",
+      "minzoom": 8.5,
+      "maxzoom": 12.5,
+      "filter": ["==", ["get", "resolution"], 6],
+      "paint": {
+        "line-color": "#73197A",
+        "line-width": 3,
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "h3-counts-r8",
+      "type": "fill",
+      "source": "h3_counts",
+      "source-layer": "h3_counts",
+      "minzoom": 11.5,
+      "filter": ["==", ["get", "resolution"], 8],
+      "paint": {
+        "fill-color": "#73197A",
+        "fill-opacity": [
+          "+", 0.3,
+          ["*", ["min", ["get", "communities_count"], 7], 0.09]
+        ]
+      }
+    },
+    {
+      "id": "h3-counts-outline-r8",
+      "type": "line",
+      "source": "h3_counts",
+      "source-layer": "h3_counts",
+      "minzoom": 11.5,
+      "filter": ["==", ["get", "resolution"], 8],
+      "paint": {
+        "line-color": "#73197A",
+        "line-width": 3,
+        "line-opacity": 1.0
+      }
+    }
+  ]
+}
