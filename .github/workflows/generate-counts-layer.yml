@@ -42,7 +42,9 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --include=dev
+        run: |
+          npm install dotenv
+          npx tsx utils/generateCounts.ts
 
       - name: Generate PMTiles
         run: npx tsx utils/generateCounts.ts
