@@ -66,7 +66,8 @@ export default function CommunitiesCard({
     return () => el.removeEventListener("wheel", stop);
   }, []);
 
-  const loading = isOpen && result?.cellId !== cellId;
+  const loading = isOpen && hasCommunities && result?.cellId !== cellId;
+
   const communities =
     hasCommunities &&
     !loading &&
