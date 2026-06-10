@@ -6,7 +6,7 @@
   "scripts": {
     "backend": "tsx watch server.ts",
     "build": "tsc",
-    "db:generate": "drizzle-kit generate",
+    "db:generate": "drizzle-kit generate --name",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx drizzle/seed.ts",
     "db:studio": "drizzle-kit studio",
