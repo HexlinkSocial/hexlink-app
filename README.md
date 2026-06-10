@@ -34,7 +34,8 @@ Main Hexlink app
 You will need to run this if you create any new lambdas
 - Install terraform 
 - Install AWS CLI
-- Zip `/backend/lamdba` and put it in `/terraform`
+- Go to `\backend` and run `npm run build` to build your lambda files
+- Zip `/backend/dist/lamdba` and put it in `/terraform`
 - To log in and run `terraform apply`, run `.\terraform\terraform_apply.sh` 
 
 ## First time deployment

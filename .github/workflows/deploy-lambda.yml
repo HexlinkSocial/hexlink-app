@@ -46,10 +46,10 @@ jobs:
 
       - name: Package Lambda code
         working-directory: backend/dist/lambda
-        run: zip -r ../../../lambda-code.zip .
+        run: zip -r ../../../lambda.zip .
 
       - name: Upload Lambda code to S3
-        run: aws s3 cp lambda-code.zip s3://$LAMBDA_S3_BUCKET/lambda-code.zip
+        run: aws s3 cp lambda-code.zip s3://$LAMBDA_S3_BUCKET/lambda.zip
 
       - name: Update Lambdas
         run: |

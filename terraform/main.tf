@@ -215,7 +215,7 @@ resource "aws_lambda_function" "api" {
   timeout       = 30
 
   s3_bucket = aws_s3_bucket.lambda_deployments.bucket
-  s3_key    = "lambda-code.zip"
+  s3_key    = "lambda.zip"
 
   lifecycle {
     ignore_changes = [
