@@ -2,10 +2,11 @@ import {
   APIGatewayProxyEventV2,
   APIGatewayProxyStructuredResultV2,
 } from "aws-lambda";
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { eq } from "drizzle-orm";
 import { Pool } from "pg";
 import { Request } from "express";
+import * as schema from "../drizzle/schema";
 
 // Supabase pooler uses a self-signed cert chain not trusted by Node's
 // default CA bundle. Disable verification for database connections only.
@@ -16,8 +17,8 @@ const pool = new Pool({
   ssl: process.env.NODE_ENV === "production" ? true : false,
   max: 1,
 });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+
+const db = drizzle(pool, { schema });
 
 const CORS_HEADERS = {
   "Content-Type": "application/json",
@@ -53,21 +54,23 @@ export const handler = async (
   }
 
   try {
-    const cellCommunities = await prisma.cellCommunity.findMany({
-      where: { cellId },
-      include: {
+    const cellCommunitiesResults = await db.query.cellCommunities.findMany({
+      where: eq(schema.cellCommunities.cellId, cellId),
+      with: {
         community: {
-          select: {
+          columns: {
             id: true,
             name: true,
             description: true,
-            community_link: true,
+            communityLink: true,
           },
         },
       },
     });
 
-    const communities = cellCommunities.map((cc) => cc.community);
+    const communities = cellCommunitiesResults
+      .map((cc) => cc.community)
+      .filter(Boolean);
 
     return {
       statusCode: 200,
