@@ -14,7 +14,12 @@ Main Hexlink app
     - Save the res 8 cells IDs in a comma separated file (e.g. `8819484001fffff,8819484003fffff,8819484005fffff,...`) and put it in the `utils` folder
     - Update the min and max latitudes and longitudes in `utils\generateGrid.ts` to define your desired defined area. Run the script with `npm run tiles:grid` - this will generate a layer for the background, separating active tiles from your comma separated file from background tiles that aren't in use
         - This takes a while and it is recommended to run it outside of docker so that max power can be used. If using WSL you might need to update the limits using `.wslconfig`. Either way it can still take a while to generate
-    - Update the file name in `utils\generateCounts.ts` to match your comma separate file name and run `npm run tile:counts` - this will get the counts from the DB and create a map layer with your communities
+    - Update the file name in `utils\generateCounts.ts` to match your comma separate file name and run 
+        ```
+        npm i dotenv (please don't commit this to the repo)
+        npm run tile:counts
+        ``` 
+        this will get the counts from the DB and create a map layer with your communities
     - Update the bounds in `hooks\useMapOverlay.tsx` to match those you defined in `utils\generateGrid.ts` when generating the map
 
 
@@ -35,4 +40,11 @@ You will need to run this if you create any new lambdas
 ## First time deployment
 - Upload the `h3-grid.pmtiles` you generated earlier manually to S3 in the `/tiles` folder. `h3-counts.pmtiles` will run automatically from GitHub actions 
 
+# Databases
+
+Every command has to be run from `/backend`
+- `npm run db:seed` - should run automatically when you create your Docker container to populate the DB with some sample data. You can also run it whenever you want
+- `npm run db:generate <migration_name>` - generates the migration and puts it in `/migrations`
+- `npm run db:migrate` - applies the migrations to the DB
+- `npm run db:studio` - start a DB management tool you can open in the browser to view the tables
 

@@ -1,7 +1,8 @@
 import { APIGatewayProxyStructuredResultV2 } from "aws-lambda";
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { count } from "drizzle-orm";
 import { Pool } from "pg";
+import { cellCommunities } from "../drizzle/schema";
 
 // Supabase pooler uses a self-signed cert chain not trusted by Node's
 // default CA bundle. Disable verification for database connections only
@@ -13,18 +14,21 @@ const pool = new Pool({
   max: 1,
 });
 
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+const db = drizzle(pool);
 
 export const handler = async (): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
-    const communities = await prisma.cellCommunity.groupBy({
-      by: ["cellId"],
-      _count: { cellId: true },
-    });
-    const result = communities.map((c) => ({
+    const communitiesGrouped = await db
+      .select({
+        cellId: cellCommunities.cellId,
+        count: count(cellCommunities.cellId),
+      })
+      .from(cellCommunities)
+      .groupBy(cellCommunities.cellId);
+
+    const result = communitiesGrouped.map((c) => ({
       cellId: c.cellId,
-      communityCount: Number(c._count.cellId),
+      communityCount: Number(c.count),
     }));
     return {
       statusCode: 200,

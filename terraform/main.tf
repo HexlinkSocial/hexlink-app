@@ -217,8 +217,6 @@ resource "aws_lambda_function" "api" {
   s3_bucket = aws_s3_bucket.lambda_deployments.bucket
   s3_key    = "lambda-code.zip"
 
-  layers = [var.prisma_layer_arn]
-
   lifecycle {
     ignore_changes = [
       s3_key,

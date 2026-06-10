@@ -1,13 +1,15 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { faker } from "@faker-js/faker";
 import * as h3 from "h3-js";
+import { Pool } from "pg";
+import { communities, cellCommunities } from "./schema";
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-const prisma = new PrismaClient({ adapter });
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+const db = drizzle(pool);
 
 function generateConnectedH3Cells(count: number): string[] {
-  // Change these to suit your selected area
   const lat = faker.number.float({ min: 51.402975, max: 51.592357 });
   const lng = faker.number.float({ min: -0.273258, max: 0.119099 });
 
@@ -21,29 +23,30 @@ function generateConnectedH3Cells(count: number): string[] {
 async function main(): Promise<void> {
   try {
     console.log("Seeding...");
-
-    await prisma.community.deleteMany();
+    await db.delete(communities);
 
     for (let i = 0; i < 20; i++) {
-      const newCommunity = await prisma.community.create({
-        data: {
+      const [newCommunity] = await db
+        .insert(communities)
+        .values({
           name: faker.company.name(),
           description: faker.lorem.paragraph(),
           owner: faker.string.uuid(),
-          community_link: faker.internet.url(),
-        },
-      });
+          communityLink: faker.internet.url(),
+        })
+        .returning();
 
       const cellIds = generateConnectedH3Cells(
-        faker.number.int({ min: 3, max: 7 }),
+        faker.number.int({ min: 3, max: 7 }) as number,
       );
-      for (const cellId of cellIds) {
-        await prisma.cellCommunity.create({
-          data: {
-            cellId,
-            communityId: newCommunity.id,
-          },
-        });
+
+      const junctionRows = cellIds.map((cellId) => ({
+        cellId,
+        communityId: newCommunity.id,
+      }));
+
+      if (junctionRows.length > 0) {
+        await db.insert(cellCommunities).values(junctionRows);
       }
     }
 
@@ -52,7 +55,7 @@ async function main(): Promise<void> {
     console.error(e);
     throw e;
   } finally {
-    await prisma.$disconnect();
+    await pool.end();
   }
 }
 
