@@ -6,8 +6,13 @@ import { useH3LayerStack } from "../hooks/useH3LayerStack";
 const MapContainer: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
 
-  const { map, isMapReady, selectedCellId, setSelectedCellId } =
-    useMap(mapContainer);
+  const {
+    map,
+    isMapReady,
+    selectedCellId,
+    selectedCellHasCommunities,
+    setSelectedCellId,
+  } = useMap(mapContainer);
 
   useH3LayerStack(map, isMapReady);
 
@@ -23,6 +28,7 @@ const MapContainer: React.FC = () => {
 
       <CommunitiesCard
         cellId={selectedCellId}
+        hasCommunities={selectedCellHasCommunities}
         onClose={() => setSelectedCellId(null)}
       />
     </div>

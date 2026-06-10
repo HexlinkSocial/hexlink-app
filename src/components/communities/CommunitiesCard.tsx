@@ -1,11 +1,18 @@
 import { JSX, useEffect, useRef, useState } from "react";
 import { Community } from "./types";
-import CommunityItem from "./CommunityItem";
+import CommunitiesList from "./CommunitiesList";
 import "../../styles/CommunitiesCard.css";
 
 interface CommunitiesCardProps {
   cellId: string | null;
+  hasCommunities: boolean;
   onClose: () => void;
+}
+
+interface FetchResult {
+  cellId: string;
+  communities?: Community[];
+  error: string | null;
 }
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "";
@@ -18,14 +25,9 @@ async function fetchCommunitiesForCell(cellId: string): Promise<Community[]> {
   return res.json() as Promise<Community[]>;
 }
 
-interface FetchResult {
-  cellId: string;
-  communities?: Community[];
-  error: string | null;
-}
-
 export default function CommunitiesCard({
   cellId,
+  hasCommunities,
   onClose,
 }: CommunitiesCardProps): JSX.Element {
   const [result, setResult] = useState<FetchResult | null>(null);
@@ -34,7 +36,7 @@ export default function CommunitiesCard({
   const isOpen = cellId !== null;
 
   useEffect(() => {
-    if (cellId == null) return;
+    if (cellId == null || !hasCommunities) return;
 
     let cancelled = false;
 
@@ -43,31 +45,41 @@ export default function CommunitiesCard({
         if (!cancelled) setResult({ cellId, communities: data, error: null });
       })
       .catch((err: Error) => {
-        if (!cancelled)
+        if (!cancelled) {
           setResult({ cellId, communities: [], error: err.message });
+        }
       });
 
     return () => {
       cancelled = true;
     };
-  }, [cellId]);
+  }, [cellId, hasCommunities]);
 
-  // Prevent wheel events on the card body from reaching the map
+  // Prevent mouse wheel events on the card body from reaching the map
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
+
     const stop = (e: WheelEvent): void => e.stopPropagation();
     el.addEventListener("wheel", stop, { passive: true });
+
     return () => el.removeEventListener("wheel", stop);
   }, []);
 
   const loading = isOpen && result?.cellId !== cellId;
   const communities =
-    !loading && result?.cellId === cellId && result?.communities
+    hasCommunities &&
+    !loading &&
+    result?.cellId === cellId &&
+    result?.communities
       ? result.communities
       : [];
+
   const error =
-    !loading && result?.cellId === cellId && result?.error != null
+    hasCommunities &&
+    !loading &&
+    result?.cellId === cellId &&
+    result?.error != null
       ? result.error
       : null;
 
@@ -109,32 +121,12 @@ export default function CommunitiesCard({
         </div>
 
         <div className="communities-card-body" ref={scrollRef}>
-          {loading && (
-            <div className="communities-card-state">
-              <div className="communities-card-spinner" />
-              <span>Loading communities…</span>
-            </div>
-          )}
-          {!loading && error !== null && (
-            <div className="communities-card-state communities-card-state--error">
-              <span>⚠ Failed to load: {error}</span>
-            </div>
-          )}
-          {!loading && error === null && communities.length === 0 && isOpen && (
-            <div className="communities-card-state">
-              <span className="communities-card-empty-hex">⬡</span>
-              <span>No communities in this tile yet.</span>
-            </div>
-          )}
-          {!loading && communities.length > 0 && (
-            <ul className="communities-card-list">
-              {communities.map((c) => (
-                <li key={c.id}>
-                  <CommunityItem community={c} />
-                </li>
-              ))}
-            </ul>
-          )}
+          <CommunitiesList
+            loading={loading}
+            error={error}
+            communities={communities}
+            isOpen={isOpen}
+          />
         </div>
       </div>
     </>

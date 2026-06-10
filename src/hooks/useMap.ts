@@ -47,6 +47,7 @@ const openCard = (
   e: maplibregl.MapLayerMouseEvent,
   map: maplibregl.Map,
   setSelectedCellId: React.Dispatch<React.SetStateAction<string | null>>,
+  setSelectedCellHasCommunities: React.Dispatch<React.SetStateAction<boolean>>,
 ): void => {
   const f = e.features?.[0];
   if (f === undefined) return;
@@ -65,6 +66,7 @@ const openCard = (
   });
 
   setSelectedCellId(id);
+  setSelectedCellHasCommunities(f.properties.communities_count > 0);
 };
 
 const europeBounds: maplibregl.LngLatBoundsLike = [
@@ -78,6 +80,7 @@ type MapInfo = {
   map: maplibregl.Map | null;
   isMapReady: boolean;
   selectedCellId: string | null;
+  selectedCellHasCommunities: boolean;
   setSelectedCellId: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
@@ -87,6 +90,8 @@ export function useMap(
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
+  const [selectedCellHasCommunities, setSelectedCellHasCommunities] =
+    useState<boolean>(false);
   const [isMapReady, setIsMapReady] = useState(false);
 
   useEffect(() => {
@@ -144,7 +149,9 @@ export function useMap(
       const fineLayers = ["h3-counts-r8", "h3-grid-fill"] as const;
 
       fineLayers.forEach((layer) => {
-        map.on("click", layer, (e) => openCard(e, map, setSelectedCellId));
+        map.on("click", layer, (e) =>
+          openCard(e, map, setSelectedCellId, setSelectedCellHasCommunities),
+        );
       });
     });
   }, [containerRef]);
@@ -153,6 +160,7 @@ export function useMap(
     map: mapInstance,
     isMapReady,
     selectedCellId,
+    selectedCellHasCommunities,
     setSelectedCellId,
   };
 }
