@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Hexlink Serverless Compute Layer (SAM)
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: hexlink
+  SupabaseDatabaseUrl:
+    Type: String
+    NoEcho: true
+  AllowedOriginsUrl:
+    Type: String
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 30
+    MemorySize: 512
+    Environment:
+      Variables:
+        DATABASE_URL: !Ref SupabaseDatabaseUrl
+        NODE_ENV: production
+
+Resources:
+
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: !Sub "${ProjectName}-api"
+      CorsConfiguration:
+        AllowOrigins:
+          - !Sub "https://${AllowedOriginsUrl}"
+        AllowMethods: [GET, POST]
+        AllowHeaders: [content-type, authorization]
+        MaxAge: 86400
+
+  GetCommunitiesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-getCommunitiesByCellId"
+      CodeUri: backend/dist/lambda/
+      Handler: getCommunitiesByCellId.handler
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /CommunitiesByCellId
+            Method: GET
+
+  GetCommunityCountsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-getCommunityCounts"
+      CodeUri: backend/dist/lambda/
+      Handler: getCommunityCounts.handler
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /CommunityCounts
+            Method: GET
+
+Outputs:
+  ApiUrl:
+    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
