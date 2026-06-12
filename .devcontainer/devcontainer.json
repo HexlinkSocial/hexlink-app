@@ -8,8 +8,10 @@
 
   "forwardPorts": [5173, 4000, 5432],
 
-  "postCreateCommand": "npm install && cd backend && npm install && npm run db:migrate && npm run db:seed",
-
+  "postCreateCommand": "npm install && cd backend && npm install && npm run build && npm run db:migrate && npm run db:seed",
+  
+  "postStartCommand": "bash /workspace/.devcontainer/start-sam.sh", 
+  
   "customizations": {
     "vscode": {
       "extensions": [

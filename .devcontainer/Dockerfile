@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     libsqlite3-dev \
     zlib1g-dev \
+    sudo \
     && rm -rf /var/lib/apt/lists/*
 
 # Install AWS CLI
@@ -38,5 +39,21 @@ RUN curl -L "https://github.com/protomaps/go-pmtiles/releases/download/v1.30.3/g
     | tar -xz -C /usr/local/bin pmtiles \
     && chmod +x /usr/local/bin/pmtiles
 
+RUN curl -L "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" \
+      -o /tmp/sam.zip \
+    && unzip /tmp/sam.zip -d /tmp/sam-install \
+    && /tmp/sam-install/install \
+    && rm -rf /tmp/sam.zip /tmp/sam-install
+
+RUN groupadd -f docker && usermod -aG docker node
+
+# Give node user docker access via group
+RUN groupadd -f docker \
+    && usermod -aG docker node \
+    && mkdir -p /etc/sudoers.d \
+    && echo "node ALL=(ALL) NOPASSWD: /bin/chmod" \
+       > /etc/sudoers.d/node-docker \
+    && chmod 0440 /etc/sudoers.d/node-docker
+        
 WORKDIR /workspace
 USER node
