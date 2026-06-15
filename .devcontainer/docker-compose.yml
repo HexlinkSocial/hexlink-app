@@ -21,15 +21,12 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
     container_name: hexlink_devcontainer
-    ports:
-      - "3001:3001"
     volumes:
       - ..:/workspace:cached
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       DATABASE_URL: postgresql://postgres:postgres@hexlink_postgres:5432/hexlink
       NODE_ENV: development
-      SAM_CLI_MOUNT_TOKEN: "C:/Hexlink/hexlink-app:/workspace"
     depends_on:
       - db
     command: sleep infinity
@@ -39,7 +36,7 @@ services:
 networks:
   sam-app-network:
     name: sam-app-network
-    external: true
+    driver: bridge
 
 volumes:
   db_data:
