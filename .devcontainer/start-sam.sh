@@ -14,15 +14,10 @@ echo "[sam-start] Checking built lambda files..."
 ls /workspace/backend/dist/lambda/ || { echo "dist/lambda not found - run npm run build in backend/"; exit 1; }
 
 echo "[sam-start] Starting SAM local API on port 4000..."
-HOST_IP=$(hostname -I | awk '{print $1}')
 sam local start-api \
-  --template /workspace/template.yaml \
-  --port 4000 \
-  --host 0.0.0.0 \
+  --template template.yaml \
+  --port 3001 \
   --docker-network sam-app-network \
-  --container-host-interface 0.0.0.0 \
-  --container-host $HOST_IP \
-  --env-vars /workspace/.devcontainer/sam-env.json \
-  >> /tmp/sam.log 2>&1 &
+  --env-vars backend/sam-env.json
 
 echo "[sam-start] SAM started with PID $!"

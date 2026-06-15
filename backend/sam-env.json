@@ -1,6 +1,10 @@
 {
-  "Parameters": {
-    "DATABASE_URL": "postgresql://postgres:postgres@db:5432/hexlink",
+  "GetCommunityCountsFunction": {
+    "DATABASE_URL": "postgresql://postgres:postgres@hexlink_postgres:5432/hexlink",
+    "NODE_ENV": "development"
+  },
+  "GetCommunitiesFunction": {
+    "DATABASE_URL": "postgresql://postgres:postgres@hexlink_postgres:5432/hexlink",
     "NODE_ENV": "development"
   }
 }
