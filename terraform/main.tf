@@ -279,7 +279,7 @@ resource "aws_iam_role_policy" "github_policy" {
           "cloudfront:CreateInvalidation"
         ]
 
-        Resource = "*" 
+        Resource = "*"
       },
 
       {
@@ -292,11 +292,19 @@ resource "aws_iam_role_policy" "github_policy" {
           "cloudformation:DescribeStackEvents",
           "cloudformation:DescribeStackResources",
           "cloudformation:GetTemplate",
-          "cloudformation:ValidateTemplate"
+          "cloudformation:ValidateTemplate",
+          "cloudformation:CreateChangeSet",
+          "cloudformation:DeleteChangeSet",
+          "cloudformation:DescribeChangeSet",
+          "cloudformation:ExecuteChangeSet",
+          "cloudformation:ListChangeSets",
+          "cloudformation:GetTemplateSummary"
         ]
-        Resource = "arn:aws:cloudformation:${var.aws_region}:*:stack/${var.project_name}-backend-stack/*"
+        Resource = [
+          "arn:aws:cloudformation:${var.aws_region}:*:stack/${var.project_name}-backend-stack/*",
+          "arn:aws:cloudformation:${var.aws_region}:aws:transform/Serverless-2016-10-31"
+        ]
       },
-
       {
         Effect = "Allow"
         Action = [
@@ -308,20 +316,26 @@ resource "aws_iam_role_policy" "github_policy" {
           "lambda:UpdateFunctionCode",
           "lambda:UpdateFunctionConfiguration",
           "lambda:AddPermission",
-          "lambda:RemovePermission"
+          "lambda:RemovePermission",
+          "lambda:ListTags",
+          "lambda:TagResource"
         ]
         Resource = "arn:aws:lambda:${var.aws_region}:*:function:${var.project_name}-*"
       },
-
       {
         Effect = "Allow"
         Action = [
           "apigateway:GET",
           "apigateway:POST",
           "apigateway:PUT",
-          "apigateway:DELETE"
+          "apigateway:DELETE",
+          "apigateway:PATCH",
+          "apigateway:TagResource",
+          "apigateway:UntagResource"
         ]
-        Resource = "arn:aws:apigateway:${var.aws_region}::/apis*"
+        Resource = [
+          "arn:aws:apigateway:${var.aws_region}::*"
+        ]
       },
 
       {
@@ -332,9 +346,19 @@ resource "aws_iam_role_policy" "github_policy" {
           "iam:GetRole",
           "iam:GetRolePolicy",
           "iam:PutRolePolicy",
-          "iam:DeleteRolePolicy"
+          "iam:DeleteRolePolicy",
+          "iam:AttachRolePolicy",
+          "iam:DetachRolePolicy",
+          "iam:ListRolePolicies",
+          "iam:ListAttachedRolePolicies",
+          "iam:PassRole",
+          "iam:TagRole",
+          "iam:UntagRole"
         ]
-        Resource = "arn:aws:iam::*:role/${var.project_name}-backend-stack-*"
+        Resource = [
+          "arn:aws:iam::*:role/${var.project_name}-backend-stack-*",
+          "arn:aws:iam::*:role/${var.project_name}-*"
+        ]
       }
     ]
   })
