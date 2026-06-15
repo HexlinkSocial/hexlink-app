@@ -39,7 +39,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub "${ProjectName}-getCommunitiesByCellId"
-      CodeUri: /dist/
+      CodeUri: dist/
       Handler: getCommunitiesByCellId.handler
       Events:
         ApiEvent:
@@ -53,7 +53,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub "${ProjectName}-getCommunityCounts"
-      CodeUri: /dist/
+      CodeUri: dist/
       Handler: getCommunityCounts.handler
       Events:
         ApiEvent:

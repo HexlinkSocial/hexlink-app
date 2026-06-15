@@ -5,7 +5,7 @@
   "scripts": {
     "build": "esbuild *.ts --bundle --minify --platform=node --target=node20 --format=cjs --outdir=dist --entry-names=[name]",
     "dev": "esbuild *.ts --bundle --platform=node --target=node20 --format=cjs --outdir=dist --entry-names=[name] --watch",
-    "run:sam": "sam local start-api --template template.yml --port 4000 --host 0.0.0.0 --docker-network sam-app-network --env-vars sam-env.json --docker-volume-basedir \"/c/Hexlink/hexlink-app\" --container-host host.docker.internal"
+    "sam": "sam build && sam local start-api --template template.yml --port 4000 --host 0.0.0.0 --docker-network sam-app-network --env-vars sam-env.json --docker-volume-basedir \"/c/Hexlink/hexlink-app/lambdas\" --container-host host.docker.internal"
   },
   "author": "",
   "license": "ISC",

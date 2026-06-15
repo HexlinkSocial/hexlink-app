@@ -38,5 +38,12 @@ RUN curl -L "https://github.com/protomaps/go-pmtiles/releases/download/v1.30.3/g
     | tar -xz -C /usr/local/bin pmtiles \
     && chmod +x /usr/local/bin/pmtiles
 
+# Install aws-sam cli
+RUN curl -L "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" \
+      -o /tmp/sam.zip \
+    && unzip /tmp/sam.zip -d /tmp/sam-install \
+    && /tmp/sam-install/install \
+    && rm -rf /tmp/sam.zip /tmp/sam-install
+
 WORKDIR /workspace
 USER node

@@ -37,3 +37,4 @@ public/tiles/h3-grid.pmtiles
 
 lambdas/dist
 lambdas/node_modules
+lambdas/.aws-sam
