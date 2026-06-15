@@ -37,9 +37,10 @@ Main Hexlink app
 You will need to run this if you create any new lambdas
 - Install terraform 
 - Install AWS CLI
-- Go to `\backend` and run `npm run build` to build your lambda files
-- Zip `/backend/dist/lamdba` and put it in `/terraform`
-- To log in and run `terraform apply`, run `.\terraform\terraform_apply.sh` 
+- To log in and run `terraform apply`
+    - `cd terraform`
+    - `.\terraform\terraform_apply.sh` 
+    This will create static resources like CloudFront, S3, roles, etc. Lambdas and API gateway themselves are managed by AWS SAM and created/updated by GitHub actions.
 
 ## First time deployment
 - Upload the `h3-grid.pmtiles` you generated earlier manually to S3 in the `/tiles` folder. `h3-counts.pmtiles` will run automatically from GitHub actions 
