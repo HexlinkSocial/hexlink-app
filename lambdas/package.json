@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "drizzle-orm": "^0.45.2",
+    "esbuild": "^0.28.1",
     "pg": "^8.21.0"
   }
 }

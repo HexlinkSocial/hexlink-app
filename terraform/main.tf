@@ -128,111 +128,6 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
 }
-
-#################################
-# LAMBDA
-#################################
-
-resource "aws_iam_role" "lambda_exec" {
-
-  name = "${var.project_name}-lambda-role"
-
-  assume_role_policy = jsonencode({
-
-    Version = "2012-10-17"
-
-    Statement = [
-
-      {
-
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        }
-
-      }
-
-    ]
-
-  })
-
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_logs" {
-
-  role       = aws_iam_role.lambda_exec.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-
-}
-
-locals {
-
-  lambda_files = fileset("${path.module}/../backend/lambda", "*.ts")
-
-  lambdas = {
-
-    for file in local.lambda_files :
-
-    trimsuffix(file, ".ts") => {
-
-      name = trimsuffix(file, ".ts")
-
-      method = (
-        startswith(file, "get")    ? "GET" :
-        startswith(file, "post")   ? "POST" :
-        startswith(file, "put")    ? "PUT" :
-        startswith(file, "delete") ? "DELETE" :
-        "GET"
-      )
-
-      route = substr(
-        trimsuffix(file, ".ts"),
-        length(
-          startswith(file,"get")    ? "get" :
-          startswith(file,"post")   ? "post" :
-          startswith(file,"put")    ? "put" :
-          startswith(file,"delete") ? "delete" :
-          ""
-        ),
-        100
-      )
-
-    }
-
-  }
-
-}
-
-resource "aws_lambda_function" "api" {
-  for_each = local.lambdas
-
-  function_name = "${var.project_name}-${each.value.name}"
-  role          = aws_iam_role.lambda_exec.arn
-  runtime       = "nodejs20.x"
-  handler       = "lambda/${each.value.name}.handler"
-  timeout       = 30
-
-  s3_bucket = aws_s3_bucket.lambda_deployments.bucket
-  s3_key    = "lambda.zip"
-
-  lifecycle {
-    ignore_changes = [
-      s3_key,
-      s3_object_version,
-      source_code_hash,
-    ]
-  }
-
-  environment {
-    variables = {
-      DATABASE_URL = var.supabase_database_url
-      NODE_ENV     = "production"
-    }
-  }
-}
-
 #################################
 # LAMBDA S3 BUCKET
 #################################
@@ -264,82 +159,6 @@ resource "aws_s3_bucket_public_access_block" "lambda_deployments" {
   block_public_acls       = true
   block_public_policy     = true
   restrict_public_buckets = true
-}
-
-#################################
-# API GATEWAY
-#################################
-
-resource "aws_apigatewayv2_api" "api" {
-
-  name          = "${var.project_name}-api"
-  protocol_type = "HTTP"
-
-  cors_configuration {
-
-    allow_origins = [
-      "https://${aws_cloudfront_distribution.frontend.domain_name}"
-    ]
-
-    allow_methods = [
-      "GET", "POST"
-    ]
-
-    allow_headers = [
-      "content-type",
-      "authorization"
-    ]
-
-    max_age = 86400
-  }
-}
-
-resource "aws_apigatewayv2_integration" "lambda" {
-
-  for_each = aws_lambda_function.api
-
-  api_id = aws_apigatewayv2_api.api.id
-
-  integration_type = "AWS_PROXY"
-
-  integration_uri = each.value.invoke_arn
-
-}
-
-resource "aws_apigatewayv2_route" "routes" {
-
-  for_each = local.lambdas
-
-  api_id = aws_apigatewayv2_api.api.id
-
-  route_key = "${each.value.method} /${each.value.route}"
-
-  target = "integrations/${aws_apigatewayv2_integration.lambda[each.key].id}"
-
-}
-
-resource "aws_apigatewayv2_stage" "default" {
-
-  api_id = aws_apigatewayv2_api.api.id
-
-  name = "$default"
-
-  auto_deploy = true
-
-}
-
-resource "aws_lambda_permission" "api" {
-
-  for_each = aws_lambda_function.api
-
-  statement_id = "AllowAPIGateway-${each.key}"
-
-  action = "lambda:InvokeFunction"
-
-  function_name = each.value.function_name
-
-  principal = "apigateway.amazonaws.com"
-
 }
 
 #################################
@@ -465,29 +284,82 @@ resource "aws_iam_role_policy" "github_policy" {
 
       {
         Effect = "Allow"
-
         Action = [
-          "lambda:UpdateFunctionCode",
-          "lambda:CreateFunction",
-          "lambda:GetFunction",
-          "lambda:ListFunctions",
-          "lambda:PublishLayerVersion",
-          "lambda:UpdateFunctionConfiguration",
-          "lambda:GetLayerVersion",
-          "lambda:GetFunctionConfiguration"
+          "cloudformation:CreateStack",
+          "cloudformation:UpdateStack",
+          "cloudformation:DeleteStack",
+          "cloudformation:DescribeStacks",
+          "cloudformation:DescribeStackEvents",
+          "cloudformation:DescribeStackResources",
+          "cloudformation:GetTemplate",
+          "cloudformation:ValidateTemplate",
+          "cloudformation:CreateChangeSet",
+          "cloudformation:DeleteChangeSet",
+          "cloudformation:DescribeChangeSet",
+          "cloudformation:ExecuteChangeSet",
+          "cloudformation:ListChangeSets",
+          "cloudformation:GetTemplateSummary"
         ]
-
-        Resource = "*"
+        Resource = [
+          "arn:aws:cloudformation:${var.aws_region}:*:stack/${var.project_name}-backend-stack/*",
+          "arn:aws:cloudformation:${var.aws_region}:aws:transform/Serverless-2016-10-31"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "lambda:CreateFunction",
+          "lambda:DeleteFunction",
+          "lambda:GetFunction",
+          "lambda:GetFunctionConfiguration",
+          "lambda:ListFunctions",
+          "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration",
+          "lambda:AddPermission",
+          "lambda:RemovePermission",
+          "lambda:ListTags",
+          "lambda:TagResource"
+        ]
+        Resource = "arn:aws:lambda:${var.aws_region}:*:function:${var.project_name}-*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "apigateway:GET",
+          "apigateway:POST",
+          "apigateway:PUT",
+          "apigateway:DELETE",
+          "apigateway:PATCH",
+          "apigateway:TagResource",
+          "apigateway:UntagResource"
+        ]
+        Resource = [
+          "arn:aws:apigateway:${var.aws_region}::*"
+        ]
       },
 
       {
         Effect = "Allow"
-        Action = "iam:PassRole"
-        Resource = aws_iam_role.lambda_exec.arn
+        Action = [
+          "iam:CreateRole",
+          "iam:DeleteRole",
+          "iam:GetRole",
+          "iam:GetRolePolicy",
+          "iam:PutRolePolicy",
+          "iam:DeleteRolePolicy",
+          "iam:AttachRolePolicy",
+          "iam:DetachRolePolicy",
+          "iam:ListRolePolicies",
+          "iam:ListAttachedRolePolicies",
+          "iam:PassRole",
+          "iam:TagRole",
+          "iam:UntagRole"
+        ]
+        Resource = [
+          "arn:aws:iam::*:role/${var.project_name}-backend-stack-*",
+          "arn:aws:iam::*:role/${var.project_name}-*"
+        ]
       }
-
     ]
-
   })
-
 }
