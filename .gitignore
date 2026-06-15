@@ -31,7 +31,7 @@ terraform/terraform.tfstate.backup
 terraform/.terraform.lock.hcl
 terraform/lambda.zip
 
-backend/dist
+database/dist
 public/tiles/h3-counts.pmtiles
 public/tiles/h3-grid.pmtiles
 

@@ -46,7 +46,7 @@ You will need to run this if you create any new lambdas
 
 # Databases
 
-Every command has to be run from `/backend`
+Every command has to be run from `/database`
 - `npm run db:seed` - should run automatically when you create your Docker container to populate the DB with some sample data. You can also run it whenever you want
 - `npm run db:generate <migration_name>` - generates the migration and puts it in `/migrations`
 - `npm run db:migrate` - applies the migrations to the DB

@@ -6,7 +6,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
 import { Pool } from "pg";
 import { Request } from "express";
-import * as schema from "../backend/drizzle/schema";
+import * as schema from "../database/drizzle/schema";
 
 // Supabase pooler uses a self-signed cert chain not trusted by Node's
 // default CA bundle. Disable verification for database connections only.

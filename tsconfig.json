@@ -22,8 +22,8 @@
   },
   "include": [
     "src",
-    "backend/**/*.ts",
-    "backend/**/*.tsx",
+    "database/**/*.ts",
+    "database/**/*.tsx",
     "lambdas/*.ts"
   ]
 }

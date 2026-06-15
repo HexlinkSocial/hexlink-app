@@ -43,10 +43,6 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['backend/**/*.ts', 'backend/**/*.tsx'],
-      env: { node: true, browser: false }
-    },
-    {
       files: ['**/*.tsx'],
       env: { browser: true }
     }
