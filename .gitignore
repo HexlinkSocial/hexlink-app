@@ -37,3 +37,4 @@ public/tiles/h3-grid.pmtiles
 
 .aws-sam
 dist/
+.devcontainer/devcontainer-lock.json

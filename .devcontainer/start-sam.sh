@@ -16,8 +16,11 @@ ls /workspace/backend/dist/lambda/ || { echo "dist/lambda not found - run npm ru
 echo "[sam-start] Starting SAM local API on port 4000..."
 sam local start-api \
   --template template.yaml \
-  --port 3001 \
+  --port 4000 \
+  --host 0.0.0.0 \
   --docker-network sam-app-network \
-  --env-vars backend/sam-env.json
+  --env-vars backend/sam-env.json \
+  --docker-volume-basedir "/c/Hexlink/hexlink-app" \
+  --container-host host.docker.internal \
 
 echo "[sam-start] SAM started with PID $!"
