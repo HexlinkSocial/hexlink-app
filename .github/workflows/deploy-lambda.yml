@@ -1,15 +1,14 @@
-name: Deploy Lambdas
+name: Deploy Backend Lambdas
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'backend/lambda/**'
-  workflow_dispatch:
+      - 'lambdas/**/*.ts'
 
 jobs:
-  deploy_lambda:
+  deploy_lambdas:
     runs-on: ubuntu-latest
 
     permissions:
@@ -19,49 +18,51 @@ jobs:
     env:
       AWS_REGION: eu-west-2
       LAMBDA_S3_BUCKET: ${{ secrets.AWS_LAMBDA_S3_BUCKET_NAME }}
-      PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+
+    defaults:
+      run:
+        working-directory: lambdas
 
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: lambdas/package-lock.json
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: eu-west-2
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Install backend dependencies
+      - name: Setup AWS SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: Install Dependencies
         run: npm ci
-        working-directory: backend
 
-      - name: Compile Lambda
-        run: npm run build
-        working-directory: backend
+      - name: Bundle TypeScript with esbuild
+        run: npx esbuild *.ts --bundle --minify --platform=node --target=node20 --outdir=dist
 
-      - name: Package Lambda code
-        working-directory: backend/dist/lambda
-        run: zip -r ../../../lambda.zip .
+      - name: SAM Build
+        run: sam build --template template.yml
 
-      - name: Upload Lambda code to S3
-        run: aws s3 cp lambda.zip s3://$LAMBDA_S3_BUCKET/lambda.zip
-
-      - name: Update Lambdas
+      - name: SAM Deploy
         run: |
-          for fn in $(aws lambda list-functions \
-            --query "Functions[?starts_with(FunctionName, '$PROJECT_NAME')].FunctionName" \
-            --output text)
-          do
-            echo "Updating $fn..."
-            aws lambda update-function-code \
-              --function-name $fn \
-              --s3-bucket $LAMBDA_S3_BUCKET \
-              --s3-key lambda.zip
-
-            aws lambda wait function-updated --function-name $fn
-          done
+          sam deploy \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset \
+            --stack-name ${{ secrets.PROJECT_NAME }}-backend-stack \
+            --s3-bucket $LAMBDA_S3_BUCKET \
+            --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
+            --region ${{ env.AWS_REGION }} \
+            --parameter-overrides \
+              SupabaseDatabaseUrl="${{ secrets.DATABASE_URL }}" \
+              AllowedOriginsUrl="${{ secrets.ALLOWED_ORIGINS_URL }}"
