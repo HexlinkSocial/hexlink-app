@@ -24,9 +24,12 @@ Main Hexlink app
 
 
 # Running (inside the dev container)
-- Backend:
-    - `cd backend`
-    - `npm run backend`
+- Lambdas:
+    - `cd lambdas`
+    - `npm run dev` - this will watch for changes in your lambda files and automatically rebuild them
+    - In a separate terminal:
+        - (optional)`sam build` - this should run automatically when Docker is created. If you updated the template.yml file, you'll need to run this again before restarting your local SAM runner.
+        - `npm run sam` - this will run AWS SAM locally. Everytime you call a function, it creates a sibling container in Docker to run it.
 
 - Frontend: `npm start`
 
