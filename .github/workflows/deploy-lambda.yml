@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - 'lambdas/**/*.ts'
+      - 'database/**/*.ts'
 
 jobs:
   deploy_lambdas:
@@ -50,7 +51,7 @@ jobs:
         run: npm ci
 
       - name: Bundle TypeScript with esbuild
-        run: npx esbuild *.ts --bundle --minify --platform=node --target=node20 --outdir=dist
+        run: npm run build
 
       - name: SAM Build
         run: sam build --template template.yml
