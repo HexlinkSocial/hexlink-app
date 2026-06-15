@@ -10,8 +10,3 @@ variable "frontend_domain" {
   description = "Optional custom domain"
   default     = ""
 }
-
-variable "supabase_database_url" {
-  description = "Supabase Postgres connection string"
-  sensitive   = true
-}
