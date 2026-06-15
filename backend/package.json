@@ -6,6 +6,7 @@
   "scripts": {
     "backend": "tsx watch server.ts",
     "build": "esbuild lambda/*.ts --bundle --minify --platform=node --target=node20 --format=cjs --outdir=dist/lambda --entry-names=[name]",
+    "dev": "esbuild lambda/*.ts --bundle --platform=node --target=node20 --format=cjs --outdir=dist/lambda --entry-names=[name] --watch",
     "db:generate": "drizzle-kit generate --name",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx drizzle/seed.ts",
