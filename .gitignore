@@ -34,3 +34,6 @@ terraform/lambda.zip
 backend/dist
 public/tiles/h3-counts.pmtiles
 public/tiles/h3-grid.pmtiles
+
+lambdas/dist
+lambdas/node_modules
