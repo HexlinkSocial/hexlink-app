@@ -1,0 +1,17 @@
+{
+  "name": "lambdas",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild *.ts --bundle --minify --platform=node --target=node20 --outdir=dist",
+    "dev": "esbuild *.ts --bundle --minify --platform=node --target=node20 --outdir=dist --watch",
+    "sam": "sam local start-api --template template.yml --port 4000 --host 0.0.0.0 --docker-network sam-app-network --env-vars sam-env.json --docker-volume-basedir \"/c/Hexlink/hexlink-app/lambdas\" --container-host host.docker.internal"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "drizzle-orm": "^0.45.2",
+    "pg": "^8.21.0"
+  }
+}

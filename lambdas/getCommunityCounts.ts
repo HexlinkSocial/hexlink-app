@@ -2,7 +2,7 @@ import { APIGatewayProxyStructuredResultV2 } from "aws-lambda";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { count } from "drizzle-orm";
 import { Pool } from "pg";
-import { cellCommunities } from "../drizzle/schema";
+import { cellCommunities } from "../backend/drizzle/schema";
 
 // Supabase pooler uses a self-signed cert chain not trusted by Node's
 // default CA bundle. Disable verification for database connections only

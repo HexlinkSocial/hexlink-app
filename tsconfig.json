@@ -23,6 +23,7 @@
   "include": [
     "src",
     "backend/**/*.ts",
-    "backend/**/*.tsx"
+    "backend/**/*.tsx",
+    "lambdas/*.ts"
   ]
 }
