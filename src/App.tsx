@@ -11,14 +11,15 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SampleAdminPage from "./pages/SampleAdminPage";
 import ProtectedRoute from "./pages/ProtectedRoute";
+import ErrorPage from "./pages/ErrorPage";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
+    <Route path="/" errorElement={<ErrorPage />}>
+      <Route index element={<Home />} />
+      <Route path="login" element={<Login />} />
       <Route
-        path="/sampleAdminPage"
+        path="sampleAdminPage"
         element={
           <ProtectedRoute>
             <SampleAdminPage />
