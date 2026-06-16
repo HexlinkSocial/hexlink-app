@@ -15,7 +15,9 @@ export default function ErrorPage(): JSX.Element {
     <div className="error-page-container">
       <div className="error-flex-overlay">
         <div className="error-card">
-          <div className="error-icon">⚠️</div>
+          <div className="error-icon">
+            <img src="/warning-hex.png" alt="Warning Icon" />
+          </div>
           <h1 className="error-heading">An unexpected error occurred</h1>
           <p className="error-text">
             Something went wrong behind the scenes. We&apos;ve been notified and

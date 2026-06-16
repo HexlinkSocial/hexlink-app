@@ -46,8 +46,14 @@
 }
 
 .error-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1rem; 
+}
+
+.error-icon img {
+  width: 70px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 
 .error-heading {
