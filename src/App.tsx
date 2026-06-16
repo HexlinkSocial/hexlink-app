@@ -1,7 +1,7 @@
 import React, { JSX } from "react";
 import "./styles/App.css";
 import "leaflet/dist/leaflet.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SampleAdminPage from "./pages/SampleAdminPage";
@@ -21,6 +21,8 @@ export default function App(): JSX.Element {
             </ProtectedRoute>
           }
         />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );
