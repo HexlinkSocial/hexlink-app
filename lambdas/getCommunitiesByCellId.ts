@@ -82,7 +82,7 @@ export const handler = async (
     return {
       statusCode: 500,
       headers: CORS_HEADERS,
-      body: JSON.stringify({ error: (e as Error).message }),
+      body: "Internal Server Error",
     };
   }
 };
