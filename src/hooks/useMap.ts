@@ -82,6 +82,7 @@ type MapInfo = {
   selectedCellId: string | null;
   selectedCellHasCommunities: boolean;
   setSelectedCellId: React.Dispatch<React.SetStateAction<string | null>>;
+  error: string | null;
 };
 
 export function useMap(
@@ -93,6 +94,7 @@ export function useMap(
   const [selectedCellHasCommunities, setSelectedCellHasCommunities] =
     useState<boolean>(false);
   const [isMapReady, setIsMapReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -132,6 +134,18 @@ export function useMap(
       "top-left",
     );
 
+    map.on("error", (e) => {
+      if (e != null && "sourceId" in e) {
+        const sourceId = (e as { sourceId: string }).sourceId;
+
+        if (sourceId === "osm") {
+          setError("Failed to load background base map layer.");
+        } else if (sourceId === "h3_counts" || sourceId === "h3_grid_source") {
+          setError("Failed to load map data layers.");
+        }
+      }
+    });
+
     map.on("load", () => {
       setIsMapReady(true);
     });
@@ -154,6 +168,10 @@ export function useMap(
         );
       });
     });
+
+    return () => {
+      map.remove();
+    };
   }, [containerRef]);
 
   return {
@@ -162,5 +180,6 @@ export function useMap(
     selectedCellId,
     selectedCellHasCommunities,
     setSelectedCellId,
+    error,
   };
 }
