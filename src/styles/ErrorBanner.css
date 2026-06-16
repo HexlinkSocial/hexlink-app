@@ -1,8 +1,13 @@
 .error-banner {
-  position: absolute;
-  top: 20px;
+  position: fixed; 
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
+  
+  width: 90%;
+  max-width: 450px;
+  box-sizing: border-box;
+
   background-color: #e6c8eb;
   color: purple;
   padding: 12px 24px;
@@ -11,14 +16,16 @@
   font-weight: bold;
   z-index: 1000;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+  
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 24px;
+  gap: 16px;
 }
 
 .error-content {
   flex: 1;
+  word-break: break-word; 
 }
 
 .error-banner .error-subtext {
@@ -40,6 +47,8 @@
   opacity: 0.6;
   transition: opacity 0.2s;
   margin-right: -8px;
+  
+  flex-shrink: 0; 
 }
 
 .error-close-btn:hover {
