@@ -129,6 +129,7 @@ export default function CommunitiesCard({
             isOpen={isOpen}
           />
         </div>
+        <button className="button form">Add community</button>
       </div>
     </>
   );
