@@ -45,7 +45,7 @@
       "source": "h3_grid_source",
       "source-layer": "h3_grid",
       "paint": {
-        "line-width": 3,
+        "line-width": 2,
         "line-color": [
           "match", ["get", "isActive"],
           1, "rgba(76, 160, 63, 0.5)",
