@@ -10,6 +10,49 @@ type MapBuilderInfo = {
   error: string | null;
 };
 
+const DYNAMIC_OUTLINE_ID = "h3-grid-dynamic-outline";
+const STATIC_OUTLINE_ID = "h3-grid-outline";
+const COARSE_LAYERS = ["h3-counts-r4", "h3-counts-r6"] as const;
+
+const PURPLE_LAYERS = [
+  "h3-counts-r4",
+  "h3-counts-outline-r4",
+  "h3-counts-r6",
+  "h3-counts-outline-r6",
+  "h3-counts-r8",
+  "h3-counts-outline-r8",
+];
+
+const DEFAULT_FILL_COLOR = [
+  "match",
+  ["get", "isActive"],
+  1,
+  "#5cb04f",
+  0,
+  "#626262",
+  "#626262",
+];
+
+const DEFAULT_FILL_OPACITY = [
+  "match",
+  ["get", "isActive"],
+  1,
+  0.5,
+  0,
+  0.3,
+  0.3,
+];
+
+const DEFAULT_OUTLINE_COLOR = [
+  "match",
+  ["get", "isActive"],
+  1,
+  "rgba(76, 160, 63, 0.5)",
+  0,
+  "rgba(82, 82, 82, 0.4)",
+  "rgba(82, 82, 82, 0.4)",
+];
+
 export function useMapBuilder(
   containerRef: React.RefObject<HTMLDivElement | null>,
   initialCamera?: CameraState,
@@ -36,29 +79,19 @@ export function useMapBuilder(
   useEffect(() => {
     if (map == null || !isMapReady) return;
 
-    const purpleLayers = [
-      "h3-counts-r4",
-      "h3-counts-outline-r4",
-      "h3-counts-r6",
-      "h3-counts-outline-r6",
-      "h3-counts-r8",
-      "h3-counts-outline-r8",
-    ];
-
-    purpleLayers.forEach((layerId) => {
+    PURPLE_LAYERS.forEach((layerId) => {
       if (map.getLayer(layerId) != null) {
         map.setLayoutProperty(layerId, "visibility", "none");
       }
     });
 
-    const dynamicOutlineId = "h3-grid-dynamic-outline";
     if (
-      map.getLayer(dynamicOutlineId) == null &&
+      map.getLayer(DYNAMIC_OUTLINE_ID) == null &&
       map.getSource("h3_grid_source") != null
     ) {
       map.addLayer(
         {
-          id: dynamicOutlineId,
+          id: DYNAMIC_OUTLINE_ID,
           type: "line",
           source: "h3_grid_source",
           "source-layer": "h3_grid",
@@ -76,8 +109,7 @@ export function useMapBuilder(
   useEffect(() => {
     if (map == null || !isMapReady) return;
 
-    const coarseLayers = ["h3-counts-r4", "h3-counts-r6"] as const;
-    coarseLayers.forEach((layer) => {
+    COARSE_LAYERS.forEach((layer) => {
       map.on("click", layer, (e) => flyToFeature(e, map));
     });
 
@@ -121,47 +153,33 @@ export function useMapBuilder(
   useEffect(() => {
     if (map == null || !isMapReady) return;
 
-    const dynamicOutlineId = "h3-grid-dynamic-outline";
-
     if (selectedIds.size === 0) {
-      map.setPaintProperty("h3-grid-fill", "fill-color", [
-        "match",
-        ["get", "isActive"],
-        1,
-        "#5cb04f",
-        0,
-        "#626262",
-        "#626262",
-      ]);
-      map.setPaintProperty("h3-grid-fill", "fill-opacity", [
-        "match",
-        ["get", "isActive"],
-        1,
-        0.5,
-        0,
-        0.3,
-        0.3,
-      ]);
-      map.setPaintProperty("h3-grid-fill", "fill-outline-color", [
-        "match",
-        ["get", "isActive"],
-        1,
-        "rgba(76, 160, 63, 0.5)",
-        0,
-        "rgba(82, 82, 82, 0.4)",
-        "rgba(82, 82, 82, 0.4)",
-      ]);
+      map.setPaintProperty("h3-grid-fill", "fill-color", DEFAULT_FILL_COLOR);
+      map.setPaintProperty(
+        "h3-grid-fill",
+        "fill-opacity",
+        DEFAULT_FILL_OPACITY,
+      );
+      map.setPaintProperty(
+        "h3-grid-fill",
+        "fill-outline-color",
+        DEFAULT_OUTLINE_COLOR,
+      );
 
-      if (map.getLayer(dynamicOutlineId) != null) {
-        map.setPaintProperty(dynamicOutlineId, "line-color", [
-          "match",
-          ["get", "isActive"],
-          1,
-          "rgba(76, 160, 63, 0.5)",
-          0,
-          "rgba(82, 82, 82, 0.4)",
-          "rgba(82, 82, 82, 0.4)",
-        ]);
+      if (map.getLayer(STATIC_OUTLINE_ID) != null) {
+        map.setPaintProperty(
+          STATIC_OUTLINE_ID,
+          "line-color",
+          DEFAULT_OUTLINE_COLOR,
+        );
+      }
+
+      if (map.getLayer(DYNAMIC_OUTLINE_ID) != null) {
+        map.setPaintProperty(
+          DYNAMIC_OUTLINE_ID,
+          "line-color",
+          DEFAULT_OUTLINE_COLOR,
+        );
       }
       return;
     }
@@ -184,23 +202,26 @@ export function useMapBuilder(
 
     map.setPaintProperty("h3-grid-fill", "fill-color", fillColorExpr);
     map.setPaintProperty("h3-grid-fill", "fill-opacity", fillOpacityExpr);
-
     map.setPaintProperty("h3-grid-fill", "fill-outline-color", "rgba(0,0,0,0)");
 
-    if (map.getLayer(dynamicOutlineId) != null) {
-      const lineColorExpr: unknown[] = ["match", ["get", "h3"]];
+    const lineColorExpr: unknown[] = ["match", ["get", "h3"]];
 
-      selectedIds.forEach((id) => {
-        lineColorExpr.push(id, "#73197A");
-      });
+    selectedIds.forEach((id) => {
+      lineColorExpr.push(id, "#73197A");
+    });
 
-      availableIds.forEach((id) => {
-        lineColorExpr.push(id, "rgba(76, 160, 63, 0.5)");
-      });
+    availableIds.forEach((id) => {
+      lineColorExpr.push(id, "rgba(76, 160, 63, 0.5)");
+    });
 
-      lineColorExpr.push("rgba(82, 82, 82, 0.4)");
+    lineColorExpr.push("rgba(82, 82, 82, 0.4)");
 
-      map.setPaintProperty(dynamicOutlineId, "line-color", lineColorExpr);
+    if (map.getLayer(STATIC_OUTLINE_ID) != null) {
+      map.setPaintProperty(STATIC_OUTLINE_ID, "line-color", lineColorExpr);
+    }
+
+    if (map.getLayer(DYNAMIC_OUTLINE_ID) != null) {
+      map.setPaintProperty(DYNAMIC_OUTLINE_ID, "line-color", lineColorExpr);
     }
   }, [map, isMapReady, selectedIds, availableIds]);
 
