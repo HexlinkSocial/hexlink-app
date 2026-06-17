@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import * as maplibregl from "maplibre-gl";
-import { useMapCore, getCentre, flyToFeature } from "./useMapCore";
+import {
+  useMapCore,
+  getCentre,
+  flyToFeature,
+  type CameraState,
+} from "./useMapCore";
 
 const closeCard = (
   setSelectedCellId: React.Dispatch<React.SetStateAction<string | null>>,
@@ -44,8 +49,9 @@ type MapInfo = {
 
 export function useMap(
   containerRef: React.RefObject<HTMLDivElement | null>,
+  initialCamera?: CameraState,
 ): MapInfo {
-  const { map, isMapReady, error } = useMapCore(containerRef);
+  const { map, isMapReady, error } = useMapCore(containerRef, initialCamera);
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const [selectedCellHasCommunities, setSelectedCellHasCommunities] =
     useState<boolean>(false);

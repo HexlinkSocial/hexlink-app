@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import * as maplibregl from "maplibre-gl";
-import { useMapCore, getCentre, flyToFeature } from "./useMapCore";
+import {
+  useMapCore,
+  getCentre,
+  flyToFeature,
+  type CameraState,
+} from "./useMapCore";
 
 type MapBuilderInfo = {
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
@@ -13,8 +18,9 @@ type MapBuilderInfo = {
 
 export function useMapBuilder(
   containerRef: React.RefObject<HTMLDivElement | null>,
+  initialCamera?: CameraState,
 ): MapBuilderInfo {
-  const { map, isMapReady, error } = useMapCore(containerRef);
+  const { map, isMapReady, error } = useMapCore(containerRef, initialCamera);
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
 
   useEffect(() => {

@@ -44,6 +44,11 @@ export function flyToFeature(
   });
 }
 
+export type CameraState = {
+  center: maplibregl.LngLatLike;
+  zoom: number;
+};
+
 type MapCoreInfo = {
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   map: maplibregl.Map | null;
@@ -53,6 +58,7 @@ type MapCoreInfo = {
 
 export function useMapCore(
   containerRef: React.RefObject<HTMLDivElement | null>,
+  initialCamera?: CameraState,
 ): MapCoreInfo {
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
@@ -82,8 +88,8 @@ export function useMapCore(
     const map = new maplibregl.Map({
       container: containerRef.current,
       style,
-      center: mapCenter,
-      zoom: 8,
+      center: initialCamera?.center ?? mapCenter,
+      zoom: initialCamera?.zoom ?? 8,
       minZoom: 4,
       maxZoom: 16,
       maxBounds: europeBounds,
@@ -115,7 +121,7 @@ export function useMapCore(
     return () => {
       map.remove();
     };
-  }, [containerRef]);
+  }, [containerRef, initialCamera?.center, initialCamera?.zoom]);
 
   return { map: mapInstance, isMapReady, error };
 }

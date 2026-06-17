@@ -3,13 +3,21 @@ import CommunitiesCard from "../communities/CommunitiesCard";
 import { useMap } from "../../hooks/useMap";
 import { useH3LayerStack } from "../../hooks/useH3LayerStack";
 import ErrorBanner from "../ErrorBanner";
+import type { CameraState } from "../../hooks/useMapCore";
 
 const DisplayMap: React.FC<{
   containerRef: React.RefObject<HTMLDivElement | null>;
-  onAddCommunity: () => void;
+  initialCamera?: CameraState;
+  onAddCommunity: (camera: CameraState) => void;
   onDismissError: (err: string) => void;
   dismissedError: unknown;
-}> = ({ containerRef, onAddCommunity, onDismissError, dismissedError }) => {
+}> = ({
+  containerRef,
+  initialCamera,
+  onAddCommunity,
+  onDismissError,
+  dismissedError,
+}) => {
   const {
     map,
     isMapReady,
@@ -17,13 +25,15 @@ const DisplayMap: React.FC<{
     selectedCellHasCommunities,
     setSelectedCellId,
     error,
-  } = useMap(containerRef);
-
+  } = useMap(containerRef, initialCamera);
   useH3LayerStack(map, isMapReady);
-
   const activeError = error != null && error !== dismissedError ? error : null;
+  const handleCloseCard = (): void => setSelectedCellId(null);
 
-  const handleCloseCard = () => setSelectedCellId(null);
+  const handleAddCommunity = (): void => {
+    if (map == null) return;
+    onAddCommunity({ center: map.getCenter(), zoom: map.getZoom() });
+  };
 
   return (
     <>
@@ -32,7 +42,7 @@ const DisplayMap: React.FC<{
         cellId={selectedCellId}
         hasCommunities={selectedCellHasCommunities}
         onClose={handleCloseCard}
-        onAddCommunityClick={onAddCommunity}
+        onAddCommunityClick={handleAddCommunity}
       />
     </>
   );

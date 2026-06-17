@@ -2,15 +2,16 @@ import React from "react";
 import { useMapBuilder } from "../../hooks/useMapBuilder";
 import { useH3LayerStack } from "../../hooks/useH3LayerStack";
 import ErrorBanner from "../ErrorBanner";
+import type { CameraState } from "../../hooks/useMapCore";
 
 const BuilderMap: React.FC<{
   containerRef: React.RefObject<HTMLDivElement | null>;
-  onCancel: () => void;
+  initialCamera?: CameraState;
   onDismissError: (err: string) => void;
   dismissedError: unknown;
-}> = ({ containerRef, onCancel, onDismissError, dismissedError }) => {
+}> = ({ containerRef, initialCamera, onDismissError, dismissedError }) => {
   const { map, isMapReady, selectedCellId, setSelectedCellId, error } =
-    useMapBuilder(containerRef);
+    useMapBuilder(containerRef, initialCamera);
 
   useH3LayerStack(map, isMapReady);
 
@@ -22,7 +23,6 @@ const BuilderMap: React.FC<{
   return (
     <>
       <ErrorBanner error={activeError} onClose={() => onDismissError(error!)} />
-      <button onClick={onCancel}>Cancel</button>
     </>
   );
 };
