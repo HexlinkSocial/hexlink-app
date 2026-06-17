@@ -1,18 +1,11 @@
 import { useEffect, useState } from "react";
 import * as maplibregl from "maplibre-gl";
-import {
-  useMapCore,
-  getCentre,
-  flyToFeature,
-  type CameraState,
-} from "./useMapCore";
-
+import { flyToFeature, useMapCore, type CameraState } from "./useMapCore";
+import { gridDisk, H3Index } from "h3-js";
 type MapBuilderInfo = {
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   map: maplibregl.Map | null;
   isMapReady: boolean;
-  selectedCellId: string | null;
-  setSelectedCellId: React.Dispatch<React.SetStateAction<string | null>>;
   error: string | null;
 };
 
@@ -21,7 +14,8 @@ export function useMapBuilder(
   initialCamera?: CameraState,
 ): MapBuilderInfo {
   const { map, isMapReady, error } = useMapCore(containerRef, initialCamera);
-  const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
+  const [selectedIds, addSelectedId] = useState<Set<string>>(new Set<string>());
+  const [availableIds, addAvailableIds] = useState<Set<string> | null>(null);
 
   useEffect(() => {
     if (map == null || !isMapReady) return;
@@ -54,19 +48,16 @@ export function useMapBuilder(
       const f = e.features?.[0];
       if (f === undefined) return;
 
-      const id = f.properties?.cell_id as string;
+      const id = f.properties?.h3 as string;
 
-      map.flyTo({
-        center: getCentre(f),
-        zoom: map.getZoom(),
+      addSelectedId((ids) => ids.add(id));
+      addAvailableIds((ids) => {
+        const currentSet = ids ?? new Set<string>();
+        const newIds = new Set(gridDisk(id, 1) as H3Index[]);
+        return currentSet.union(newIds).difference(selectedIds);
       });
-
-      setSelectedCellId(id);
     });
+  }, [map, isMapReady, selectedIds, availableIds]);
 
-    map.on("dragstart", () => setSelectedCellId(null));
-    map.on("zoomstart", () => setSelectedCellId(null));
-  }, [map, isMapReady]);
-
-  return { map, isMapReady, selectedCellId, setSelectedCellId, error };
+  return { map, isMapReady, error };
 }
