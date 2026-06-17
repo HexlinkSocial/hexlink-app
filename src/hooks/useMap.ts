@@ -87,6 +87,7 @@ type MapInfo = {
 
 export function useMap(
   containerRef: React.RefObject<HTMLDivElement | null>,
+  isAddingCommunity: boolean,
 ): MapInfo {
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
@@ -173,6 +174,31 @@ export function useMap(
       map.remove();
     };
   }, [containerRef]);
+
+  useEffect(() => {
+    if (mapInstance == null || !isMapReady) return;
+
+    const purpleLayers = [
+      "h3-counts-r4",
+      "h3-counts-outline-r4",
+      "h3-counts-r6",
+      "h3-counts-outline-r6",
+      "h3-counts-r8",
+      "h3-counts-outline-r8",
+    ];
+
+    const visibility = isAddingCommunity ? "none" : "visible";
+
+    purpleLayers.forEach((layerId) => {
+      if (mapInstance.getLayer(layerId) != null) {
+        mapInstance.setLayoutProperty(layerId, "visibility", visibility);
+      }
+    });
+  }, [mapInstance, isMapReady, isAddingCommunity]);
+
+  if (isAddingCommunity && mapInstance?.getLayer("h3-grid-fill") != null) {
+    mapInstance.setFilter("h3-grid-fill", null);
+  }
 
   return {
     map: mapInstance,

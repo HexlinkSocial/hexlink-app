@@ -7,6 +7,7 @@ interface CommunitiesCardProps {
   cellId: string | null;
   hasCommunities: boolean;
   onClose: () => void;
+  onAddCommunityClick: () => void;
 }
 
 interface FetchResult {
@@ -29,6 +30,7 @@ export default function CommunitiesCard({
   cellId,
   hasCommunities,
   onClose,
+  onAddCommunityClick,
 }: CommunitiesCardProps): JSX.Element {
   const [result, setResult] = useState<FetchResult | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -129,7 +131,9 @@ export default function CommunitiesCard({
             isOpen={isOpen}
           />
         </div>
-        <button className="button form">Add community</button>
+        <button className="button form" onClick={onAddCommunityClick}>
+          Add community
+        </button>
       </div>
     </>
   );
