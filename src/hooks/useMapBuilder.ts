@@ -22,6 +22,12 @@ export function useMapBuilder(
     new Set<string>(),
   );
 
+  useEffect(() => {
+    if (map == null || !isMapReady) return;
+
+    map.setMinZoom(12);
+  }, [map, isMapReady]);
+
   const stateRef = useRef({ selectedIds, availableIds });
   useEffect(() => {
     stateRef.current = { selectedIds, availableIds };
