@@ -1,5 +1,5 @@
 import { JSX } from "react";
-import MapContainer from "../components/MapContainer";
+import MapContainer from "../components/map/MapContainer";
 import Navbar from "../components/Navbar";
 
 export default function Home(): JSX.Element {
