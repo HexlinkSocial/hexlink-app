@@ -44,6 +44,27 @@ export function useMapBuilder(
         map.setLayoutProperty(layerId, "visibility", "none");
       }
     });
+
+    const dynamicOutlineId = "h3-grid-dynamic-outline";
+    if (
+      map.getLayer(dynamicOutlineId) == null &&
+      map.getSource("h3_grid_source") != null
+    ) {
+      map.addLayer(
+        {
+          id: dynamicOutlineId,
+          type: "line",
+          source: "h3_grid_source",
+          "source-layer": "h3_grid",
+          paint: {
+            "line-width": 3,
+            "line-color": "rgba(0,0,0,0)",
+            "line-opacity": 1.0,
+          },
+        },
+        "h3-grid-fill",
+      );
+    }
   }, [map, isMapReady]);
 
   useEffect(() => {
@@ -94,6 +115,8 @@ export function useMapBuilder(
   useEffect(() => {
     if (map == null || !isMapReady) return;
 
+    const dynamicOutlineId = "h3-grid-dynamic-outline";
+
     if (selectedIds.size === 0) {
       map.setPaintProperty("h3-grid-fill", "fill-color", [
         "match",
@@ -113,6 +136,27 @@ export function useMapBuilder(
         0.3,
         0.3,
       ]);
+      map.setPaintProperty("h3-grid-fill", "fill-outline-color", [
+        "match",
+        ["get", "isActive"],
+        1,
+        "rgba(76, 160, 63, 0.5)",
+        0,
+        "rgba(82, 82, 82, 0.4)",
+        "rgba(82, 82, 82, 0.4)",
+      ]);
+
+      if (map.getLayer(dynamicOutlineId) != null) {
+        map.setPaintProperty(dynamicOutlineId, "line-color", [
+          "match",
+          ["get", "isActive"],
+          1,
+          "rgba(76, 160, 63, 0.5)",
+          0,
+          "rgba(82, 82, 82, 0.4)",
+          "rgba(82, 82, 82, 0.4)",
+        ]);
+      }
       return;
     }
 
@@ -130,10 +174,28 @@ export function useMapBuilder(
     });
 
     fillColorExpr.push("#626262");
-    fillOpacityExpr.push(0.2);
+    fillOpacityExpr.push(0.3);
 
     map.setPaintProperty("h3-grid-fill", "fill-color", fillColorExpr);
     map.setPaintProperty("h3-grid-fill", "fill-opacity", fillOpacityExpr);
+
+    map.setPaintProperty("h3-grid-fill", "fill-outline-color", "rgba(0,0,0,0)");
+
+    if (map.getLayer(dynamicOutlineId) != null) {
+      const lineColorExpr: unknown[] = ["match", ["get", "h3"]];
+
+      selectedIds.forEach((id) => {
+        lineColorExpr.push(id, "#73197A");
+      });
+
+      availableIds.forEach((id) => {
+        lineColorExpr.push(id, "rgba(76, 160, 63, 0.5)");
+      });
+
+      lineColorExpr.push("rgba(82, 82, 82, 0.4)");
+
+      map.setPaintProperty(dynamicOutlineId, "line-color", lineColorExpr);
+    }
   }, [map, isMapReady, selectedIds, availableIds]);
 
   return { map, isMapReady, error };
