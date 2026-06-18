@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import * as maplibregl from "maplibre-gl";
-import { flyToFeature, useMapCore, type CameraState } from "./useMapCore";
+import { useMapCore, type CameraState } from "./useMapCore";
 import { gridDisk, H3Index } from "h3-js";
 
 type MapBuilderInfo = {

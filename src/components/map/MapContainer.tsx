@@ -18,6 +18,7 @@ const MapContainer: React.FC = () => {
           initialCamera={camera}
           onDismissError={setDismissedError}
           dismissedError={dismissedError}
+          onCancel={() => setIsAddingCommunity(false)}
         />
       ) : (
         <DisplayMap
