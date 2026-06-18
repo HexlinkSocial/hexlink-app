@@ -12,7 +12,6 @@ type MapBuilderInfo = {
 
 const DYNAMIC_OUTLINE_ID = "h3-grid-dynamic-outline";
 const STATIC_OUTLINE_ID = "h3-grid-outline";
-const COARSE_LAYERS = ["h3-counts-r4", "h3-counts-r6"] as const;
 
 const PURPLE_LAYERS = [
   "h3-counts-r4",
@@ -52,6 +51,29 @@ const DEFAULT_OUTLINE_COLOR = [
   "rgba(82, 82, 82, 0.4)",
   "rgba(82, 82, 82, 0.4)",
 ];
+
+function checkConnectivity(ids: Set<string>): boolean {
+  if (ids.size <= 1) return true;
+
+  const idsArray = Array.from(ids);
+  const startNode = idsArray[0];
+  const visited = new Set<string>([startNode]);
+  const queue = [startNode];
+
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    const neighbors = gridDisk(current, 1) as string[];
+
+    for (const neighbor of neighbors) {
+      if (ids.has(neighbor) && !visited.has(neighbor)) {
+        visited.add(neighbor);
+        queue.push(neighbor);
+      }
+    }
+  }
+
+  return visited.size === ids.size;
+}
 
 export function useMapBuilder(
   containerRef: React.RefObject<HTMLDivElement | null>,
@@ -109,10 +131,6 @@ export function useMapBuilder(
   useEffect(() => {
     if (map == null || !isMapReady) return;
 
-    COARSE_LAYERS.forEach((layer) => {
-      map.on("click", layer, (e) => flyToFeature(e, map));
-    });
-
     const handleGridClick = (e: maplibregl.MapLayerMouseEvent): void => {
       const f = e.features?.[0];
       if (f === undefined) return;
@@ -120,6 +138,27 @@ export function useMapBuilder(
       const id = f.properties?.h3 as string;
       const { selectedIds: currentSelected, availableIds: currentAvailable } =
         stateRef.current;
+
+      if (currentSelected.has(id)) {
+        const nextSelected = new Set(currentSelected);
+        nextSelected.delete(id);
+
+        if (!checkConnectivity(nextSelected)) {
+          return;
+        }
+
+        setSelectedIds(nextSelected);
+        setAvailableIds(() => {
+          const nextAvailable = new Set<string>();
+          nextSelected.forEach((sId) => {
+            const neighbors = gridDisk(sId, 1) as string[];
+            neighbors.forEach((nId) => nextAvailable.add(nId));
+          });
+          nextSelected.forEach((sId) => nextAvailable.delete(sId));
+          return nextAvailable;
+        });
+        return;
+      }
 
       if (currentSelected.size > 0 && !currentAvailable.has(id)) {
         return;
