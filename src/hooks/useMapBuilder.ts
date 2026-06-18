@@ -8,6 +8,7 @@ type MapBuilderInfo = {
   map: maplibregl.Map | null;
   isMapReady: boolean;
   error: string | null;
+  selectedIds: Set<string>;
 };
 
 const DYNAMIC_OUTLINE_ID = "h3-grid-dynamic-outline";
@@ -264,5 +265,5 @@ export function useMapBuilder(
     }
   }, [map, isMapReady, selectedIds, availableIds]);
 
-  return { map, isMapReady, error };
+  return { map, isMapReady, error, selectedIds };
 }
