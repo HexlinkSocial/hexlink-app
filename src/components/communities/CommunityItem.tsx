@@ -16,10 +16,10 @@ export default function CommunityItem({
           <p className="community-item__description">{community.description}</p>
         )}
       </div>
-      {community.community_link !== null ? (
+      {community.communityLink !== null ? (
         <a
           className="community-item__join"
-          href={community.community_link}
+          href={community.communityLink}
           target="_blank"
           rel="noopener noreferrer"
         >
