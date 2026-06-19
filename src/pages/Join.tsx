@@ -1,10 +1,12 @@
 import { Authenticator, ThemeProvider } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 import { JSX, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { theme } from "../styles/LoginTheme";
 import "../styles/Login.css";
 
+const PENDING_KEY = "pendingCommunityPayload";
+const JOIN_TOKEN_KEY = "joinFlowToken";
 const FORM_FIELDS = {
   signUp: {
     email: {
@@ -48,7 +50,23 @@ function AuthSuccessRedirect(): JSX.Element {
   return <div />;
 }
 
+function isValidJoinSession(): boolean {
+  const token = sessionStorage.getItem(JOIN_TOKEN_KEY);
+  const raw = sessionStorage.getItem(PENDING_KEY);
+  if (token == null || raw == null) return false;
+  try {
+    const pending = JSON.parse(raw);
+    return pending.token === token;
+  } catch {
+    return false;
+  }
+}
+
 export default function Join(): JSX.Element {
+  if (!isValidJoinSession()) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <div className="login-page-container">
