@@ -6,7 +6,6 @@ import { theme } from "../styles/LoginTheme";
 import "../styles/Login.css";
 
 const PENDING_KEY = "pendingCommunityPayload";
-const JOIN_TOKEN_KEY = "joinFlowToken";
 const FORM_FIELDS = {
   signUp: {
     email: {
@@ -50,20 +49,12 @@ function AuthSuccessRedirect(): JSX.Element {
   return <div />;
 }
 
-function isValidJoinSession(): boolean {
-  const token = sessionStorage.getItem(JOIN_TOKEN_KEY);
-  const raw = sessionStorage.getItem(PENDING_KEY);
-  if (token == null || raw == null) return false;
-  try {
-    const pending = JSON.parse(raw);
-    return pending.token === token;
-  } catch {
-    return false;
-  }
+function hasPendingPayload(): boolean {
+  return sessionStorage.getItem(PENDING_KEY) !== null;
 }
 
 export default function Join(): JSX.Element {
-  if (!isValidJoinSession()) {
+  if (!hasPendingPayload()) {
     return <Navigate to="/" replace />;
   }
 

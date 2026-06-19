@@ -5,10 +5,18 @@ import type { CameraState } from "../../hooks/useMapCore";
 
 type MapMode = "display" | "building" | "success";
 
+const PENDING_KEY = "pendingCommunityPayload";
+
+function hasPendingPayload(): boolean {
+  return sessionStorage.getItem(PENDING_KEY) !== null;
+}
+
 const MapContainer: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const [dismissedError, setDismissedError] = useState<unknown>(null);
-  const [mode, setMode] = useState<MapMode>("display");
+  const [mode, setMode] = useState<MapMode>(() =>
+    hasPendingPayload() ? "building" : "display",
+  );
   const [camera, setCamera] = useState<CameraState | undefined>(undefined);
 
   return (
