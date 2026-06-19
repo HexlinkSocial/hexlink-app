@@ -4,7 +4,8 @@ import { useH3LayerStack } from "../../hooks/useH3LayerStack";
 import ErrorBanner from "../ErrorBanner";
 import type { CameraState } from "../../hooks/useMapCore";
 import "../../styles/InfoCard.css";
-import FormOverlay from "../Forms/FormOverlay";
+import SelectionLegend from "./components/SelectionLegend";
+import CreateCommunityForm from "../forms/CreateCommunityForms";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "";
 
@@ -85,89 +86,21 @@ const BuilderMap: React.FC<{
       <ErrorBanner error={activeError} onClose={() => onDismissError(error!)} />
 
       {step === "select" && (
-        <div className="info-card">
-          <p className="info-card-title">
-            Please select the tiles where you want your community to be based
-          </p>
-
-          <div className="info-card-legend">
-            <div className="info-card-legend-item">
-              <span className="info-card-color color-selected" />
-              <span>Selected ({selectedIds.size})</span>
-            </div>
-            <div className="info-card-legend-item">
-              <span className="info-card-color color-available" />
-              <span>Available for selection</span>
-            </div>
-            <div className="info-card-legend-item">
-              <span className="info-card-color color-unavailable" />
-              <span>Not available</span>
-            </div>
-          </div>
-
-          <div className="info-card-actions">
-            <button type="button" className="btn-cancel" onClick={onCancel}>
-              Cancel
-            </button>
-            <button
-              type="button"
-              className="btn-submit"
-              onClick={() => setStep("form")}
-              disabled={selectedIds.size === 0}
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        <SelectionLegend
+          selectedCount={selectedIds.size}
+          onCancel={onCancel}
+          onNext={() => setStep("form")}
+        />
       )}
 
-      <FormOverlay
+      <CreateCommunityForm
         isOpen={step === "form"}
-        title="Create Community"
-        submitLabel="Create"
         isSubmitting={isSubmitting}
+        communityData={communityData}
         onCancel={() => setStep("select")}
         onSubmit={handleFormSubmit}
-      >
-        <div className="form-group">
-          <label htmlFor="name">Community Name</label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            required
-            value={communityData.name}
-            onChange={handleInputChange}
-            placeholder="e.g. Westside Gardeners"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="description">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            required
-            rows={3}
-            value={communityData.description}
-            onChange={handleInputChange}
-            placeholder="What is your community about?"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="url">Community URL</label>
-          <input
-            id="url"
-            name="url"
-            type="text"
-            required
-            value={communityData.url}
-            onChange={handleInputChange}
-            placeholder="example.com"
-          />
-        </div>
-      </FormOverlay>
+        onInputChange={handleInputChange}
+      />
     </>
   );
 };

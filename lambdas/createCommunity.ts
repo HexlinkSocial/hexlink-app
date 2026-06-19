@@ -19,6 +19,7 @@ const pool = new Pool({
 
 const db = drizzle(pool, { schema });
 
+// TODO factor our when needed again
 function getRequestBody(event: APIGatewayProxyEventV2 | Request): any {
   if ("body" in event && event.body != null) {
     if (typeof event.body === "string") {
