@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import CommunitiesCard from "../communities/CommunitiesCard";
 import { useMap } from "../../hooks/useMap";
 import { useH3LayerStack } from "../../hooks/useH3LayerStack";
@@ -30,8 +30,19 @@ const DisplayMap: React.FC<{
     selectedCellHasCommunities,
     setSelectedCellId,
     error,
-  } = useMap(containerRef, initialCamera);
+  } = useMap(
+    containerRef,
+    initialCamera,
+    showSuccess ? onSuccessDismiss : undefined,
+  );
+
   useH3LayerStack(map, isMapReady);
+
+  useEffect(() => {
+    if (showSuccess && selectedCellId != null) {
+      onSuccessDismiss?.();
+    }
+  }, [onSuccessDismiss, selectedCellId, showSuccess]);
 
   const activeError = error != null && error !== dismissedError ? error : null;
   const handleCloseCard = (): void => setSelectedCellId(null);
@@ -44,7 +55,7 @@ const DisplayMap: React.FC<{
     <>
       <ErrorBanner error={activeError} onClose={() => onDismissError(error!)} />
       {showSuccess ? (
-        <SuccessOverlay onClose={onSuccessDismiss ?? (() => {})} />
+        <SuccessOverlay onClose={onSuccessDismiss ?? ((): void => {})} />
       ) : (
         <CommunitiesCard
           cellId={selectedCellId}

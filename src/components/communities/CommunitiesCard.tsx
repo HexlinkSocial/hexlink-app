@@ -34,6 +34,21 @@ export default function CommunitiesCard({
 }: CommunitiesCardProps): JSX.Element {
   const [result, setResult] = useState<FetchResult | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    let id: number;
+    let timeoutId: ReturnType<typeof setTimeout>;
+    if (cellId !== null) {
+      id = requestAnimationFrame(() => setIsVisible(true));
+    } else {
+      timeoutId = setTimeout(() => setIsVisible(false), 0);
+    }
+    return () => {
+      cancelAnimationFrame(id);
+      clearTimeout(timeoutId);
+    };
+  }, [cellId]);
 
   const isOpen = cellId !== null;
 
@@ -96,7 +111,7 @@ export default function CommunitiesCard({
         />
       )}
       <div
-        className={`communities-card ${isOpen ? "communities-card--open" : ""}`}
+        className={`communities-card ${isVisible ? "communities-card--open" : ""}`}
         role="dialog"
         aria-modal="true"
       >

@@ -55,7 +55,7 @@ export function savePending(payload: CommunityPayload): void {
 
 export function loadPending(): CommunityPayload | null {
   const raw = sessionStorage.getItem(PENDING_KEY);
-  return raw ? (JSON.parse(raw) as CommunityPayload) : null;
+  return raw != null ? (JSON.parse(raw) as CommunityPayload) : null;
 }
 
 export function clearPending(): void {
