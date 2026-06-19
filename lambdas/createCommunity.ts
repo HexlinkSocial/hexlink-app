@@ -7,6 +7,8 @@ import { Pool } from "pg";
 import { Request } from "express";
 import * as schema from "../database/drizzle/schema";
 
+// Supabase pooler uses a self-signed cert chain not trusted by Node's
+// default CA bundle. Disable verification for database connections only.
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const pool = new Pool({
@@ -17,36 +19,39 @@ const pool = new Pool({
 
 const db = drizzle(pool, { schema });
 
-const CORS_HEADERS = {
-  "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "POST,OPTIONS",
-};
+function getRequestBody(event: APIGatewayProxyEventV2 | Request): any {
+  if ("body" in event && event.body != null) {
+    if (typeof event.body === "string") {
+      try {
+        return JSON.parse(event.body as string);
+      } catch {
+        return {};
+      }
+    }
+    return event.body;
+  }
+  return {};
+}
 
 export const handler = async (
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   event: APIGatewayProxyEventV2 | Request,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
-  if ("requestContext" in event && event.requestContext.http.method === "OPTIONS") {
-    return { statusCode: 204, headers: CORS_HEADERS, body: "" };
-  }
-
   try {
-    let bodyData: any = {};
-    if ("body" in event && event.body) {
-      bodyData = JSON.parse(event.body);
-    } else if ("body" in event === false) {
-      bodyData = (event as any).body;
-    }
-
+    const bodyData = getRequestBody(event);
     const { name, description, owner, communityLink, cellIds } = bodyData;
 
-    if (!name || !owner || !Array.isArray(cellIds) || cellIds.length === 0) {
+    if (
+      name == null ||
+      owner == null ||
+      !Array.isArray(cellIds) ||
+      cellIds.length === 0
+    ) {
       return {
         statusCode: 400,
-        headers: CORS_HEADERS,
         body: JSON.stringify({
-          error: "Missing fields. 'name', 'owner', and a non-empty array of 'cellIds' are required.",
+          error:
+            "Missing fields. 'name', 'owner', and a non-empty array of 'cellIds' are required.",
         }),
       };
     }
@@ -74,7 +79,6 @@ export const handler = async (
 
     return {
       statusCode: 201,
-      headers: CORS_HEADERS,
       body: JSON.stringify({
         message: "Community created successfully along with tile associations",
         community: transactionResult,
@@ -84,7 +88,6 @@ export const handler = async (
     console.error("Database Write Transaction Error:", e);
     return {
       statusCode: 500,
-      headers: CORS_HEADERS,
       body: JSON.stringify({ error: "Internal Server Error" }),
     };
   }
