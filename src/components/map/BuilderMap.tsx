@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useMapBuilder } from "../../hooks/useMapBuilder";
 import { useH3LayerStack } from "../../hooks/useH3LayerStack";
 import ErrorBanner from "../ErrorBanner";
@@ -6,8 +6,15 @@ import type { CameraState } from "../../hooks/useMapCore";
 import "../../styles/InfoCard.css";
 import SelectionLegend from "./components/SelectionLegend";
 import CreateCommunityForm from "../forms/CreateCommunityForm";
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "";
+import {
+  buildPayload,
+  clearPending,
+  CommunityPayload,
+  getAuthUserId,
+  loadPending,
+  postCommunity,
+  savePending,
+} from "./helpers/builderMapHelpers";
 
 const BuilderMap: React.FC<{
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -15,12 +22,14 @@ const BuilderMap: React.FC<{
   onDismissError: (err: string) => void;
   dismissedError: unknown;
   onCancel: () => void;
+  onSuccess: () => void;
 }> = ({
   containerRef,
   initialCamera,
   onDismissError,
   dismissedError,
   onCancel,
+  onSuccess,
 }) => {
   const { map, isMapReady, error, selectedIds } = useMapBuilder(
     containerRef,
@@ -31,7 +40,6 @@ const BuilderMap: React.FC<{
   const [step, setStep] = useState<"select" | "form">("select");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
   const [communityData, setCommunityData] = useState({
     name: "",
     description: "",
@@ -40,46 +48,52 @@ const BuilderMap: React.FC<{
 
   const activeError = error != null && error !== dismissedError ? error : null;
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setCommunityData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  async function submit(payload: CommunityPayload): Promise<void> {
     setIsSubmitting(true);
     setSubmitError(null);
-
+    setStep("form");
     try {
-      let finalUrl = communityData.url.trim();
-      if (finalUrl && !/^https?:\/\//i.test(finalUrl)) {
-        finalUrl = `http://${finalUrl}`;
-      }
-
-      const payload = {
-        name: communityData.name,
-        description: communityData.description,
-        communityLink: finalUrl,
-        owner: "user_placeholder_id", // TODO get cognito user ID after register/log in
-        cellIds: Array.from(selectedIds),
-      };
-
-      const res = await fetch(`${BACKEND_URL}/CreateCommunity`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error("Database insertion failure");
-
-      onCancel();
+      await postCommunity(payload);
+      onSuccess();
     } catch (err) {
       console.error(err);
       setSubmitError("Something went wrong, please try again.");
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  useEffect(() => {
+    const pending = loadPending();
+    if (pending == null) return;
+    void (async (): Promise<void> => {
+      const userId = await getAuthUserId();
+      if (userId == null) return;
+      clearPending();
+      await submit({ ...pending, owner: userId });
+    })();
+  }, []);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ): void => {
+    const { name, value } = e.target;
+    setCommunityData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFormSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
+    e.preventDefault();
+    setSubmitError(null);
+
+    const userId = await getAuthUserId();
+
+    if (userId != null) {
+      await submit(buildPayload(communityData, selectedIds, userId));
+    } else {
+      savePending(buildPayload(communityData, selectedIds, "PENDING"));
+      window.location.href = "/join";
     }
   };
 
