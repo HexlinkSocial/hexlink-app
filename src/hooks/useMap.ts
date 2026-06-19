@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import {
   useMapCore,
@@ -50,11 +50,17 @@ type MapInfo = {
 export function useMap(
   containerRef: React.RefObject<HTMLDivElement | null>,
   initialCamera?: CameraState,
+  onBeforeCellSelect?: () => void,
 ): MapInfo {
   const { map, isMapReady, error } = useMapCore(containerRef, initialCamera);
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const [selectedCellHasCommunities, setSelectedCellHasCommunities] =
     useState<boolean>(false);
+
+  const onBeforeCellSelectRef = useRef(onBeforeCellSelect);
+  useEffect(() => {
+    onBeforeCellSelectRef.current = onBeforeCellSelect;
+  }, [onBeforeCellSelect]);
 
   useEffect(() => {
     if (map == null || !isMapReady) return;
@@ -69,9 +75,10 @@ export function useMap(
 
     const fineLayers = ["h3-counts-r8", "h3-grid-fill"] as const;
     fineLayers.forEach((layer) => {
-      map.on("click", layer, (e) =>
-        openCard(e, map, setSelectedCellId, setSelectedCellHasCommunities),
-      );
+      map.on("click", layer, (e) => {
+        onBeforeCellSelectRef.current?.();
+        openCard(e, map, setSelectedCellId, setSelectedCellHasCommunities);
+      });
     });
   }, [map, isMapReady]);
 

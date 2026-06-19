@@ -12,12 +12,14 @@ import Login from "./pages/Login";
 import SampleAdminPage from "./pages/SampleAdminPage";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import ErrorPage from "./pages/ErrorPage";
+import Join from "./pages/Join";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" errorElement={<ErrorPage />}>
       <Route index element={<Home />} />
       <Route path="login" element={<Login />} />
+      <Route path="join" element={<Join />} />
       <Route
         path="sampleAdminPage"
         element={

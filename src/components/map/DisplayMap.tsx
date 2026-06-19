@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import CommunitiesCard from "../communities/CommunitiesCard";
 import { useMap } from "../../hooks/useMap";
 import { useH3LayerStack } from "../../hooks/useH3LayerStack";
 import ErrorBanner from "../ErrorBanner";
 import type { CameraState } from "../../hooks/useMapCore";
+import SuccessOverlay from "./components/SuccessOverlay";
 
 const DisplayMap: React.FC<{
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -11,12 +12,16 @@ const DisplayMap: React.FC<{
   onAddCommunity: (camera: CameraState) => void;
   onDismissError: (err: string) => void;
   dismissedError: unknown;
+  showSuccess?: boolean;
+  onSuccessDismiss?: () => void;
 }> = ({
   containerRef,
   initialCamera,
   onAddCommunity,
   onDismissError,
   dismissedError,
+  showSuccess = false,
+  onSuccessDismiss,
 }) => {
   const {
     map,
@@ -25,11 +30,22 @@ const DisplayMap: React.FC<{
     selectedCellHasCommunities,
     setSelectedCellId,
     error,
-  } = useMap(containerRef, initialCamera);
+  } = useMap(
+    containerRef,
+    initialCamera,
+    showSuccess ? onSuccessDismiss : undefined,
+  );
+
   useH3LayerStack(map, isMapReady);
+
+  useEffect(() => {
+    if (showSuccess && selectedCellId != null) {
+      onSuccessDismiss?.();
+    }
+  }, [onSuccessDismiss, selectedCellId, showSuccess]);
+
   const activeError = error != null && error !== dismissedError ? error : null;
   const handleCloseCard = (): void => setSelectedCellId(null);
-
   const handleAddCommunity = (): void => {
     if (map == null) return;
     onAddCommunity({ center: map.getCenter(), zoom: map.getZoom() });
@@ -38,12 +54,16 @@ const DisplayMap: React.FC<{
   return (
     <>
       <ErrorBanner error={activeError} onClose={() => onDismissError(error!)} />
-      <CommunitiesCard
-        cellId={selectedCellId}
-        hasCommunities={selectedCellHasCommunities}
-        onClose={handleCloseCard}
-        onAddCommunityClick={handleAddCommunity}
-      />
+      {showSuccess ? (
+        <SuccessOverlay onClose={onSuccessDismiss ?? ((): void => {})} />
+      ) : (
+        <CommunitiesCard
+          cellId={selectedCellId}
+          hasCommunities={selectedCellHasCommunities}
+          onClose={handleCloseCard}
+          onAddCommunityClick={handleAddCommunity}
+        />
+      )}
     </>
   );
 };
