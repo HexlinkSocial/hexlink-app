@@ -5,6 +5,24 @@ import { Navigate } from "react-router-dom";
 import { theme } from "../styles/LoginTheme";
 import "../styles/Login.css";
 
+const LOGIN_FORM_FIELDS = {
+  signIn: {
+    username: {
+      label: "Email",
+      placeholder: "email@example.com",
+      type: "email",
+    },
+  },
+  forgotPassword: {
+    email: {
+      label: "Enter your email",
+      placeholder: "Email",
+      type: "email",
+      required: true,
+    },
+  },
+};
+
 export default function Login(): JSX.Element {
   return (
     <ThemeProvider theme={theme}>
@@ -12,16 +30,8 @@ export default function Login(): JSX.Element {
         <div className="login-flex-overlay">
           <Authenticator
             hideSignUp={true}
-            formFields={{
-              forgotPassword: {
-                username: {
-                  label: "Enter your email",
-                  placeholder: "Email",
-                  type: "email",
-                  required: true,
-                },
-              },
-            }}
+            loginMechanisms={["email"]}
+            formFields={LOGIN_FORM_FIELDS}
           >
             {() => <Navigate to="/sampleAdminPage" replace />}
           </Authenticator>
