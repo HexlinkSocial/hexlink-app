@@ -5,7 +5,7 @@ import ErrorBanner from "../ErrorBanner";
 import type { CameraState } from "../../hooks/useMapCore";
 import "../../styles/InfoCard.css";
 import SelectionLegend from "./components/SelectionLegend";
-import CreateCommunityForm from "../forms/CreateCommunityForms";
+import CreateCommunityForm from "../forms/CreateCommunityForm";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "";
 
@@ -30,6 +30,7 @@ const BuilderMap: React.FC<{
 
   const [step, setStep] = useState<"select" | "form">("select");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const [communityData, setCommunityData] = useState({
     name: "",
@@ -49,6 +50,7 @@ const BuilderMap: React.FC<{
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(null);
 
     try {
       let finalUrl = communityData.url.trim();
@@ -60,7 +62,7 @@ const BuilderMap: React.FC<{
         name: communityData.name,
         description: communityData.description,
         communityLink: finalUrl,
-        owner: "user_placeholder_id",
+        owner: "user_placeholder_id", // TODO get cognito user ID after register/log in
         cellIds: Array.from(selectedIds),
       };
 
@@ -75,7 +77,7 @@ const BuilderMap: React.FC<{
       onCancel();
     } catch (err) {
       console.error(err);
-      alert("Error saving community data.");
+      setSubmitError("Something went wrong, please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -97,7 +99,11 @@ const BuilderMap: React.FC<{
         isOpen={step === "form"}
         isSubmitting={isSubmitting}
         communityData={communityData}
-        onCancel={() => setStep("select")}
+        errorMessage={submitError}
+        onCancel={() => {
+          setSubmitError(null);
+          setStep("select");
+        }}
         onSubmit={handleFormSubmit}
         onInputChange={handleInputChange}
       />
