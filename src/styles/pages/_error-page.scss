@@ -1,0 +1,87 @@
+@use "../abstracts" as *;
+
+.error-page {
+  background-image: url('/tiles-background-light.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+
+  @include dark-mode {
+    background-image: url('/tiles-background-dark.png');
+  }
+
+  // Centred overlay
+  &__overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+
+  // White card
+  &__card {
+    @include card-surface($padding: 2.5rem);
+    box-shadow: $shadow-page;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    font-family: var(--amplify-fonts-default, system-ui, sans-serif);
+
+    @include dark-mode {
+      background-color: $color-bg-dark;
+      color: $color-text-dark;
+    }
+  }
+
+  &__icon {
+    margin-bottom: 1rem;
+
+    img {
+      width: 70px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+  }
+
+  &__heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    color: inherit;
+  }
+
+  &__text {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    font-size: 0.95rem;
+
+    @include dark-mode { color: $color-muted-dark; }
+  }
+
+  &__details {
+    text-align: left;
+    background-color: $color-error-details-bg;
+    padding: 0.75rem;
+    border-radius: $radius-md;
+    font-size: 0.85rem;
+    color: $color-error-details-text;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+    max-height: 150px;
+    font-family: $font-mono;
+
+    @include dark-mode {
+      background-color: $color-error-details-bg-dark;
+      color: $color-error-details-text-dark;
+    }
+  }
+}

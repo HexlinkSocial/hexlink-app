@@ -17,8 +17,8 @@ export default function CommunitiesList({
 }: CommunitiesListProps): JSX.Element | null {
   if (loading) {
     return (
-      <div className="communities-card-state">
-        <div className="communities-card-spinner" />
+      <div className="communities-card__state">
+        <div className="communities-card__spinner" />
         <span>Loading communities…</span>
       </div>
     );
@@ -26,7 +26,7 @@ export default function CommunitiesList({
 
   if (error !== null) {
     return (
-      <div className="communities-card-state communities-card-state--error">
+      <div className="communities-card__state communities-card__state--error">
         <span>⚠ Failed to load: {error}</span>
       </div>
     );
@@ -34,15 +34,15 @@ export default function CommunitiesList({
 
   if (communities.length === 0 && isOpen) {
     return (
-      <div className="communities-card-state">
-        <span className="communities-card-empty-hex">⬡</span>
+      <div className="communities-card__state">
+        <span className="communities-card__empty-hex">⬡</span>
         <span>No communities in this tile yet.</span>
       </div>
     );
   }
 
   return (
-    <ul className="communities-card-list">
+    <ul className="communities-card__list">
       {communities.map((c) => (
         <li key={c.id}>
           <CommunityItem community={c} />

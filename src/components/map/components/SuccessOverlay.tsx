@@ -12,7 +12,7 @@ const SuccessOverlay: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   return (
     <div
-      className={`success-card${dismissing == true ? " success-card--dismissing" : ""}`}
+      className={`success-card${dismissing ? " success-card--dismissing" : ""}`}
     >
       <p className="success-card__title">Community submitted!</p>
       <p className="success-card__body">

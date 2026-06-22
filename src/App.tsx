@@ -1,6 +1,4 @@
 import React, { JSX } from "react";
-import "./styles/App.css";
-import "leaflet/dist/leaflet.css";
 import {
   createBrowserRouter,
   createRoutesFromElements,

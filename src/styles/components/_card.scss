@@ -1,0 +1,325 @@
+@use "../abstracts" as *;
+
+@mixin card-base {
+  @include card-surface;
+  position: fixed;
+  z-index: $z-card;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.communities-card {
+  @include card-base;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-20%, -50%) translateX(calc(100% + 24px));
+  opacity: 0;
+  width: min(380px, 40vw);
+  min-height: 160px;
+  max-height: calc(100dvh - 160px);
+  transition: transform $transition-spring, opacity $transition-spring;
+  pointer-events: none;
+
+  &--open {
+    transform: translate(25%, -50%);
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  @include mobile {
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100%;
+    max-height: 100dvh;
+    min-height: unset;
+    border-radius: 0;
+    transform: translateY(110%);
+    opacity: 1;
+    transition: transform $transition-spring;
+
+    &--open {
+      transform: translateY(0);
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: $space-md $space-md 0;
+    flex-shrink: 0;
+  }
+
+  &__body {
+    flex: 1;
+    @include scrollable;
+    padding: $space-sm $space-lg $space-xl;
+  }
+
+  &__state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $space-md;
+    min-height: 100px;
+    height: 100%;
+    padding: $space-xl 0;
+    color: $color-muted;
+    font-size: 14px;
+    text-align: center;
+
+    &--error { color: #c0392b; }
+  }
+
+  &__empty-hex {
+    font-size: 36px;
+    opacity: 0.2;
+    line-height: 1;
+  }
+
+  &__spinner {
+    width: 28px;
+    height: 28px;
+    border: 2px solid rgba(0, 0, 0, 0.08);
+    border-top-color: $color-accent;
+    border-radius: 50%;
+    animation: card-spin 0.7s linear infinite;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+.communities-card-backdrop {
+  display: none;
+  border: none;
+  padding: 0;
+  background: transparent;
+  cursor: default;
+
+  @include mobile {
+    display: block;
+    @include fixed-cover;
+    z-index: $z-backdrop;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+  }
+}
+
+@keyframes card-spin {
+  to { transform: rotate(360deg); }
+}
+
+.community-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px $space-lg;
+  background: $color-bg-subtle;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  transition: background $transition-fast, border-color $transition-fast;
+
+  &:hover {
+    background: $color-bg-hover;
+    border-color: $color-border-accent;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &__name {
+    font-size: 14px;
+    font-weight: 700;
+    color: $color-text;
+    @include truncate;
+  }
+
+  &__description {
+    font-size: 12px;
+    color: $color-muted;
+    line-height: 1.5;
+    margin: 0;
+    @include line-clamp(2);
+  }
+
+  &__join {
+    flex-shrink: 0;
+    appearance: none;
+    border: none;
+    padding: 7px 14px;
+    border-radius: $radius-md;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    text-decoration: none;
+    background: $color-accent;
+    color: #fff !important;
+    transition: background $transition-fast, transform 0.1s;
+    align-self: center;
+
+    &:hover {
+      background: $color-accent-light;
+      transform: translateY(-1px);
+    }
+
+    &--disabled {
+      background: rgba(0, 0, 0, 0.08);
+      color: $color-muted;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+  }
+}
+
+.info-card {
+  @include card-base;
+  bottom: $space-xl;
+  left: $space-xl;
+  width: min(380px, 40vw);
+  padding: $space-xl;
+
+  @include mobile {
+    bottom: 0; left: 0; right: 0;
+    width: 100%;
+    max-height: 50dvh;
+    border-radius: $radius-xl $radius-xl 0 0;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  &__body {
+    flex: 1;
+    @include scrollable;
+
+    @include mobile {
+      padding: $space-xl 20px 32px;
+    }
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 700;
+    color: $color-text;
+    margin: 0 0 18px 0;
+    line-height: 1.5;
+  }
+
+  &__legend {
+    display: flex;
+    flex-direction: column;
+    gap: $space-md;
+    margin-bottom: $space-xl;
+  }
+
+  &__legend-item {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+    font-size: 13px;
+    color: $color-muted;
+    font-weight: 500;
+  }
+
+  &__color {
+    width: 16px;
+    height: 16px;
+    border-radius: 5px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+
+    &--unavailable { background-color: $color-unavailable; }
+    &--available   { background-color: $color-success; }
+    &--selected    { background-color: $color-accent; }
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-md;
+    margin-top: $space-xs;
+  }
+}
+
+.success-card {
+  @include card-base;
+  bottom: $space-xl;
+  left: $space-xl;
+  width: min(380px, 40vw);
+  padding: $space-xl;
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform $transition-spring, opacity $transition-spring;
+
+  &--dismissing {
+    transform: translateY(calc(100% + 24px));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @include mobile {
+    bottom: 0; left: 0; right: 0;
+    width: 100%;
+    border-radius: $radius-xl $radius-xl 0 0;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: $color-text;
+    margin: 0 0 $space-sm 0;
+    line-height: 1.4;
+  }
+
+  &__body {
+    font-size: 13px;
+    color: $color-muted;
+    margin: 0 0 $space-xl 0;
+    line-height: 1.6;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-md;
+    margin-top: $space-xs;
+  }
+
+  // Inlined rather than @extend .btn across module boundary
+  &__close {
+    flex: 1;
+    appearance: none;
+    border: none;
+    border-radius: $radius-lg;
+    font-family: $font-sans;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    padding: 12px 16px;
+    transition: background $transition-spring, transform 0.1s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: $color-accent;
+    color: #ffffff;
+
+    &:hover {
+      background: $color-accent-light;
+      transform: translateY(-1px);
+    }
+  }
+}

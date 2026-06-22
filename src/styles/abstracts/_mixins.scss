@@ -1,0 +1,60 @@
+@use "variables" as *;
+
+// ── Responsive ─────────────────────────────────
+@mixin mobile {
+  @media (max-width: #{$bp-mobile}) { @content; }
+}
+@mixin desktop {
+  @media (min-width: #{$bp-desktop}) { @content; }
+}
+@mixin dark-mode {
+  @media (prefers-color-scheme: dark) { @content; }
+}
+
+// ── Card surface ───────────────────────────────
+// Shared surface style used by floating cards, dialogs, banners.
+@mixin card-surface($padding: null) {
+  background: $color-bg;
+  border: 1px solid $color-border;
+  box-shadow: $shadow-card;
+  border-radius: $radius-xl;
+  color: $color-text;
+  font-family: $font-sans;
+  @if $padding { padding: $padding; }
+}
+
+// ── Scrollable container ───────────────────────
+@mixin scrollable {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+
+  &::-webkit-scrollbar       { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 2px;
+  }
+}
+
+// ── Fixed full-cover backdrop ──────────────────
+@mixin fixed-cover {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+}
+
+// ── Truncate text ──────────────────────────────
+@mixin truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ── Line-clamp ─────────────────────────────────
+@mixin line-clamp($lines) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import CommunitiesCard from "../communities/CommunitiesCard";
 import { useMap } from "../../hooks/useMap";
 import { useH3LayerStack } from "../../hooks/useH3LayerStack";
-import ErrorBanner from "../ErrorBanner";
+import Banner from "../Banner";
 import type { CameraState } from "../../hooks/useMapCore";
 import SuccessOverlay from "./components/SuccessOverlay";
 
@@ -53,7 +53,7 @@ const DisplayMap: React.FC<{
 
   return (
     <>
-      <ErrorBanner error={activeError} onClose={() => onDismissError(error!)} />
+      <Banner message={activeError} onClose={() => onDismissError(error!)} />
       {showSuccess ? (
         <SuccessOverlay onClose={onSuccessDismiss ?? ((): void => {})} />
       ) : (

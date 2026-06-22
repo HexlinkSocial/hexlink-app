@@ -1,7 +1,6 @@
 import { JSX, useEffect, useRef, useState } from "react";
 import { Community } from "./types";
 import CommunitiesList from "./CommunitiesList";
-import "../../styles/CommunitiesCard.css";
 
 interface CommunitiesCardProps {
   cellId: string | null;
@@ -62,9 +61,8 @@ export default function CommunitiesCard({
         if (!cancelled) setResult({ cellId, communities: data, error: null });
       })
       .catch((err: Error) => {
-        if (!cancelled) {
+        if (!cancelled)
           setResult({ cellId, communities: [], error: err.message });
-        }
       });
 
     return () => {
@@ -111,13 +109,13 @@ export default function CommunitiesCard({
         />
       )}
       <div
-        className={`communities-card ${isVisible ? "communities-card--open" : ""}`}
+        className={`communities-card${isVisible ? " communities-card--open" : ""}`}
         role="dialog"
         aria-modal="true"
       >
-        <div className="communities-card-header">
+        <div className="communities-card__header">
           <button
-            className="communities-card-close"
+            className="btn-icon-close"
             onClick={onClose}
             aria-label="Close panel"
           >
@@ -146,7 +144,10 @@ export default function CommunitiesCard({
             isOpen={isOpen}
           />
         </div>
-        <button className="button form" onClick={onAddCommunityClick}>
+        <button
+          className="btn btn--primary btn--form-block"
+          onClick={onAddCommunityClick}
+        >
           Add community
         </button>
       </div>

@@ -1,5 +1,4 @@
 import React from "react";
-import "../../styles/FormOverlay.css";
 
 interface FormOverlayProps {
   isOpen: boolean;
@@ -25,15 +24,13 @@ const FormOverlay: React.FC<FormOverlayProps> = ({
   return (
     <div className="form-overlay-backdrop">
       <div className="form-overlay-container">
-        <form onSubmit={onSubmit} className="generic-overlay-form">
-          <h2 className="form-heading">{title}</h2>
-
-          <div className="form-fields-body">{children}</div>
-
-          <div className="form-actions">
+        <form onSubmit={onSubmit} className="form">
+          <h2 className="form__heading">{title}</h2>
+          {children}
+          <div className="form__actions">
             <button
               type="button"
-              className="btn-cancel"
+              className="btn btn--secondary btn--flex"
               onClick={onCancel}
               disabled={isSubmitting}
             >
@@ -41,7 +38,7 @@ const FormOverlay: React.FC<FormOverlayProps> = ({
             </button>
             <button
               type="submit"
-              className="btn-submit"
+              className="btn btn--primary btn--flex"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Saving..." : submitLabel}

@@ -1,0 +1,128 @@
+@use "../abstracts" as *;
+
+// ── Backdrop (full-screen dimmed overlay) ──────
+.form-overlay-backdrop {
+  @include fixed-cover;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: $z-overlay;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ── Container (white box centred on backdrop) ──
+.form-overlay-container {
+  background: $color-bg;
+  width: 100%;
+  box-sizing: border-box;
+
+  @include desktop {
+    max-width: 500px;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-dialog;
+    padding: $space-2xl;
+  }
+
+  @include mobile {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: $space-xl;
+  }
+}
+
+@include mobile {
+  .form-overlay-backdrop {
+    background-color: $color-bg;
+    backdrop-filter: none;
+  }
+}
+
+// ── Form element ───────────────────────────────
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xl;
+  width: 100%;
+}
+
+// ── Scrollable fields area (mobile) ────────────
+.form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  @include mobile {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: $space-lg;
+  }
+}
+
+// ── Heading ────────────────────────────────────
+.form__heading {
+  margin: 0;
+  font-family: $font-sans;
+  font-size: 20px;
+  font-weight: 700;
+  color: $color-text;
+}
+
+// ── Label + input group ────────────────────────
+.form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-family: $font-sans;
+    font-size: 13px;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  input,
+  textarea {
+    font-family: inherit;
+    font-size: 14px;
+    padding: $space-md;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    outline: none;
+    transition: border-color $transition-medium;
+    box-sizing: border-box;
+    width: 100%;
+
+    &:focus { border-color: $color-accent; }
+  }
+}
+
+// ── Inline validation error ────────────────────
+.form__error {
+  font-family: $font-sans;
+  font-size: 13px;
+  font-weight: 500;
+  color: $color-error;
+  margin-top: $space-xs;
+  animation: form-fade-in 0.2s ease-out;
+}
+
+// ── Action buttons row ─────────────────────────
+.form__actions {
+  display: flex;
+  gap: $space-md;
+  margin-top: $space-sm;
+
+  @include mobile {
+    flex-shrink: 0;
+    margin-top: auto;
+    background: $color-bg;
+    padding-top: $space-md;
+  }
+}
+
+@keyframes form-fade-in {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

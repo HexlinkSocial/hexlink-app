@@ -3,7 +3,6 @@ import "@aws-amplify/ui-react/styles.css";
 import { JSX, useEffect } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { theme } from "../styles/LoginTheme";
-import "../styles/Login.css";
 
 const PENDING_KEY = "pendingCommunityPayload";
 const FORM_FIELDS = {
@@ -60,8 +59,8 @@ export default function Join(): JSX.Element {
 
   return (
     <ThemeProvider theme={theme}>
-      <div className="login-page-container">
-        <div className="login-flex-overlay">
+      <div className="auth-page">
+        <div className="auth-flex-overlay">
           <Authenticator formFields={FORM_FIELDS} loginMechanisms={["email"]}>
             {() => <AuthSuccessRedirect />}
           </Authenticator>

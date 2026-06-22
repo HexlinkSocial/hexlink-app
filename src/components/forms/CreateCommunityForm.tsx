@@ -37,8 +37,8 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
       onCancel={onCancel}
       onSubmit={onSubmit}
     >
-      <div className="form-fields-body">
-        <div className="form-group">
+      <div className="form__fields">
+        <div className="form__group">
           <label htmlFor="name">Community Name</label>
           <input
             id="name"
@@ -50,8 +50,7 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
             placeholder="e.g. Westside Gardeners"
           />
         </div>
-
-        <div className="form-group">
+        <div className="form__group">
           <label htmlFor="description">Description</label>
           <textarea
             id="description"
@@ -63,8 +62,7 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
             placeholder="What is your community about?"
           />
         </div>
-
-        <div className="form-group">
+        <div className="form__group">
           <label htmlFor="url">Community URL</label>
           <input
             id="url"
@@ -76,9 +74,8 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
             placeholder="example.com"
           />
         </div>
-
         {errorMessage != null && (
-          <div className="form-error-message">{errorMessage}</div>
+          <div className="form__error">{errorMessage}</div>
         )}
       </div>
     </FormOverlay>

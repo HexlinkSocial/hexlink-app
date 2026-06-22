@@ -1,0 +1,68 @@
+@use "../abstracts" as *;
+
+.banner {
+  position: fixed;
+  bottom: $space-3xl;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 90%;
+  max-width: 450px;
+  padding: $space-md $space-xl;
+  border-radius: $radius-md;
+  font-family: $font-sans;
+  font-weight: bold;
+  z-index: $z-overlay;
+  box-shadow: $shadow-banner;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-lg;
+
+  // ── Default / Error variant ─────────────────
+  background-color: $color-error-banner-bg;
+  color: $color-accent-dark;
+  border: 1px solid $color-accent-dark;
+
+  &--warning {
+    background-color: #fef3c7;
+    color: #92400e;
+    border-color: #d97706;
+  }
+
+  &--info {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    border-color: #0284c7;
+  }
+
+  &__content {
+    flex: 1;
+    word-break: break-word;
+  }
+
+  &__subtext {
+    font-size: 12px;
+    font-weight: normal;
+    display: block;
+    margin-top: $space-xs;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    color: inherit;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    opacity: 0.6;
+    transition: opacity $transition-medium;
+    margin-right: -8px;
+    flex-shrink: 0;
+
+    &:hover { opacity: 1; }
+  }
+}

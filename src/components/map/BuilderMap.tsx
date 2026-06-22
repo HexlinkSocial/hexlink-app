@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useMapBuilder } from "../../hooks/useMapBuilder";
 import { useH3LayerStack } from "../../hooks/useH3LayerStack";
-import ErrorBanner from "../ErrorBanner";
 import type { CameraState } from "../../hooks/useMapCore";
-import "../../styles/InfoCard.css";
 import SelectionLegend from "./components/SelectionLegend";
 import CreateCommunityForm from "../forms/CreateCommunityForm";
 import {
@@ -15,6 +13,7 @@ import {
   postCommunity,
   savePending,
 } from "./helpers/builderMapHelpers";
+import Banner from "../Banner";
 
 const BuilderMap: React.FC<{
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -99,7 +98,7 @@ const BuilderMap: React.FC<{
 
   return (
     <>
-      <ErrorBanner error={activeError} onClose={() => onDismissError(error!)} />
+      <Banner message={activeError} onClose={() => onDismissError(error!)} />
 
       {step === "select" && (
         <SelectionLegend

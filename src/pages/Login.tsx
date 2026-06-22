@@ -3,7 +3,6 @@ import "@aws-amplify/ui-react/styles.css";
 import { JSX } from "react";
 import { Navigate } from "react-router-dom";
 import { theme } from "../styles/LoginTheme";
-import "../styles/Login.css";
 
 const LOGIN_FORM_FIELDS = {
   signIn: {
@@ -26,8 +25,8 @@ const LOGIN_FORM_FIELDS = {
 export default function Login(): JSX.Element {
   return (
     <ThemeProvider theme={theme}>
-      <div className="login-page-container">
-        <div className="login-flex-overlay">
+      <div className="auth-page">
+        <div className="auth-flex-overlay">
           <Authenticator
             hideSignUp={true}
             loginMechanisms={["email"]}
