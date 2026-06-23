@@ -5,7 +5,6 @@ import {
 import { drizzle } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
 import { Pool } from "pg";
-import { Request } from "express";
 import * as schema from "../database/drizzle/schema";
 
 // Supabase pooler uses a self-signed cert chain not trusted by Node's
@@ -26,7 +25,7 @@ const CORS_HEADERS = {
 };
 
 function getQueryParam(
-  event: APIGatewayProxyEventV2 | Request,
+  event: APIGatewayProxyEventV2,
   key: string,
 ): string | undefined {
   if ("queryStringParameters" in event) {
@@ -39,7 +38,7 @@ function getQueryParam(
 }
 
 export const handler = async (
-  event: APIGatewayProxyEventV2 | Request,
+  event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
   const cellId = getQueryParam(event, "cellId");
 
