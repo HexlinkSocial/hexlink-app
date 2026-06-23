@@ -79,6 +79,20 @@ Resources:
             Path: /CreateCommunity
             Method: POST
 
+  ApproveOrDenyCommunityFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-approveOrDenyCommunity"
+      CodeUri: dist/
+      Handler: approveOrDenyCommunity.handler
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /ApproveOrDenyCommunity
+            Method: POST
+
 Outputs:
   ApiUrl:
     Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
