@@ -42,7 +42,7 @@ Resources:
           - "http://localhost:3000"
           - "http://localhost:5173"
         AllowMethods: [GET, POST, OPTIONS]
-        AllowHeaders: [content-type, authorization, x-mock-groups]
+        AllowHeaders: [content-type, authorization]
         MaxAge: 86400
 
   GetCommunitiesFunction:

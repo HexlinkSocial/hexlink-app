@@ -17,26 +17,20 @@ export interface ApprovalItem {
 
 export type ApprovalAction = "approve" | "reject" | "amend";
 
-function adminHeaders(
-  isAdmin: boolean,
-  token?: string,
-): Record<string, string> {
+function adminHeaders(token?: string): Record<string, string> {
   return {
     "Content-Type": "application/json",
     ...(token != null ? { Authorization: `Bearer ${token}` } : {}),
-    ...(isAdmin ? { "X-Mock-Groups": "Admins" } : {}),
   };
 }
 
-export async function fetchApprovals(
-  isAdmin: boolean,
-): Promise<ApprovalItem[]> {
+export async function fetchApprovals(): Promise<ApprovalItem[]> {
   const session = await fetchAuthSession();
   const token = session.tokens?.idToken?.toString() as string;
 
   const res = await fetch(`${BACKEND_URL}/GetPendingCommunities`, {
     method: "POST",
-    headers: adminHeaders(isAdmin, token),
+    headers: adminHeaders(token),
     body: JSON.stringify({}),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -44,7 +38,6 @@ export async function fetchApprovals(
 }
 
 export async function submitAction(
-  isAdmin: boolean,
   id: string,
   action: ApprovalAction,
   comments?: string,
@@ -54,7 +47,7 @@ export async function submitAction(
 
   const res = await fetch(`${BACKEND_URL}/ApproveOrDenyCommunity`, {
     method: "POST",
-    headers: adminHeaders(isAdmin, token),
+    headers: adminHeaders(token),
     body: JSON.stringify({ id, action, comments }),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);

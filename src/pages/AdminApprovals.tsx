@@ -52,7 +52,7 @@ export default function AdminApprovals(): JSX.Element {
   const loadApprovals = useCallback(async (): Promise<void> => {
     try {
       setApiError(null);
-      const data = await fetchApprovals(isAdmin);
+      const data = await fetchApprovals();
       setApprovals(data);
     } catch (error) {
       console.error("Failed to fetch approvals:", error);
@@ -60,7 +60,7 @@ export default function AdminApprovals(): JSX.Element {
     } finally {
       setLoading(false);
     }
-  }, [isAdmin]);
+  }, []);
 
   useEffect(() => {
     if (isAuthLoading) return;
@@ -82,7 +82,7 @@ export default function AdminApprovals(): JSX.Element {
     comments?: string,
   ): Promise<void> => {
     try {
-      await submitAction(isAdmin, id, action, comments);
+      await submitAction(id, action, comments);
       setAmendTrackId(null);
       setCommentText("");
       await loadApprovals();

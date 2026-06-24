@@ -25,10 +25,21 @@ Main Hexlink app
 
 # Running (inside the dev container)
 - Lambdas:
+    - Create a file called `sam-env.json` in the root of the lambda folder and populate it with
+    ```
+    {
+        "Parameters": {
+            "DATABASE_URL": "postgresql://postgres:postgres@hexlink_postgres:5432/hexlink",
+            "NODE_ENV": "development",
+            "COGNITO_USER_POOL_ID": "<your cognito user pool ID>",
+            "COGNITO_CLIENT_ID": "<your cognito client ID"
+        }
+    }
+    ```
     - `cd lambdas`
     - `npm run dev` - this will watch for changes in your lambda files and automatically rebuild them
     - In a separate terminal:
-        - (optional)`sam build` - this should run automatically when Docker is created. If you updated the template.yml file, you'll need to run this again before restarting your local SAM runner.
+        - `sam build` - only needs running the first time or if you updated the template.yml or sam-env.json files. Restart your local SAM runner after.
         - `npm run sam` - this will run AWS SAM locally. Everytime you call a function, it creates a sibling container in Docker to run it.
 
 - Frontend: `npm start`

@@ -8,14 +8,7 @@ const verifier = CognitoJwtVerifier.create({
 });
 
 export async function isAdmin(event: APIGatewayProxyEventV2): Promise<boolean> {
-  if (process.env.NODE_ENV !== "production") {
-    const mockGroupsHeader = event.headers?.["x-mock-groups"];
-    if (mockGroupsHeader != null) {
-      return mockGroupsHeader.split(",").includes("Admins");
-    }
-  }
-
-  const authHeader = event.headers?.authorization;
+  const authHeader = event.headers?.Authorization;
   if (!(authHeader?.startsWith("Bearer ") ?? false)) return false;
 
   try {
