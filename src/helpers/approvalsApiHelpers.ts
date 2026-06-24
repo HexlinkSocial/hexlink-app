@@ -5,6 +5,7 @@ export interface ApprovalItem {
   name: string;
   description: string | null;
   owner: string;
+  ownerEmail: string;
   communityLink: string | null;
   cellIds: string[];
   status: string;

@@ -35,6 +35,7 @@ export const approvals = pgTable("approvals", {
   name: text("name").notNull(),
   description: text("description"),
   owner: text("owner").notNull(),
+  ownerEmail: text("owner_email").notNull(),
   communityLink: text("community_link"),
   cellIds: text("cell_ids").array().notNull(),
   status: text("status").notNull().default("pending"),

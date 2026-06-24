@@ -1,0 +1,1 @@
+ALTER TABLE "approvals" ADD COLUMN "owner_email" text NOT NULL;

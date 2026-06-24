@@ -68,7 +68,7 @@ function ApprovalRow({
         <div className="custom-table-row__meta">
           <span className="custom-table-row__title">{item.name}</span>
           <span className="custom-table-row__subtitle">
-            submitted by &lt;{item.owner}&gt;
+            submitted by {item.ownerEmail}
           </span>
         </div>
         <p className="custom-table-row__description">

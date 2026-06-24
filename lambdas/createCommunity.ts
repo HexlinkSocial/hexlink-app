@@ -25,7 +25,8 @@ export const handler = async (
 ): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
     const bodyData = getRequestBody(event);
-    const { name, description, owner, communityLink, cellIds } = bodyData;
+    const { name, description, owner, ownerEmail, communityLink, cellIds } =
+      bodyData;
 
     if (
       name == null ||
@@ -48,6 +49,7 @@ export const handler = async (
         name,
         description: description !== undefined ? description : null,
         owner,
+        ownerEmail,
         communityLink: communityLink !== undefined ? communityLink : null,
         cellIds: cellIds,
         status: "pending",

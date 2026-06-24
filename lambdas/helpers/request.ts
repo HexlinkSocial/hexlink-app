@@ -7,6 +7,7 @@ export interface RequestBodyData {
   name?: string;
   description?: string;
   owner?: string;
+  ownerEmail?: string;
   communityLink?: string;
   cellIds?: string[];
 }

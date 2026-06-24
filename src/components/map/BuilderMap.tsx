@@ -8,6 +8,7 @@ import {
   buildPayload,
   clearPending,
   CommunityPayload,
+  getAuthUserEmail,
   getAuthUserId,
   loadPending,
   postCommunity,
@@ -87,11 +88,14 @@ const BuilderMap: React.FC<{
     setSubmitError(null);
 
     const userId = await getAuthUserId();
+    const userEmail = await getAuthUserEmail();
 
-    if (userId != null) {
-      await submit(buildPayload(communityData, selectedIds, userId));
+    if (userId != null && userEmail != null) {
+      await submit(buildPayload(communityData, selectedIds, userId, userEmail));
     } else {
-      savePending(buildPayload(communityData, selectedIds, "PENDING"));
+      savePending(
+        buildPayload(communityData, selectedIds, "PENDING", "PENDING"),
+      );
       window.location.href = "/join";
     }
   };
