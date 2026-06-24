@@ -6,6 +6,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { asc } from "drizzle-orm";
 import * as schema from "../database/drizzle/schema";
+import { isAdmin } from "./helpers/auth";
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -16,18 +17,6 @@ const pool = new Pool({
 });
 
 const db = drizzle(pool, { schema });
-
-function isAdmin(event: APIGatewayProxyEventV2): boolean {
-  if ("requestContext" in event && "authorizer" in event.requestContext) {
-    const authorizer = event.requestContext.authorizer as {
-      jwt?: { claims?: Record<string, unknown> };
-    };
-    const groups = authorizer?.jwt?.claims?.["cognito:groups"];
-    if (Array.isArray(groups)) return groups.includes("Admins");
-    if (typeof groups === "string") return groups.split(",").includes("Admins");
-  }
-  return false;
-}
 
 export const handler = async (
   event: APIGatewayProxyEventV2,

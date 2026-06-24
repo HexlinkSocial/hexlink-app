@@ -93,6 +93,20 @@ Resources:
             Path: /ApproveOrDenyCommunity
             Method: POST
 
+  GetPendingCommunitiesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-getPendingCommunities"
+      CodeUri: dist/
+      Handler: getPendingCommunities.handler
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /GetPendingCommunities
+            Method: POST
+
 Outputs:
   ApiUrl:
     Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"

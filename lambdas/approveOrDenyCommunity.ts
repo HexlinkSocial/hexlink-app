@@ -7,6 +7,7 @@ import { Pool } from "pg";
 import { eq } from "drizzle-orm";
 import * as schema from "../database/drizzle/schema";
 import { getRequestBody } from "./helpers/request";
+import { isAdmin } from "./helpers/auth";
 
 type ApprovalItem = typeof schema.approvals.$inferSelect;
 type DbInstance = typeof db;
@@ -25,18 +26,6 @@ const pool = new Pool({
 });
 
 const db = drizzle(pool, { schema });
-
-function isAdmin(event: APIGatewayProxyEventV2): boolean {
-  if ("requestContext" in event && "authorizer" in event.requestContext) {
-    const authorizer = event.requestContext.authorizer as {
-      jwt?: { claims?: Record<string, unknown> };
-    };
-    const groups = authorizer?.jwt?.claims?.["cognito:groups"];
-    if (Array.isArray(groups)) return groups.includes("Admins");
-    if (typeof groups === "string") return groups.split(",").includes("Admins");
-  }
-  return false;
-}
 
 async function handleApprove(
   tx: TransactionContext,
@@ -120,16 +109,24 @@ export const handler = async (
     }
 
     await db.transaction(async (tx) => {
-      if (action === "approve") {
-        await handleApprove(tx, approvalItem);
-      } else if (action === "reject") {
-        await handleReject(tx, id);
-      } else if (action === "amend") {
-        if (comments === undefined || comments === "")
-          throw new Error("Comments required for amendments");
-        await handleAmendments(tx, id, comments);
-      } else {
-        throw new Error("Invalid action provided");
+      switch (action) {
+        case "approve":
+          await handleApprove(tx, approvalItem);
+          break;
+
+        case "reject":
+          await handleReject(tx, id);
+          break;
+
+        case "amend":
+          if (comments === undefined || comments === "") {
+            throw new Error("Comments required for amendments");
+          }
+          await handleAmendments(tx, id, comments);
+          break;
+
+        default:
+          throw new Error("Invalid action provided");
       }
     });
 
