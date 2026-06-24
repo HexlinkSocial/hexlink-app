@@ -68,11 +68,12 @@ const BuilderMap: React.FC<{
     if (pending == null) return;
     void (async (): Promise<void> => {
       const userId = await getAuthUserId();
-      if (userId == null) return;
+      const userEmail = await getAuthUserEmail();
+      if (userId == null || userEmail == null) return;
       clearPending();
-      await submit({ ...pending, owner: userId });
+      await submit({ ...pending, owner: userId, ownerEmail: userEmail });
     })();
-  }, []);
+  }, [submit]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
