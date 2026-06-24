@@ -80,6 +80,19 @@ function ApprovalRow({
           <span className="custom-table-row__subtitle">
             submitted by {item.ownerEmail}
           </span>
+          {item.communityLink != null && (
+            <span className="custom-table-row__link-wrapper">
+              Link:{" "}
+              <a
+                href={item.communityLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="custom-table-row__link"
+              >
+                {item.communityLink}
+              </a>
+            </span>
+          )}
         </div>
         <div className="custom-table-row__description-container">
           <p
