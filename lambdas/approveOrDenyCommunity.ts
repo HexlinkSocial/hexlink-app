@@ -95,14 +95,6 @@ export const handler = async (
       };
     }
 
-    if (event.requestContext.http.method === "GET") {
-      const pendingRequests = await db.select().from(schema.approvals);
-      return {
-        statusCode: 200,
-        body: JSON.stringify(pendingRequests),
-      };
-    }
-
     const bodyData = getRequestBody(event);
     const { id, action, comments } = bodyData;
 
