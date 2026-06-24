@@ -48,26 +48,26 @@
 
   &__meta {
     display: flex;
-    align-items: center;
-    gap: $space-sm;
+    align-items: baseline;
+    gap: $space-xs $space-sm;
     margin-bottom: $space-xs;
-
-    @media (max-width: 576px) {
-      flex-wrap: wrap;
-      gap: $space-xs $space-sm;
-    }
+    flex-wrap: wrap;
   }
 
   &__title {
     font-size: 15px;
     font-weight: 700;
     color: $color-text;
+    word-break: break-word;
+    overflow-wrap: anywhere;
   }
 
   &__subtitle {
     font-size: 13px;
     color: $color-muted;
     font-style: italic;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 
     @media (max-width: 576px) {
       flex-basis: 100%;
@@ -86,10 +86,8 @@
     color: $color-muted;
     margin: 0;
     width: 100%;
-
-    &--clamped {
-      word-break: break-word;
-    }
+    word-break: break-word;
+    overflow-wrap: anywhere;
   }
 
   &__toggle-description-btn {
