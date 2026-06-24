@@ -1,6 +1,7 @@
 @use "../abstracts" as *;
 // ── Base ───────────────────────────────────────
 .btn {
+  text-decoration: none;
   appearance: none;
   border: none;
   border-radius: $radius-lg;

@@ -11,20 +11,14 @@ export default function Navbar(): JSX.Element {
         style={{ display: "flex", marginLeft: "auto", gap: "1rem" }}
       >
         {isAdmin && (
-          <button
-            className="btn btn--primary"
-            onClick={() => (window.location.href = "/admin")}
-          >
+          <a className="btn btn--primary" href="/admin">
             Admin
-          </button>
+          </a>
         )}
 
-        <button
-          className="btn btn--primary"
-          onClick={() => (window.location.href = "/login")}
-        >
+        <a className="btn btn--primary" href="/login">
           {isLoggedIn ? "Manage" : "Log in"}
-        </button>
+        </a>
       </div>
     </div>
   );
