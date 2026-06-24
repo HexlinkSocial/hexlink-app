@@ -7,7 +7,15 @@ export default function ProtectedRoute({
 }: {
   children: JSX.Element;
 }): JSX.Element {
-  const { user } = useAuthenticator();
+  const { user, authStatus } = useAuthenticator((context) => [
+    context.user,
+    context.authStatus,
+  ]);
+
+  if (authStatus === "configuring") {
+    return <div className="communities-card__spinner" />;
+  }
+
   if (user === undefined) {
     return <Navigate to="/login" replace />;
   }
