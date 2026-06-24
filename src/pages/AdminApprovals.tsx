@@ -1,5 +1,5 @@
 import React, { JSX, useCallback, useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { useAuth } from "../hooks/useAuth";
 import Table from "../components/table/Table";
@@ -104,9 +104,14 @@ export default function AdminApprovals(): JSX.Element {
     <div className="table-container">
       <div className="table-header-row">
         <h1 className="table-header-row__title">Approvals</h1>
-        <button className="btn btn--primary" onClick={signOut}>
-          Log out
-        </button>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <Link to="/" className="btn btn--primary">
+            Home
+          </Link>
+          <button className="btn btn--primary" onClick={signOut}>
+            Log out
+          </button>
+        </div>
       </div>
       <Banner message={apiError} onClose={() => setApiError(null)} />
       {approvals.length === 0 || apiError != null ? (
