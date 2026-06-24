@@ -28,14 +28,25 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
   onSubmit,
   onInputChange,
 }) => {
+  const isNameOverLimit = communityData.name.length > 100;
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isNameOverLimit) {
+      return;
+    }
+    onSubmit(e);
+  };
+
   return (
     <FormOverlay
       isOpen={isOpen}
       title="Create Community"
       submitLabel="Create"
       isSubmitting={isSubmitting}
+      isDisabled={isNameOverLimit}
       onCancel={onCancel}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
     >
       <div className="form__fields">
         <div className="form__group">
@@ -48,7 +59,14 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
             value={communityData.name}
             onChange={onInputChange}
             placeholder="e.g. Westside Gardeners"
+            className={isNameOverLimit ? "form__input--error" : ""}
           />
+          {isNameOverLimit && (
+            <div className="form__error">
+              Name cannot exceed 100 characters (currently{" "}
+              {communityData.name.length}/100)
+            </div>
+          )}
         </div>
         <div className="form__group">
           <label htmlFor="description">Description</label>

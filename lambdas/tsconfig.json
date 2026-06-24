@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "ES2020",
+    "paths": {
+      "drizzle-orm": ["../database/node_modules/drizzle-orm"],
+      "drizzle-orm/*": ["../database/node_modules/drizzle-orm/*"]
+    }
+  }
+}

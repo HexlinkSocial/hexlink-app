@@ -174,7 +174,12 @@ resource "aws_cognito_user_pool" "users" {
   password_policy {
     minimum_length = 8
   }
+}
 
+resource "aws_cognito_user_group" "admins" {
+  name         = "Admins"
+  user_pool_id = aws_cognito_user_pool.users.id
+  description  = "Administrative users with access to the approval workflows"
 }
 
 resource "aws_cognito_user_pool_client" "web" {

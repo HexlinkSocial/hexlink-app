@@ -8,6 +8,7 @@ import {
   buildPayload,
   clearPending,
   CommunityPayload,
+  getAuthUserEmail,
   getAuthUserId,
   loadPending,
   postCommunity,
@@ -67,11 +68,12 @@ const BuilderMap: React.FC<{
     if (pending == null) return;
     void (async (): Promise<void> => {
       const userId = await getAuthUserId();
-      if (userId == null) return;
+      const userEmail = await getAuthUserEmail();
+      if (userId == null || userEmail == null) return;
       clearPending();
-      await submit({ ...pending, owner: userId });
+      await submit({ ...pending, owner: userId, ownerEmail: userEmail });
     })();
-  }, []);
+  }, [submit]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -87,11 +89,14 @@ const BuilderMap: React.FC<{
     setSubmitError(null);
 
     const userId = await getAuthUserId();
+    const userEmail = await getAuthUserEmail();
 
-    if (userId != null) {
-      await submit(buildPayload(communityData, selectedIds, userId));
+    if (userId != null && userEmail != null) {
+      await submit(buildPayload(communityData, selectedIds, userId, userEmail));
     } else {
-      savePending(buildPayload(communityData, selectedIds, "PENDING"));
+      savePending(
+        buildPayload(communityData, selectedIds, "PENDING", "PENDING"),
+      );
       window.location.href = "/join";
     }
   };

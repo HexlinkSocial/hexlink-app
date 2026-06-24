@@ -1,0 +1,220 @@
+@use "../abstracts" as *;
+
+.table-container {
+  max-width: 1200px;
+  margin: $space-2xl auto;
+  padding: 0 $space-xl;
+  font-family: $font-sans;
+}
+
+.table-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-xl;
+
+  &__title {
+    font-size: 24px;
+    font-weight: 700;
+    color: $color-text;
+    margin: 0;
+  }
+}
+
+.custom-table {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  width: 100%;
+}
+
+.custom-table-row {
+  @include card-surface($space-md $space-lg);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-md;
+  position: relative;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    border-color: $color-border-accent;
+  }
+
+  @media (max-width: 576px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: baseline;
+    gap: $space-xs $space-sm;
+    margin-bottom: $space-xs;
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 700;
+    color: $color-text;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  &__subtitle {
+    font-size: 13px;
+    color: $color-muted;
+    font-style: italic;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+
+    @media (max-width: 576px) {
+      flex-basis: 100%;
+    }
+  }
+
+  &__link-wrapper {
+    font-size: 13px;
+    color: $color-muted;
+    font-weight: 500;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+
+    @media (max-width: 768px) {
+      flex-basis: 100%;
+      margin-top: $space-xs;
+    }
+  }
+
+  &__link {
+    color: $color-accent;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color $transition-fast;
+
+    &:hover {
+      text-decoration: underline;
+      color: darken($color-accent, 10%);
+    }
+  }
+
+  &__description-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-xs;
+  }
+
+  &__description {
+    font-size: 13px;
+    color: $color-muted;
+    margin: 0;
+    width: 100%;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  &__toggle-description-btn {
+    background: transparent;
+    border: none;
+    color: $color-accent;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 0;
+    margin-top: $space-xs;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+    flex-shrink: 0;
+
+    @media (max-width: 576px) {
+      justify-content: flex-end;
+      margin-top: $space-md;
+      padding-top: $space-sm;
+      border-top: 1px solid $color-border;
+    }
+  }
+
+  &__btn {
+    background: transparent;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    color: $color-accent;
+    cursor: pointer;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background $transition-fast, border-color $transition-fast;
+
+    &:hover {
+      background: $color-bg-hover;
+      border-color: $color-accent-soft;
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+  }
+}
+
+.amend-popover {
+  @include card-surface($space-md);
+  position: absolute;
+  right: 0;
+  top: calc(100% + $space-xs);
+  width: 300px;
+  z-index: $z-overlay;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  animation: form-fade-in 0.2s ease-out;
+
+  @media (max-width: 576px) {
+    right: 0;
+    bottom: calc(100% + $space-xs);
+    top: auto;
+  }
+
+  &__textarea {
+    font-family: inherit;
+    font-size: 13px;
+    padding: $space-sm;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    outline: none;
+    resize: vertical;
+    width: 100%;
+    box-sizing: border-box;
+
+    &:focus {
+      border-color: $color-accent;
+    }
+  }
+
+  &__submit {
+    align-self: flex-end;
+    padding: $space-sm $space-lg;
+    font-size: 12px;
+  }
+}

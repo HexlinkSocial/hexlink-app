@@ -34,7 +34,7 @@ Resources:
           - "http://localhost:3000"
           - "http://localhost:5173"
         AllowMethods: [GET, POST, OPTIONS]
-        AllowHeaders: [content-type, authorization]
+        AllowHeaders: [content-type, authorization, x-mock-groups]
         MaxAge: 86400
 
   GetCommunitiesFunction:
@@ -77,6 +77,34 @@ Resources:
           Properties:
             ApiId: !Ref HttpApi
             Path: /CreateCommunity
+            Method: POST
+
+  ApproveOrDenyCommunityFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-approveOrDenyCommunity"
+      CodeUri: dist/
+      Handler: approveOrDenyCommunity.handler
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /ApproveOrDenyCommunity
+            Method: POST
+
+  GetPendingCommunitiesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-getPendingCommunities"
+      CodeUri: dist/
+      Handler: getPendingCommunities.handler
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /GetPendingCommunities
             Method: POST
 
 Outputs:

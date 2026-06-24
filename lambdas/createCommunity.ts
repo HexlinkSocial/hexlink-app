@@ -4,8 +4,8 @@ import {
 } from "aws-lambda";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { Request } from "express";
 import * as schema from "../database/drizzle/schema";
+import { getRequestBody } from "./helpers/request";
 
 // Supabase pooler uses a self-signed cert chain not trusted by Node's
 // default CA bundle. Disable verification for database connections only.
@@ -19,28 +19,14 @@ const pool = new Pool({
 
 const db = drizzle(pool, { schema });
 
-// TODO factor our when needed again
-function getRequestBody(event: APIGatewayProxyEventV2 | Request): any {
-  if ("body" in event && event.body != null) {
-    if (typeof event.body === "string") {
-      try {
-        return JSON.parse(event.body as string);
-      } catch {
-        return {};
-      }
-    }
-    return event.body;
-  }
-  return {};
-}
-
 export const handler = async (
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-  event: APIGatewayProxyEventV2 | Request,
+  event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
     const bodyData = getRequestBody(event);
-    const { name, description, owner, communityLink, cellIds } = bodyData;
+    const { name, description, owner, ownerEmail, communityLink, cellIds } =
+      bodyData;
 
     if (
       name == null ||
@@ -57,36 +43,28 @@ export const handler = async (
       };
     }
 
-    const transactionResult = await db.transaction(async (tx) => {
-      const [newCommunity] = await tx
-        .insert(schema.communities)
-        .values({
-          name,
-          description,
-          owner,
-          communityLink,
-        })
-        .returning();
-
-      const joinRecords = cellIds.map((cellId: string) => ({
-        cellId,
-        communityId: newCommunity.id,
-      }));
-
-      await tx.insert(schema.cellCommunities).values(joinRecords);
-
-      return newCommunity;
-    });
+    const [newApproval] = await db
+      .insert(schema.approvals)
+      .values({
+        name,
+        description: description !== undefined ? description : null,
+        owner,
+        ownerEmail,
+        communityLink: communityLink !== undefined ? communityLink : null,
+        cellIds: cellIds,
+        status: "pending",
+      })
+      .returning();
 
     return {
       statusCode: 201,
       body: JSON.stringify({
-        message: "Community created successfully along with tile associations",
-        community: transactionResult,
+        message: "Community submission routed to approvals workflow",
+        approval: newApproval,
       }),
     };
   } catch (e) {
-    console.error("Database Write Transaction Error:", e);
+    console.error("Database Write Error:", e);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: "Internal Server Error" }),

@@ -1,7 +1,7 @@
 @use "../abstracts" as *;
-
 // ── Base ───────────────────────────────────────
 .btn {
+  text-decoration: none;
   appearance: none;
   border: none;
   border-radius: $radius-lg;
@@ -15,37 +15,31 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   &:disabled {
     cursor: not-allowed;
     pointer-events: none;
     opacity: 0.6;
   }
 }
-
 // ── Primary (accent filled) ────────────────────
 .btn--primary {
   background: $color-accent;
   color: #ffffff;
-
   &:hover {
     background: $color-accent-light;
     transform: translateY(-1px);
   }
 }
-
 // ── Secondary (ghost / cancel) ─────────────────
 .btn--secondary {
   background: $color-bg-subtle;
   border: 1px solid $color-border;
   color: $color-text;
-
   &:hover {
     background: $color-bg-hover;
     border-color: $color-border-accent;
   }
 }
-
 // ── Modifier: full-width form button ───────────
 .btn--form-block {
   display: block;
@@ -55,12 +49,10 @@
   border-radius: $radius-sm;
   font-size: 14px;
 }
-
 // ── Modifier: stretch inside a flex row ────────
 .btn--flex {
   flex: 1;
 }
-
 // ── Icon-only close button ─────────────────────
 .btn-icon-close {
   background: none;
@@ -75,14 +67,35 @@
   border-radius: $radius-sm;
   transition: color $transition-fast, background $transition-fast;
   flex-shrink: 0;
-
   &:hover {
     color: $color-text;
     background: rgba(0, 0, 0, 0.06);
   }
 }
-
 // ── Utility: push element to far right in flex ─
 .ml-auto {
   margin-left: auto;
+}
+.custom-table-row {
+  &__content {
+    &--disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+
+  &__btn {
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+}
+// ── Spinner ────────────────────────────────────
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner-icon {
+  animation: spin 0.7s linear infinite;
 }

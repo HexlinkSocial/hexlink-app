@@ -5,6 +5,7 @@ interface FormOverlayProps {
   title: string;
   submitLabel?: string;
   isSubmitting?: boolean;
+  isDisabled?: boolean;
   onCancel: () => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   children: React.ReactNode;
@@ -15,6 +16,7 @@ const FormOverlay: React.FC<FormOverlayProps> = ({
   title,
   submitLabel = "Submit",
   isSubmitting = false,
+  isDisabled = false,
   onCancel,
   onSubmit,
   children,
@@ -39,7 +41,7 @@ const FormOverlay: React.FC<FormOverlayProps> = ({
             <button
               type="submit"
               className="btn btn--primary btn--flex"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isDisabled}
             >
               {isSubmitting ? "Saving..." : submitLabel}
             </button>

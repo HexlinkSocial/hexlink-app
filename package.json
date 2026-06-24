@@ -15,6 +15,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "aws-amplify": "^6.16.2",
+    "drizzle-orm": "^0.45.2",
     "h3-js": "^4.4.0",
     "jszip": "^3.10.1",
     "leaflet": "^1.9.4",

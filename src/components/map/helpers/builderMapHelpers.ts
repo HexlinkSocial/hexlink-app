@@ -5,6 +5,7 @@ export type CommunityPayload = {
   description: string;
   communityLink: string;
   owner: string;
+  ownerEmail: string;
   cellIds: string[];
 };
 
@@ -21,12 +22,14 @@ export function buildPayload(
   communityData: { name: string; description: string; url: string },
   selectedIds: Set<string>,
   owner: string,
+  ownerEmail: string,
 ): CommunityPayload {
   return {
     name: communityData.name,
     description: communityData.description,
     communityLink: normaliseUrl(communityData.url),
     owner,
+    ownerEmail,
     cellIds: Array.from(selectedIds),
   };
 }
@@ -44,6 +47,15 @@ export async function getAuthUserId(): Promise<string | null> {
   try {
     const session = await fetchAuthSession();
     return (session.tokens?.idToken?.payload?.sub as string) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getAuthUserEmail(): Promise<string | null> {
+  try {
+    const session = await fetchAuthSession();
+    return (session.tokens?.idToken?.payload?.email as string) ?? null;
   } catch {
     return null;
   }

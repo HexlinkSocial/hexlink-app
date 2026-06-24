@@ -8,6 +8,7 @@ import {
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SampleAdminPage from "./pages/SampleAdminPage";
+import AdminApprovals from "./pages/AdminApprovals";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import ErrorPage from "./pages/ErrorPage";
 import Join from "./pages/Join";
@@ -23,6 +24,14 @@ export const router = createBrowserRouter(
         element={
           <ProtectedRoute>
             <SampleAdminPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="admin"
+        element={
+          <ProtectedRoute>
+            <AdminApprovals />
           </ProtectedRoute>
         }
       />
