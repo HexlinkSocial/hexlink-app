@@ -12,6 +12,10 @@ export function isAdmin(event: APIGatewayProxyEventV2): boolean {
   const authorizer = event.requestContext?.authorizer;
   const groups = authorizer?.jwt?.claims?.["cognito:groups"];
 
+  if (Array.isArray(groups)) {
+    return groups.includes("Admins");
+  }
+
   if (typeof groups === "string") {
     return groups.split(" ").includes("Admins");
   }
