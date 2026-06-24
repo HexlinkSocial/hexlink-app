@@ -8,7 +8,8 @@ const verifier = CognitoJwtVerifier.create({
 });
 
 export async function isAdmin(event: APIGatewayProxyEventV2): Promise<boolean> {
-  const authHeader = event.headers?.Authorization;
+  const authHeader =
+    event.headers?.Authorization ?? event.headers?.authorization;
   if (!(authHeader?.startsWith("Bearer ") ?? false)) return false;
 
   try {
