@@ -96,7 +96,7 @@ export default function AdminApprovals(): JSX.Element {
     return <TableLoadingState />;
   }
 
-  if (!isLoggedIn || !!isAdmin) {
+  if (!isLoggedIn || !isAdmin) {
     return <Navigate to="/" replace />;
   }
 
@@ -108,9 +108,7 @@ export default function AdminApprovals(): JSX.Element {
           Log out
         </button>
       </div>
-
       <Banner message={apiError} onClose={() => setApiError(null)} />
-
       {approvals.length === 0 && apiError != null ? (
         <TableEmptyState message="No pending approvals found." />
       ) : (
@@ -122,12 +120,10 @@ export default function AdminApprovals(): JSX.Element {
               isAmending={amendTrackId === item.id}
               commentText={commentText}
               onCommentChange={setCommentText}
-              onApprove={() => void handleAction(item.id, "approve")}
-              onReject={() => void handleAction(item.id, "reject")}
+              onApprove={() => handleAction(item.id, "approve")}
+              onReject={() => handleAction(item.id, "reject")}
               onToggleAmend={() => toggleAmend(item.id)}
-              onSubmitAmend={() =>
-                void handleAction(item.id, "amend", commentText)
-              }
+              onSubmitAmend={() => handleAction(item.id, "amend", commentText)}
             />
           ))}
         </Table>

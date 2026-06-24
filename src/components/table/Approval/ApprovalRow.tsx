@@ -1,16 +1,22 @@
-import { JSX } from "react";
+import { JSX, useState } from "react";
 import TableRow from "../TableRow";
 import { ApprovalItem } from "../../../helpers/approvalsApiHelpers";
+import CheckIcon from "../../icons/CheckIcon";
+import CrossIcon from "../../icons/CrossIcon";
+import PencilIcon from "../../icons/PencilIcon";
+import SpinnerIcon from "../../icons/SpinnerIcon";
+
+type PendingAction = "approve" | "reject" | "amend" | null;
 
 interface ApprovalRowProps {
   item: ApprovalItem;
   isAmending: boolean;
   commentText: string;
   onCommentChange: (text: string) => void;
-  onApprove: () => void;
-  onReject: () => void;
+  onApprove: () => Promise<void>;
+  onReject: () => Promise<void>;
   onToggleAmend: () => void;
-  onSubmitAmend: () => void;
+  onSubmitAmend: () => Promise<void>;
 }
 
 function ApprovalRow({
@@ -23,9 +29,42 @@ function ApprovalRow({
   onToggleAmend,
   onSubmitAmend,
 }: ApprovalRowProps): JSX.Element {
+  const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+
+  const isDisabled = pendingAction !== null;
+
+  async function handleApprove(): Promise<void> {
+    setPendingAction("approve");
+    try {
+      await onApprove();
+    } finally {
+      setPendingAction(null);
+    }
+  }
+
+  async function handleReject(): Promise<void> {
+    setPendingAction("reject");
+    try {
+      await onReject();
+    } finally {
+      setPendingAction(null);
+    }
+  }
+
+  async function handleSubmitAmend(): Promise<void> {
+    setPendingAction("amend");
+    try {
+      await onSubmitAmend();
+    } finally {
+      setPendingAction(null);
+    }
+  }
+
   return (
     <TableRow>
-      <div className="custom-table-row__content">
+      <div
+        className={`custom-table-row__content${isDisabled ? " custom-table-row__content--disabled" : ""}`}
+      >
         <div className="custom-table-row__meta">
           <span className="custom-table-row__title">{item.name}</span>
           <span className="custom-table-row__subtitle">
@@ -36,50 +75,31 @@ function ApprovalRow({
           {item.description ?? "No description provided."}
         </p>
       </div>
-
       <div className="custom-table-row__actions">
         <button
           className="custom-table-row__btn"
           title="Approve"
-          onClick={onApprove}
+          onClick={handleApprove}
+          disabled={isDisabled}
         >
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M20 6L9 17l-5-5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          {pendingAction === "approve" ? <SpinnerIcon /> : <CheckIcon />}
         </button>
-
         <button
           className="custom-table-row__btn"
           title="Reject"
-          onClick={onReject}
+          onClick={handleReject}
+          disabled={isDisabled}
         >
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M18 6L6 18M6 6l12 12"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          {pendingAction === "reject" ? <SpinnerIcon /> : <CrossIcon />}
         </button>
-
         <button
           className="custom-table-row__btn"
           title="Request Amendments"
           onClick={onToggleAmend}
+          disabled={isDisabled}
         >
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <PencilIcon />
         </button>
-
         {isAmending && (
           <div className="amend-popover">
             <textarea
@@ -91,10 +111,10 @@ function ApprovalRow({
             />
             <button
               className="btn btn--primary amend-popover__submit"
-              disabled={!commentText.trim()}
-              onClick={onSubmitAmend}
+              disabled={!commentText.trim() || isDisabled}
+              onClick={handleSubmitAmend}
             >
-              Submit
+              {pendingAction === "amend" ? <SpinnerIcon /> : "Submit"}
             </button>
           </div>
         )}
