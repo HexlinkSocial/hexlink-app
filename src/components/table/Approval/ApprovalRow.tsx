@@ -6,6 +6,8 @@ import CrossIcon from "../../icons/CrossIcon";
 import PencilIcon from "../../icons/PencilIcon";
 import SpinnerIcon from "../../icons/SpinnerIcon";
 
+const MAX_DESCRIPTION_LENGTH = 200;
+
 type PendingAction = "approve" | "reject" | "amend" | null;
 
 interface ApprovalRowProps {
@@ -33,6 +35,13 @@ function ApprovalRow({
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   const isDisabled = pendingAction !== null;
+  const description = item.description ?? "No description provided.";
+  const isTruncatable = description.length > MAX_DESCRIPTION_LENGTH;
+
+  const displayedDescription =
+    isTruncatable && !isExpanded
+      ? `${description.slice(0, MAX_DESCRIPTION_LENGTH)}...`
+      : description;
 
   async function handleApprove(): Promise<void> {
     setPendingAction("approve");
@@ -76,9 +85,9 @@ function ApprovalRow({
           <p
             className={`custom-table-row__description${!isExpanded ? " custom-table-row__description--clamped" : ""}`}
           >
-            {item.description ?? "No description provided."}
+            {displayedDescription}
           </p>
-          {item.description != null && (
+          {item.description != null && isTruncatable && (
             <button
               type="button"
               className="custom-table-row__toggle-description-btn"
