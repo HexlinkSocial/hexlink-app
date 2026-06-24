@@ -19,7 +19,7 @@ export async function isAdmin(event: APIGatewayProxyEventV2): Promise<boolean> {
   if (!(authHeader?.startsWith("Bearer ") ?? false)) return false;
 
   try {
-    const payload = await verifier.verify(authHeader?.slice(7));
+    const payload = await verifier.verify(authHeader?.slice(7) as string);
     const groups = payload["cognito:groups"];
     return Array.isArray(groups) && groups.includes("Admins");
   } catch {
