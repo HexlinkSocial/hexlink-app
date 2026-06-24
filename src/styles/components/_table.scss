@@ -32,7 +32,7 @@
   @include card-surface($space-md $space-lg);
   display: flex;
   align-items: center;
-  justify-between: space-between;
+  justify-content: space-between;
   gap: $space-md;
   position: relative;
   transition: border-color $transition-fast, box-shadow $transition-fast;
@@ -65,11 +65,42 @@
     font-style: italic;
   }
 
+  &__description-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-xs;
+  }
+
   &__description {
     font-size: 13px;
     color: $color-muted;
     margin: 0;
-    @include truncate;
+    width: 100%;
+
+    &--clamped {
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &__toggle-description-btn {
+    background: transparent;
+    border: none;
+    color: $color-accent;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 0;
+    margin-top: $space-xs;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   &__actions {

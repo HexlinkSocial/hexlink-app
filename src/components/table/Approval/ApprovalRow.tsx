@@ -30,6 +30,7 @@ function ApprovalRow({
   onSubmitAmend,
 }: ApprovalRowProps): JSX.Element {
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   const isDisabled = pendingAction !== null;
 
@@ -63,7 +64,7 @@ function ApprovalRow({
   return (
     <TableRow>
       <div
-        className={`custom-table-row__content${isDisabled ? " custom-table-row__content--disabled" : ""}`}
+        className={`custom-table-row__content${isDisabled ? " custom-table-row__content--disabled" : ""}${isExpanded ? " custom-table-row__content--expanded" : ""}`}
       >
         <div className="custom-table-row__meta">
           <span className="custom-table-row__title">{item.name}</span>
@@ -71,9 +72,22 @@ function ApprovalRow({
             submitted by {item.ownerEmail}
           </span>
         </div>
-        <p className="custom-table-row__description">
-          {item.description ?? "No description provided."}
-        </p>
+        <div className="custom-table-row__description-container">
+          <p
+            className={`custom-table-row__description${!isExpanded ? " custom-table-row__description--clamped" : ""}`}
+          >
+            {item.description ?? "No description provided."}
+          </p>
+          {item.description != null && (
+            <button
+              type="button"
+              className="custom-table-row__toggle-description-btn"
+              onClick={() => setIsExpanded(!isExpanded)}
+            >
+              {isExpanded ? "Show less" : "Show more"}
+            </button>
+          )}
+        </div>
       </div>
       <div className="custom-table-row__actions">
         <button
