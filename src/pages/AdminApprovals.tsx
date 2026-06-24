@@ -109,7 +109,7 @@ export default function AdminApprovals(): JSX.Element {
         </button>
       </div>
       <Banner message={apiError} onClose={() => setApiError(null)} />
-      {approvals.length === 0 && apiError != null ? (
+      {approvals.length === 0 || apiError != null ? (
         <TableEmptyState message="No pending approvals found." />
       ) : (
         <Table>
