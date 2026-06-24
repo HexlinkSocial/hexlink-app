@@ -1,3 +1,5 @@
+import { fetchAuthSession } from "aws-amplify/auth";
+
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "";
 
 export interface ApprovalItem {
@@ -28,8 +30,10 @@ function adminHeaders(
 
 export async function fetchApprovals(
   isAdmin: boolean,
-  token?: string,
 ): Promise<ApprovalItem[]> {
+  const session = await fetchAuthSession();
+  const token = session.tokens?.idToken?.toString() as string;
+
   const res = await fetch(`${BACKEND_URL}/GetPendingCommunities`, {
     method: "POST",
     headers: adminHeaders(isAdmin, token),
@@ -44,8 +48,10 @@ export async function submitAction(
   id: string,
   action: ApprovalAction,
   comments?: string,
-  token?: string,
 ): Promise<void> {
+  const session = await fetchAuthSession();
+  const token = session.tokens?.idToken?.toString() as string;
+
   const res = await fetch(`${BACKEND_URL}/ApproveOrDenyCommunity`, {
     method: "POST",
     headers: adminHeaders(isAdmin, token),
