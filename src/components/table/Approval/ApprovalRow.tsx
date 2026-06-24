@@ -4,9 +4,10 @@ import { ApprovalItem } from "../../../helpers/approvalsApiHelpers";
 import CheckIcon from "../../icons/CheckIcon";
 import CrossIcon from "../../icons/CrossIcon";
 import PencilIcon from "../../icons/PencilIcon";
-import SpinnerIcon from "../../icons/SpinnerIcon";
-
-const MAX_DESCRIPTION_LENGTH = 200;
+import ActionButton from "./ActionButton";
+import AmendPopover from "./AmendPopover";
+import ApprovalRowMeta from "./ApprovalRowMeta";
+import DescriptionBlock from "./DescriptionBlock";
 
 type PendingAction = "approve" | "reject" | "amend" | null;
 
@@ -32,16 +33,8 @@ function ApprovalRow({
   onSubmitAmend,
 }: ApprovalRowProps): JSX.Element {
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   const isDisabled = pendingAction !== null;
-  const description = item.description ?? "No description provided.";
-  const isTruncatable = description.length > MAX_DESCRIPTION_LENGTH;
-
-  const displayedDescription =
-    isTruncatable && !isExpanded
-      ? `${description.slice(0, MAX_DESCRIPTION_LENGTH)}...`
-      : description;
 
   async function handleApprove(): Promise<void> {
     setPendingAction("approve");
@@ -73,86 +66,44 @@ function ApprovalRow({
   return (
     <TableRow>
       <div
-        className={`custom-table-row__content${isDisabled ? " custom-table-row__content--disabled" : ""}${isExpanded ? " custom-table-row__content--expanded" : ""}`}
+        className={`custom-table-row__content${isDisabled ? " custom-table-row__content--disabled" : ""}`}
       >
-        <div className="custom-table-row__meta">
-          <span className="custom-table-row__title">{item.name}</span>
-          <span className="custom-table-row__subtitle">
-            submitted by {item.ownerEmail}
-          </span>
-          {item.communityLink != null && (
-            <span className="custom-table-row__link-wrapper">
-              Link:{" "}
-              <a
-                href={item.communityLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="custom-table-row__link"
-              >
-                {item.communityLink}
-              </a>
-            </span>
-          )}
-        </div>
-        <div className="custom-table-row__description-container">
-          <p
-            className={`custom-table-row__description${!isExpanded ? " custom-table-row__description--clamped" : ""}`}
-          >
-            {displayedDescription}
-          </p>
-          {item.description != null && isTruncatable && (
-            <button
-              type="button"
-              className="custom-table-row__toggle-description-btn"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              {isExpanded ? "Show less" : "Show more"}
-            </button>
-          )}
-        </div>
+        <ApprovalRowMeta
+          name={item.name}
+          ownerEmail={item.ownerEmail}
+          communityLink={item.communityLink}
+        />
+        <DescriptionBlock description={item.description} />
       </div>
       <div className="custom-table-row__actions">
-        <button
-          className="custom-table-row__btn"
+        <ActionButton
           title="Approve"
           onClick={handleApprove}
           disabled={isDisabled}
-        >
-          {pendingAction === "approve" ? <SpinnerIcon /> : <CheckIcon />}
-        </button>
-        <button
-          className="custom-table-row__btn"
+          isPending={pendingAction === "approve"}
+          icon={<CheckIcon />}
+        />
+        <ActionButton
           title="Reject"
           onClick={handleReject}
           disabled={isDisabled}
-        >
-          {pendingAction === "reject" ? <SpinnerIcon /> : <CrossIcon />}
-        </button>
-        <button
-          className="custom-table-row__btn"
+          isPending={pendingAction === "reject"}
+          icon={<CrossIcon />}
+        />
+        <ActionButton
           title="Request Amendments"
           onClick={onToggleAmend}
           disabled={isDisabled}
-        >
-          <PencilIcon />
-        </button>
+          icon={<PencilIcon />}
+        />
         {isAmending && (
-          <div className="amend-popover">
-            <textarea
-              className="amend-popover__textarea"
-              rows={3}
-              placeholder="Your change request comment..."
-              value={commentText}
-              onChange={(e) => onCommentChange(e.target.value as string)}
-            />
-            <button
-              className="btn btn--primary amend-popover__submit"
-              disabled={!commentText.trim() || isDisabled}
-              onClick={handleSubmitAmend}
-            >
-              {pendingAction === "amend" ? <SpinnerIcon /> : "Submit"}
-            </button>
-          </div>
+          <AmendPopover
+            commentText={commentText}
+            onCommentChange={onCommentChange}
+            onSubmit={handleSubmitAmend}
+            isPending={pendingAction === "amend"}
+            isDisabled={isDisabled}
+          />
         )}
       </div>
     </TableRow>
