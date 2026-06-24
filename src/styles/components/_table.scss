@@ -51,6 +51,11 @@
     align-items: center;
     gap: $space-sm;
     margin-bottom: $space-xs;
+
+    @media (max-width: 576px) {
+      flex-wrap: wrap;
+      gap: $space-xs $space-sm;
+    }
   }
 
   &__title {
@@ -63,6 +68,10 @@
     font-size: 13px;
     color: $color-muted;
     font-style: italic;
+
+    @media (max-width: 576px) {
+      flex-basis: 100%;
+    }
   }
 
   &__description-container {
