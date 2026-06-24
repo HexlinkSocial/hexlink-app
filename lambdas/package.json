@@ -11,6 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "aws-jwt-verify": "^5.2.1",
     "esbuild": "^0.28.1",
     "pg": "^8.21.0"
   },

@@ -21,14 +21,8 @@ const db = drizzle(pool, { schema });
 export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
-  console.log("CONTEXT:", JSON.stringify(event.requestContext));
-  console.log(
-    "AUTHORIZER CONTEXT:",
-    JSON.stringify(event.requestContext?.authorizer),
-  );
-  console.log("HEADERS:", JSON.stringify(event.headers));
   try {
-    if (!isAdmin(event)) {
+    if (!(await isAdmin(event))) {
       return {
         statusCode: 403,
         body: JSON.stringify({

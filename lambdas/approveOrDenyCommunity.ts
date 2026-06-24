@@ -75,7 +75,7 @@ export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
-    if (!isAdmin(event)) {
+    if (!(await isAdmin(event))) {
       return {
         statusCode: 403,
         body: JSON.stringify({
