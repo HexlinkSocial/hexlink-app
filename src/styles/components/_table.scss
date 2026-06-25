@@ -64,9 +64,8 @@
   @include card-surface($space-md $space-lg);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: $space-md;
+  flex-direction: column;
+  gap: $space-sm;
   position: relative;
   transition: border-color $transition-fast, box-shadow $transition-fast;
 
@@ -75,22 +74,25 @@
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   }
 
-  @media (max-width: 576px) {
-    flex-direction: column;
-    align-items: stretch;
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: $space-md;
   }
 
-  &__content {
-    flex: 1;
-    min-width: 0;
+  &__body {
+    width: 100%;
   }
 
   &__meta {
     display: flex;
     align-items: baseline;
     gap: $space-xs $space-sm;
-    margin-bottom: $space-xs;
     flex-wrap: wrap;
+    min-width: 0;
+    flex: 1;
   }
 
   &__title {
@@ -175,13 +177,6 @@
     align-items: center;
     gap: $space-sm;
     flex-shrink: 0;
-
-    @media (max-width: 576px) {
-      justify-content: flex-end;
-      margin-top: $space-md;
-      padding-top: $space-sm;
-      border-top: 1px solid $color-border;
-    }
   }
 
   &__btn {
