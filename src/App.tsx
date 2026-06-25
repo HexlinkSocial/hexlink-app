@@ -7,11 +7,11 @@ import {
 } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import SampleAdminPage from "./pages/SampleAdminPage";
 import AdminApprovals from "./pages/AdminApprovals";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import ErrorPage from "./pages/ErrorPage";
 import Join from "./pages/Join";
+import UserCommunitiesDashboard from "./pages/UserCommunitiesDashboard";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -20,10 +20,10 @@ export const router = createBrowserRouter(
       <Route path="login" element={<Login />} />
       <Route path="join" element={<Join />} />
       <Route
-        path="sampleAdminPage"
+        path="manage"
         element={
           <ProtectedRoute>
-            <SampleAdminPage />
+            <UserCommunitiesDashboard />
           </ProtectedRoute>
         }
       />

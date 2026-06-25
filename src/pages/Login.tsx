@@ -32,7 +32,7 @@ export default function Login(): JSX.Element {
             loginMechanisms={["email"]}
             formFields={LOGIN_FORM_FIELDS}
           >
-            {() => <Navigate to="/sampleAdminPage" replace />}
+            {() => <Navigate to="/manage" replace />}
           </Authenticator>
         </div>
       </div>
