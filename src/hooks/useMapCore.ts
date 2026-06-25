@@ -103,6 +103,9 @@ export function useMapCore(
       "top-left",
     );
 
+    map.touchZoomRotate.disableRotation();
+    map.doubleClickZoom.disable();
+
     map.on("error", (e) => {
       if (e != null && "sourceId" in e) {
         const sourceId = (e as { sourceId: string }).sourceId;
