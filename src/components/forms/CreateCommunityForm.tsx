@@ -29,10 +29,12 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
   onInputChange,
 }) => {
   const isNameOverLimit = communityData.name.length > 100;
+  const isDescriptionOverLimit = communityData.description.length > 3000;
+  const isFormInvalid = isNameOverLimit || isDescriptionOverLimit;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isNameOverLimit) {
+    if (isFormInvalid) {
       return;
     }
     onSubmit(e);
@@ -44,7 +46,7 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
       title="Create Community"
       submitLabel="Create"
       isSubmitting={isSubmitting}
-      isDisabled={isNameOverLimit}
+      isDisabled={isFormInvalid}
       onCancel={onCancel}
       onSubmit={handleSubmit}
     >
@@ -78,7 +80,14 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
             value={communityData.description}
             onChange={onInputChange}
             placeholder="What is your community about?"
+            className={isDescriptionOverLimit ? "form__input--error" : ""}
           />
+          {isDescriptionOverLimit && (
+            <div className="form__error">
+              Description cannot exceed 1000 characters (currently{" "}
+              {communityData.description.length}/1000)
+            </div>
+          )}
         </div>
         <div className="form__group">
           <label htmlFor="url">Community URL</label>

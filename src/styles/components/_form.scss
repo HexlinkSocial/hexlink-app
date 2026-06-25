@@ -96,6 +96,10 @@
 
     &:focus { border-color: $color-accent; }
   }
+
+  textarea {
+    resize: vertical;
+  }
 }
 
 // ── Inline validation error ────────────────────
