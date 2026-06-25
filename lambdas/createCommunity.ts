@@ -43,6 +43,28 @@ export const handler = async (
       };
     }
 
+    if (name.length > 100) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: "Community name cannot exceed 100 characters.",
+        }),
+      };
+    }
+
+    if (
+      description !== undefined &&
+      description !== null &&
+      description.length > 3000
+    ) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: "Description cannot exceed 3000 characters.",
+        }),
+      };
+    }
+
     const [newApproval] = await db
       .insert(schema.approvals)
       .values({

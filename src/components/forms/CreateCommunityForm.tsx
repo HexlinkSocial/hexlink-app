@@ -32,7 +32,7 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
   const isDescriptionOverLimit = communityData.description.length > 3000;
   const isFormInvalid = isNameOverLimit || isDescriptionOverLimit;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (isFormInvalid) {
       return;
@@ -84,8 +84,8 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
           />
           {isDescriptionOverLimit && (
             <div className="form__error">
-              Description cannot exceed 1000 characters (currently{" "}
-              {communityData.description.length}/1000)
+              Description cannot exceed 3000 characters (currently{" "}
+              {communityData.description.length}/3000)
             </div>
           )}
         </div>
