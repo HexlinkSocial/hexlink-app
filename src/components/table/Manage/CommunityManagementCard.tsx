@@ -1,6 +1,7 @@
 import { JSX } from "react";
 import { UnifiedCommunityItem } from "../../../helpers/userCommunitiesApiHelpers";
 import StatusBadge from "../../StatusBadge";
+import DescriptionBlock from "../../DescriptionBlock";
 
 interface CommunityCardProps {
   item: UnifiedCommunityItem;
@@ -11,14 +12,6 @@ function CommunityManagementCard({
   item,
   onEditClick,
 }: CommunityCardProps): JSX.Element {
-  const renderDescriptionLines = (): JSX.Element[] => {
-    return item.description.split("\n").map((line, idx) => (
-      <p key={idx} className="custom-table-row__description">
-        {line || "Description Lorem ipsum"}
-      </p>
-    ));
-  };
-
   return (
     <div className="custom-table-row">
       <div className="custom-table-row__content">
@@ -26,9 +19,11 @@ function CommunityManagementCard({
           <h2 className="custom-table-row__title">{item.name}</h2>
         </div>
 
-        <div className="custom-table-row__description-container">
-          {renderDescriptionLines()}
-        </div>
+        <DescriptionBlock
+          description={item.description}
+          maxLength={200}
+          baseClassName="custom-table-row"
+        />
       </div>
 
       <div className="custom-table-row__actions">

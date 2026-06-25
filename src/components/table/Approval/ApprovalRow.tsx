@@ -7,7 +7,7 @@ import PencilIcon from "../../icons/PencilIcon";
 import ActionButton from "./ActionButton";
 import AmendPopover from "./AmendPopover";
 import ApprovalRowMeta from "./ApprovalRowMeta";
-import DescriptionBlock from "./DescriptionBlock";
+import DescriptionBlock from "../../DescriptionBlock";
 
 type PendingAction = "approve" | "reject" | "amend" | null;
 

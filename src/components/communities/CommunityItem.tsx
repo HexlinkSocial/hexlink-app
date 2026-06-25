@@ -1,6 +1,6 @@
 import { JSX } from "react";
 import { Community } from "./types";
-import CommunityDescription from "./CommunityDescription";
+import DescriptionBlock from "../DescriptionBlock";
 
 interface CommunityItemProps {
   community: Community;
@@ -14,7 +14,11 @@ export default function CommunityItem({
       <div className="community-item__info">
         <span className="community-item__name">{community.name}</span>
         {community.description !== null && (
-          <CommunityDescription description={community.description} />
+          <DescriptionBlock
+            description={community.description}
+            maxLength={90}
+            baseClassName="community-item"
+          />
         )}
       </div>
       {community.communityLink !== null ? (
