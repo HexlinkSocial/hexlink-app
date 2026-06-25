@@ -189,6 +189,93 @@
   }
 }
 
+.custom-card {
+  @include card-surface($space-md $space-lg);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: $space-md;
+  position: relative;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    border-color: $color-border-accent;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  &__content {
+    min-width: 0;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: baseline;
+    gap: $space-xs $space-sm;
+    margin-bottom: $space-xs;
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 700;
+    color: $color-text;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  &__description-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-xs;
+  }
+
+  &__description {
+    font-size: 13px;
+    color: $color-muted;
+    margin: 0;
+    width: 100%;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-sm;
+    padding-top: $space-sm;
+    border-top: 1px solid $color-border;
+  }
+
+  &__btn {
+    background: transparent;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    color: $color-accent;
+    cursor: pointer;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background $transition-fast, border-color $transition-fast;
+
+    &:hover {
+      background: $color-bg-hover;
+      border-color: $color-accent-soft;
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+  }
+}
+
 .amend-popover {
   @include card-surface($space-md);
   position: absolute;
