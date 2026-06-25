@@ -1,4 +1,4 @@
-import { fetchAuthSession } from "aws-amplify/auth";
+import { adminHeaders } from "./authHeaders";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "";
 
@@ -17,20 +17,10 @@ export interface ApprovalItem {
 
 export type ApprovalAction = "approve" | "reject" | "amend";
 
-function adminHeaders(token?: string): Record<string, string> {
-  return {
-    "Content-Type": "application/json",
-    ...(token != null ? { Authorization: `Bearer ${token}` } : {}),
-  };
-}
-
 export async function fetchApprovals(): Promise<ApprovalItem[]> {
-  const session = await fetchAuthSession();
-  const token = session.tokens?.idToken?.toString() as string;
-
   const res = await fetch(`${BACKEND_URL}/GetPendingCommunities`, {
     method: "POST",
-    headers: adminHeaders(token),
+    headers: await adminHeaders(),
     body: JSON.stringify({}),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -42,12 +32,9 @@ export async function submitAction(
   action: ApprovalAction,
   comments?: string,
 ): Promise<void> {
-  const session = await fetchAuthSession();
-  const token = session.tokens?.idToken?.toString() as string;
-
   const res = await fetch(`${BACKEND_URL}/ApproveOrDenyCommunity`, {
     method: "POST",
-    headers: adminHeaders(token),
+    headers: await adminHeaders(),
     body: JSON.stringify({ id, action, comments }),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
