@@ -3,7 +3,7 @@
 .table-container {
   max-width: 1200px;
   margin: $space-2xl auto;
-  padding: 0 $space-xl;
+  padding: calc(#{$space-2xl} + 60px) $space-xl $space-2xl;
   font-family: $font-sans;
 }
 
@@ -11,7 +11,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: $space-xl;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: $z-overlay;
+  background-color: $color-bg;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $space-xl $space-xl;
+  border-bottom: 1px solid $color-border;
 
   &__title {
     font-size: 24px;
@@ -30,6 +39,7 @@
 
 .custom-table-row {
   @include card-surface($space-md $space-lg);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -39,6 +49,7 @@
 
   &:hover {
     border-color: $color-border-accent;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   }
 
   @media (max-width: 576px) {
