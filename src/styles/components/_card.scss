@@ -91,7 +91,7 @@
   &__list {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: $space-md $space-md $space-xl;
     display: flex;
     flex-direction: column;
     gap: 10px;
