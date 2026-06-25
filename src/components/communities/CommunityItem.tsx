@@ -1,5 +1,6 @@
 import { JSX } from "react";
 import { Community } from "./types";
+import CommunityDescription from "./CommunityDescription";
 
 interface CommunityItemProps {
   community: Community;
@@ -13,7 +14,7 @@ export default function CommunityItem({
       <div className="community-item__info">
         <span className="community-item__name">{community.name}</span>
         {community.description !== null && (
-          <p className="community-item__description">{community.description}</p>
+          <CommunityDescription description={community.description} />
         )}
       </div>
       {community.communityLink !== null ? (
