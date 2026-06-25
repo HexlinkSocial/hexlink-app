@@ -43,6 +43,15 @@ export const handler = async (
       };
     }
 
+    if (cellIds.length > 50) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: "A maximum of 50 cell IDs is allowed.",
+        }),
+      };
+    }
+
     if (name.length > 100) {
       return {
         statusCode: 400,

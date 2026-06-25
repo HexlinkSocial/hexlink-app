@@ -16,6 +16,8 @@ import {
 } from "./helpers/builderMapHelpers";
 import Banner from "../Banner";
 
+const MAX_SELECTIONS = 50;
+
 const BuilderMap: React.FC<{
   containerRef: React.RefObject<HTMLDivElement | null>;
   initialCamera?: CameraState;
@@ -34,12 +36,14 @@ const BuilderMap: React.FC<{
   const { map, isMapReady, error, selectedIds } = useMapBuilder(
     containerRef,
     initialCamera,
+    { maxSelections: MAX_SELECTIONS },
   );
   useH3LayerStack(map, isMapReady);
 
   const [step, setStep] = useState<"select" | "form">("select");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [limitBannerDismissed, setLimitBannerDismissed] = useState(false);
   const [communityData, setCommunityData] = useState({
     name: "",
     description: "",
@@ -47,6 +51,15 @@ const BuilderMap: React.FC<{
   });
 
   const activeError = error != null && error !== dismissedError ? error : null;
+  const isAtLimit = selectedIds.size >= MAX_SELECTIONS;
+  const limitWarning =
+    isAtLimit && !limitBannerDismissed
+      ? `Maximum of ${MAX_SELECTIONS} cells selected.`
+      : null;
+
+  useEffect(() => {
+    if (!isAtLimit) setLimitBannerDismissed(false);
+  }, [isAtLimit]);
 
   async function submit(payload: CommunityPayload): Promise<void> {
     setIsSubmitting(true);
@@ -104,6 +117,12 @@ const BuilderMap: React.FC<{
   return (
     <>
       <Banner message={activeError} onClose={() => onDismissError(error!)} />
+      <Banner
+        message={limitWarning}
+        subtext="Deselect a cell to select a different one."
+        variant="warning"
+        onClose={() => setLimitBannerDismissed(true)}
+      />
 
       {step === "select" && (
         <SelectionLegend

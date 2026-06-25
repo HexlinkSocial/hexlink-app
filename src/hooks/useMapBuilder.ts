@@ -79,7 +79,9 @@ function checkConnectivity(ids: Set<string>): boolean {
 export function useMapBuilder(
   containerRef: React.RefObject<HTMLDivElement | null>,
   initialCamera?: CameraState,
+  options?: { maxSelections?: number },
 ): MapBuilderInfo {
+  const maxSelections = options?.maxSelections ?? Infinity;
   const { map, isMapReady, error } = useMapCore(containerRef, initialCamera);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(
     new Set<string>(),
@@ -161,6 +163,10 @@ export function useMapBuilder(
         return;
       }
 
+      if (currentSelected.size >= maxSelections) {
+        return;
+      }
+
       if (currentSelected.size > 0 && !currentAvailable.has(id)) {
         return;
       }
@@ -188,7 +194,7 @@ export function useMapBuilder(
     return () => {
       map.off("click", "h3-grid-fill", handleGridClick);
     };
-  }, [map, isMapReady]);
+  }, [map, isMapReady, maxSelections]);
 
   useEffect(() => {
     if (map == null || !isMapReady) return;
@@ -224,6 +230,8 @@ export function useMapBuilder(
       return;
     }
 
+    const atLimit = selectedIds.size >= maxSelections;
+
     const fillColorExpr: unknown[] = ["match", ["get", "h3"]];
     const fillOpacityExpr: unknown[] = ["match", ["get", "h3"]];
 
@@ -232,10 +240,12 @@ export function useMapBuilder(
       fillOpacityExpr.push(id, 0.6);
     });
 
-    availableIds.forEach((id) => {
-      fillColorExpr.push(id, "#5cb04f");
-      fillOpacityExpr.push(id, 0.5);
-    });
+    if (!atLimit) {
+      availableIds.forEach((id) => {
+        fillColorExpr.push(id, "#5cb04f");
+        fillOpacityExpr.push(id, 0.5);
+      });
+    }
 
     fillColorExpr.push("#626262");
     fillOpacityExpr.push(0.3);
@@ -250,9 +260,11 @@ export function useMapBuilder(
       lineColorExpr.push(id, "#73197A");
     });
 
-    availableIds.forEach((id) => {
-      lineColorExpr.push(id, "rgba(76, 160, 63, 0.5)");
-    });
+    if (!atLimit) {
+      availableIds.forEach((id) => {
+        lineColorExpr.push(id, "rgba(76, 160, 63, 0.5)");
+      });
+    }
 
     lineColorExpr.push("rgba(82, 82, 82, 0.4)");
 
@@ -263,7 +275,7 @@ export function useMapBuilder(
     if (map.getLayer(DYNAMIC_OUTLINE_ID) != null) {
       map.setPaintProperty(DYNAMIC_OUTLINE_ID, "line-color", lineColorExpr);
     }
-  }, [map, isMapReady, selectedIds, availableIds]);
+  }, [map, isMapReady, selectedIds, availableIds, maxSelections]);
 
   return { map, isMapReady, error, selectedIds };
 }
