@@ -127,7 +127,7 @@ Resources:
           Properties:
             ApiId: !Ref HttpApi
             Path: /GetUserCommunities
-            Method: POST
+            Method: GET
 
 Outputs:
   ApiUrl:

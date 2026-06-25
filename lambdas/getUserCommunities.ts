@@ -6,6 +6,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { eq } from "drizzle-orm";
 import * as schema from "../database/drizzle/schema";
+import { getUser } from "./helpers/auth";
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -21,12 +22,7 @@ export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
-    const userId =
-      event.requestContext?.Authorizer?.jwt?.claims?.sub ??
-      event.requestContext?.Authorizer?.claims?.sub ??
-      event.requestContext?.authorizer?.jwt?.claims?.sub ??
-      event.requestContext?.authorizer?.claims?.sub;
-
+    const userId = await getUser(event);
     if (userId == null) {
       return {
         statusCode: 401,
@@ -39,12 +35,12 @@ export const handler = async (
     const userApprovals = await db
       .select()
       .from(schema.approvals)
-      .where(eq(schema.approvals.owner, userId as string));
+      .where(eq(schema.approvals.owner, userId));
 
     const userCommunities = await db
       .select()
       .from(schema.communities)
-      .where(eq(schema.communities.owner, userId as string));
+      .where(eq(schema.communities.owner, userId));
 
     return {
       statusCode: 200,
