@@ -30,7 +30,14 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
 }) => {
   const isNameOverLimit = communityData.name.length > 100;
   const isDescriptionOverLimit = communityData.description.length > 3000;
-  const isFormInvalid = isNameOverLimit || isDescriptionOverLimit;
+
+  const urlRegex =
+    /^(?:https?:\/\/)?(?:www\.)?[-a-zA-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{2,6}\b(?:[-a-zA-zA-Z0-9()@:%_+.~#?&//=]*)$/;
+  const isUrlInvalid =
+    communityData.url.length > 0 && !urlRegex.test(communityData.url);
+
+  const isFormInvalid =
+    isNameOverLimit || isDescriptionOverLimit || isUrlInvalid;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -99,7 +106,13 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
             value={communityData.url}
             onChange={onInputChange}
             placeholder="example.com"
+            className={isUrlInvalid ? "form__input--error" : ""}
           />
+          {isUrlInvalid && (
+            <div className="form__error">
+              Please enter a valid URL (e.g., example.com)
+            </div>
+          )}
         </div>
         {errorMessage != null && (
           <div className="form__error">{errorMessage}</div>
