@@ -35,8 +35,8 @@ function EditCommunityForm({
   const hasNoChanges =
     originalData != null &&
     formData.name.trim() === originalData.name &&
-    formData.description.trim() === (originalData.description != null || "") &&
-    formData.url.trim() === (originalData.communityLink != null || "");
+    formData.description.trim() === (originalData.description || "") &&
+    formData.url.trim() === (originalData.communityLink || "");
 
   const isFormInvalid =
     isNameOverLimit || isDescriptionOverLimit || isUrlInvalid || hasNoChanges;
@@ -106,7 +106,7 @@ function EditCommunityForm({
           )}
         </div>
 
-        {hasNoChanges && !isFormInvalid && (
+        {hasNoChanges && (
           <div className="form__error" style={{ color: "#71717a" }}>
             Modify at least one value to save changes.
           </div>
