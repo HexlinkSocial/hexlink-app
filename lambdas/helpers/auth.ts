@@ -46,3 +46,19 @@ export async function getUser(
     return null;
   }
 }
+
+export async function getOwnerEmail(
+  event: APIGatewayProxyEventV2,
+): Promise<string | null> {
+  const token = extractToken(event);
+  if (token == null) return null;
+
+  try {
+    const payload = await verifier.verify(token);
+    const email = payload.email;
+    return typeof email === "string" ? email : null;
+  } catch (error) {
+    console.error("Email extraction failed:", error);
+    return null;
+  }
+}

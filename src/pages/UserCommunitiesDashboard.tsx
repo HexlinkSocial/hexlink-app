@@ -5,9 +5,11 @@ import { useAuth } from "../hooks/useAuth";
 import Banner from "../components/Banner";
 import {
   fetchUserCommunities,
+  editCommunity,
   UnifiedCommunityItem,
 } from "../helpers/userCommunitiesApiHelpers";
 import CommunityManagementCard from "../components/table/Manage/CommunityManagementCard";
+import EditCommunityForm from "../components/forms/EditCommunityForm";
 
 export default function UserCommunitiesDashboard(): JSX.Element {
   const { signOut } = useAuthenticator();
@@ -16,6 +18,17 @@ export default function UserCommunitiesDashboard(): JSX.Element {
   const [items, setItems] = useState<UnifiedCommunityItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [apiError, setApiError] = useState<string | null>(null);
+
+  const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [activeItem, setActiveItem] = useState<UnifiedCommunityItem | null>(
+    null,
+  );
+  const [formFields, setFormFields] = useState({
+    name: "",
+    description: "",
+    url: "",
+  });
 
   const loadData = useCallback(async (): Promise<void> => {
     try {
@@ -42,6 +55,51 @@ export default function UserCommunitiesDashboard(): JSX.Element {
       setLoading(false);
     }
   }, [isLoggedIn, isAuthLoading, loadData]);
+
+  const handleEditClick = (item: UnifiedCommunityItem): void => {
+    setActiveItem(item);
+    setFormFields({
+      name: item.name,
+      description: item.description ?? "",
+      url: item.communityLink ?? "",
+    });
+    setIsFormOpen(true);
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ): void => {
+    const { name, value } = e.target;
+    setFormFields((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFormSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
+    e.preventDefault();
+    if (!activeItem) return;
+
+    try {
+      setIsSubmitting(true);
+      setApiError(null);
+
+      await editCommunity({
+        id: activeItem.id,
+        name: formFields.name,
+        description: formFields.description,
+        communityLink: formFields.url,
+      });
+
+      setIsFormOpen(false);
+      await loadData();
+    } catch (error) {
+      setApiError(
+        error instanceof Error ? error.message : "Error saving changes",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (isAuthLoading || loading) {
     return (
@@ -81,11 +139,22 @@ export default function UserCommunitiesDashboard(): JSX.Element {
             <CommunityManagementCard
               key={item.id}
               item={item}
-              onEditClick={() => {}}
+              onEditClick={handleEditClick}
             />
           ))}
         </div>
       )}
+
+      <EditCommunityForm
+        isOpen={isFormOpen}
+        isSubmitting={isSubmitting}
+        originalData={activeItem}
+        formData={formFields}
+        errorMessage={apiError}
+        onCancel={() => setIsFormOpen(false)}
+        onSubmit={handleFormSubmit}
+        onInputChange={handleInputChange}
+      />
     </div>
   );
 }

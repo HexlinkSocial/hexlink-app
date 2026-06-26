@@ -34,22 +34,38 @@ async function handleApprove(
   const [newCommunity] = await tx
     .insert(schema.communities)
     .values({
+      id: approvalItem.id,
       name: approvalItem.name,
       description: approvalItem.description,
       owner: approvalItem.owner,
       communityLink: approvalItem.communityLink,
     })
+    .onConflictDoUpdate({
+      target: schema.communities.id,
+      set: {
+        name: approvalItem.name,
+        description: approvalItem.description,
+        owner: approvalItem.owner,
+        communityLink: approvalItem.communityLink,
+      },
+    })
     .returning();
 
   const communityId =
-    typeof newCommunity?.id === "string" ? newCommunity.id : "";
+    typeof newCommunity?.id === "string" ? newCommunity.id : approvalItem.id;
 
   const joinRecords = approvalItem.cellIds.map((cellId: string) => ({
     cellId,
     communityId,
   }));
 
-  await tx.insert(schema.cellCommunities).values(joinRecords);
+  if (joinRecords.length > 0) {
+    await tx
+      .insert(schema.cellCommunities)
+      .values(joinRecords)
+      .onConflictDoNothing();
+  }
+
   await tx
     .delete(schema.approvals)
     .where(eq(schema.approvals.id, approvalItem.id));

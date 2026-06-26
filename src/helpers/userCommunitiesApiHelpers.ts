@@ -8,7 +8,6 @@ export interface UnifiedCommunityItem {
   description: string;
   communityLink: string;
   status: "amendments_requested" | "pending" | "approved";
-  isRealCommunity: boolean;
 }
 
 export interface UserCommunitiesPayload {
@@ -25,6 +24,14 @@ export interface UserCommunitiesPayload {
     description: string | null;
     communityLink: string | null;
   }>;
+}
+
+export interface EditCommunityPayload {
+  id: string;
+  name: string;
+  description?: string | null;
+  communityLink?: string | null;
+  cognitoToken?: string | null;
 }
 
 export async function fetchUserCommunities(): Promise<UnifiedCommunityItem[]> {
@@ -49,7 +56,6 @@ export async function fetchUserCommunities(): Promise<UnifiedCommunityItem[]> {
         item.status === "amendments_requested"
           ? "amendments_requested"
           : "pending",
-      isRealCommunity: false,
     }),
   );
 
@@ -60,7 +66,6 @@ export async function fetchUserCommunities(): Promise<UnifiedCommunityItem[]> {
       description: item.description!,
       communityLink: item.communityLink!,
       status: "approved",
-      isRealCommunity: true,
     }),
   );
 
@@ -68,4 +73,23 @@ export async function fetchUserCommunities(): Promise<UnifiedCommunityItem[]> {
     const priority = { amendments_requested: 1, pending: 2, approved: 3 };
     return priority[a.status] - priority[b.status];
   });
+}
+
+export async function editCommunity(
+  payload: EditCommunityPayload,
+): Promise<{ message: string; approval?: UnifiedCommunityItem }> {
+  const response = await fetch(`${BACKEND_URL}/EditCommunity`, {
+    method: "POST",
+    headers: await adminHeaders(),
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to submit community modifications: ${response.statusText}`,
+    );
+  }
+
+  const data = await response.json();
+  return data;
 }
