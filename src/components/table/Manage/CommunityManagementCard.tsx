@@ -32,6 +32,17 @@ function CommunityManagementCard({
         </div>
       </div>
 
+      {item.status === "amendments_requested" && item.comments! && (
+        <div className="custom-table-row__feedback custom-table-row__feedback--amendments">
+          <strong className="custom-table-row__feedback-label">
+            Changes Required:
+          </strong>
+          <div className="custom-table-row__feedback-scroll-container">
+            <p className="custom-table-row__feedback-text">{item.comments}</p>
+          </div>
+        </div>
+      )}
+
       <div className="custom-table-row__body">
         <DescriptionBlock
           description={item.description}

@@ -8,6 +8,7 @@ export interface UnifiedCommunityItem {
   description: string;
   communityLink: string;
   status: "amendments_requested" | "pending" | "approved";
+  comments?: string | null;
 }
 
 export interface UserCommunitiesPayload {
@@ -17,6 +18,7 @@ export interface UserCommunitiesPayload {
     description: string | null;
     communityLink: string | null;
     status: string;
+    comments?: string | null;
   }>;
   communities: Array<{
     id: string;
@@ -56,6 +58,7 @@ export async function fetchUserCommunities(): Promise<UnifiedCommunityItem[]> {
         item.status === "amendments_requested"
           ? "amendments_requested"
           : "pending",
+      comments: item.comments,
     }),
   );
 
