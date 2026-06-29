@@ -115,6 +115,34 @@ Resources:
             Path: /GetPendingCommunities
             Method: POST
 
+  GetUserCommunitiesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-getUserCommunities"
+      CodeUri: dist/
+      Handler: getUserCommunities.handler
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /GetUserCommunities
+            Method: GET
+
+  EditCommunityFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-editCommunity"
+      CodeUri: dist/
+      Handler: editCommunity.handler
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /EditCommunity
+            Method: POST
+
 Outputs:
   ApiUrl:
     Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"

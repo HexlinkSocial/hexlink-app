@@ -102,6 +102,15 @@
   }
 }
 
+// ── Input variations ───────────────────────────
+.form__input--error {
+  border-color: $color-error !important;
+
+  &:focus {
+    border-color: $color-error !important;
+  }
+}
+
 // ── Inline validation error ────────────────────
 .form__error {
   font-family: $font-sans;
@@ -110,6 +119,10 @@
   color: $color-error;
   margin-top: $space-xs;
   animation: form-fade-in 0.2s ease-out;
+
+  &--warning {
+    color: #71717a;
+  }
 }
 
 // ── Action buttons row ─────────────────────────

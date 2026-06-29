@@ -16,9 +16,17 @@ $color-text:           #1a1a1a;
 $color-muted:          #6b6b7a;
 
 // ── Semantic colours ───────────────────────────
-$color-success:        #5cb04f;
+$color-success:#5cb04f;
+$color-success-background:#e3fbe3;
+$color-success-text:#197a1c;
+
 $color-unavailable:    #626262;
-$color-error:          #df2c2c;
+
+$color-error:#df2c2c;
+$color-error-background:#fbe3e3;
+$color-error-text:#c00000;
+;
+
 $color-error-banner-bg:  #e6c8eb;
 $color-error-details-bg: #f9e3fb;
 $color-error-details-text: #7A0081;

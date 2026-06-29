@@ -5,6 +5,19 @@
   margin: $space-2xl auto;
   padding: calc(#{$space-2xl} + 60px) $space-xl $space-2xl;
   font-family: $font-sans;
+
+  &__empty-state {
+    text-align: center;
+    color: #71717a;
+    margin-top: $space-2xl;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: $space-xl;
+    margin-top: $space-xl;
+  }
 }
 
 .table-header-row {
@@ -28,6 +41,16 @@
     color: $color-text;
     margin: 0;
   }
+
+  &__actions {
+    display: flex;
+    gap: $space-sm;
+    align-items: center;
+  }
+}
+
+.communities-card__spinner {
+  margin: 100px auto;
 }
 
 .custom-table {
@@ -41,9 +64,8 @@
   @include card-surface($space-md $space-lg);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: $space-md;
+  flex-direction: column;
+  gap: $space-sm;
   position: relative;
   transition: border-color $transition-fast, box-shadow $transition-fast;
 
@@ -52,22 +74,25 @@
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   }
 
-  @media (max-width: 576px) {
-    flex-direction: column;
-    align-items: stretch;
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: $space-md;
   }
 
-  &__content {
-    flex: 1;
-    min-width: 0;
+  &__body {
+    width: 100%;
   }
 
   &__meta {
     display: flex;
     align-items: baseline;
     gap: $space-xs $space-sm;
-    margin-bottom: $space-xs;
     flex-wrap: wrap;
+    min-width: 0;
+    flex: 1;
   }
 
   &__title {
@@ -147,18 +172,147 @@
     }
   }
 
+  &__feedback {
+    padding: $space-sm $space-md;
+    border-radius: $radius-md;
+    font-size: 13px;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: $space-xs;
+
+    &--amendments {
+      background-color: rgba($color-error, 0.06);
+      border: 1px solid rgba($color-error, 0.15);
+    }
+  }
+
+  &__feedback-label {
+    color: darken($color-error, 15%);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  &__feedback-scroll-container {
+    max-height: 100px;
+    overflow-y: auto;
+    padding-right: $space-xs;
+
+    scrollbar-width: thin;
+    scrollbar-color: rgba($color-text, 0.2) transparent;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba($color-text, 0.2);
+      border-radius: $radius-md;
+    }
+  }
+
+  &__feedback-text {
+    margin: 0;
+    color: $color-text;
+    white-space: pre-wrap;
+  }
+
   &__actions {
     display: flex;
     align-items: center;
     gap: $space-sm;
     flex-shrink: 0;
+  }
 
-    @media (max-width: 576px) {
-      justify-content: flex-end;
-      margin-top: $space-md;
-      padding-top: $space-sm;
-      border-top: 1px solid $color-border;
+  &__btn {
+    background: transparent;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    color: $color-accent;
+    cursor: pointer;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background $transition-fast, border-color $transition-fast;
+
+    &:hover {
+      background: $color-bg-hover;
+      border-color: $color-accent-soft;
     }
+
+    svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+  }
+}
+
+.custom-card {
+  @include card-surface($space-md $space-lg);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: $space-md;
+  position: relative;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    border-color: $color-border-accent;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  &__content {
+    min-width: 0;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: baseline;
+    gap: $space-xs $space-sm;
+    margin-bottom: $space-xs;
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 700;
+    color: $color-text;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  &__description-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-xs;
+  }
+
+  &__description {
+    font-size: 13px;
+    color: $color-muted;
+    margin: 0;
+    width: 100%;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-sm;
+    padding-top: $space-sm;
+    border-top: 1px solid $color-border;
   }
 
   &__btn {
