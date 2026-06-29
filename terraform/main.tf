@@ -166,13 +166,17 @@ resource "aws_s3_bucket_public_access_block" "lambda_deployments" {
 #################################
 
 resource "aws_cognito_user_pool" "users" {
-
-  name = "${var.project_name}-users"
-
+  name                     = "${var.project_name}-users"
   auto_verified_attributes = ["email"]
 
   password_policy {
     minimum_length = 8
+  }
+
+  verification_message_template {
+    default_email_option = "CONFIRM_WITH_CODE"
+    email_subject        = "Verify your account"
+    email_message        = file("${path.module}/../email_templates/accounts_verification.html")
   }
 }
 
