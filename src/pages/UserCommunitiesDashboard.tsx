@@ -118,7 +118,7 @@ export default function UserCommunitiesDashboard(): JSX.Element {
       <div className="table-header-row">
         <h1 className="table-header-row__title">My Communities</h1>
         <div className="table-header-row__actions">
-          <Link to="/" className="btn btn--secondary">
+          <Link to="/" className="btn btn--primary">
             Home
           </Link>
           <button className="btn btn--primary" onClick={signOut}>

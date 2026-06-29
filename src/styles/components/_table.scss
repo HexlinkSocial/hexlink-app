@@ -76,11 +76,11 @@
 
   &__header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     width: 100%;
     gap: $space-md;
-  }
+}
 
   &__body {
     width: 100%;
@@ -226,6 +226,7 @@
     align-items: center;
     gap: $space-sm;
     flex-shrink: 0;
+    margin-top: 5px;
   }
 
   &__btn {
