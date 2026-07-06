@@ -57,13 +57,13 @@ jobs:
         working-directory: lambdas
         run: npm ci
 
-      - name: Bundle TypeScript with esbuild
-        working-directory: lambdas
-        run: npm run build
-
       - name: Compile Email Templates
         working-directory: lambdas
         run: npm run build:emails
+
+      - name: Bundle TypeScript with esbuild
+        working-directory: lambdas
+        run: npm run build
 
       - name: SAM Build
         working-directory: lambdas
