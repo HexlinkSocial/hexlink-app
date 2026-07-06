@@ -20,8 +20,14 @@ async function main(): Promise<void> {
     external: ["react", "react-dom", "react-dom/server"],
     plugins: [sassPlugin({ type: "css-text" })],
   });
-  await ctx.watch();
-  console.log("watching emails...");
+
+  if (process.argv.includes("--watch")) {
+    await ctx.watch();
+    console.log("watching emails...");
+  } else {
+    await ctx.rebuild();
+    await ctx.dispose();
+  }
 }
 
 void main();

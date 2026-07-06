@@ -41,7 +41,7 @@ Main Hexlink app
     - In a separate terminal:
         - `sam build` - only needs running the first time or if you updated the template.yml or sam-env.json files. Restart your local SAM runner after.
         - `npm run sam` - this will run AWS SAM locally. Everytime you call a function, it creates a sibling container in Docker to run it.
-    - If you're testing email templates, also run `npm run build:emails` in yet another terminal. 
+    - If you're testing email templates, also run `npm run watch:emails` in yet another terminal. 
 
 - Frontend: `npm start`
 
