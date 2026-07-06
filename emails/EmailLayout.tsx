@@ -1,5 +1,5 @@
 import React, { JSX } from "react";
-import styles from "../styles/pages/_emails.scss?inline";
+import styles from "./_emails.scss?inline";
 
 interface EmailLayoutProps {
   subject: string;

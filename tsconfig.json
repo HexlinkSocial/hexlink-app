@@ -25,5 +25,5 @@
     "database/**/*.ts",
     "database/**/*.tsx",
     "lambdas/*.ts"
-  ]
+, "emails"  ]
 }

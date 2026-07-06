@@ -1,4 +1,24 @@
-@use "../abstracts" as *;
+$font-sans: "DM Sans", "Helvetica Neue", sans-serif;
+
+$color-bg-subtle: #f8f7f9;
+$color-bg: #ffffff;
+$color-text: #1a1a1a;
+$color-accent: #73197a;
+$color-accent-light: #a83db0;
+$color-muted: #6b6b7a;
+$color-border: rgba(0, 0, 0, 0.08);
+$color-border-accent: rgba(115, 25, 122, 0.25);
+
+$radius-sm: 6px;
+$radius-md: 8px;
+
+$shadow-card: 0 8px 32px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(115, 25, 122, 0.1);
+
+$space-lg: 16px;
+$space-xl: 24px;
+$space-2xl: 32px;
+$space-3xl: 40px;
+$space-md: 12px;
 
 .email-body {
   width: 100% !important;

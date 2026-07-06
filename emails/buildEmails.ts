@@ -3,7 +3,7 @@ import { readdirSync } from "fs";
 import { resolve, extname } from "path";
 import { sassPlugin } from "esbuild-sass-plugin";
 
-const emailsDir = resolve(__dirname, "../src/emails");
+const emailsDir = resolve(__dirname);
 const entryPoints = readdirSync(emailsDir)
   .filter((f) => extname(f) === ".tsx" && !f.includes("EmailLayout"))
   .map((f) => resolve(emailsDir, f));
