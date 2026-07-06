@@ -33,7 +33,7 @@
   "scripts": {
     "start": "vite --host 0.0.0.0",
     "build": "vite build",
-    "build:emails": "vite build --config vite.email.config.ts --watch",
+    "build:emails": "tsx utils/buildEmails.ts",
     "preview": "vite preview",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",

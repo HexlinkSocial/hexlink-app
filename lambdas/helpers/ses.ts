@@ -1,12 +1,12 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-import { html as communitySubmissionConfirmation } from "../../src/emails/communitySubmissionConfirmation";
+import * as communitySubmissionConfirmationTemplate from "../dist/email_templates/communitySubmissionConfirmation";
 
 const ses = new SESClient({ region: process.env.AWS_REGION ?? "eu-west-1" });
 
 const FROM_ADDRESS = process.env.SES_FROM_ADDRESS!;
 
 const templates: Record<string, string> = {
-  communitySubmissionConfirmation,
+  communitySubmissionConfirmation: communitySubmissionConfirmationTemplate.html,
 };
 
 function renderTemplate(
