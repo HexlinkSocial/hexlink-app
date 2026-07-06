@@ -6,6 +6,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "../database/drizzle/schema";
 import { getRequestBody } from "./helpers/request";
+import { sendEmail } from "./helpers/ses";
 
 // Supabase pooler uses a self-signed cert chain not trusted by Node's
 // default CA bundle. Disable verification for database connections only.
@@ -86,6 +87,18 @@ export const handler = async (
         status: "pending",
       })
       .returning();
+
+    if (ownerEmail != null) {
+      await sendEmail({
+        to: ownerEmail,
+        subject: "Community Submission Confirmation",
+        templateName: "communitySubmissionConfirmation",
+        variables: {
+          communityName: name,
+          appUrl: process.env.APP_URL ?? "",
+        },
+      });
+    }
 
     return {
       statusCode: 201,
