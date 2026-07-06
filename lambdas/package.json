@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "build": "esbuild *.ts --bundle --minify --platform=node --target=node20 --outdir=dist",
+    "build:emails": "tsx scripts/buildEmails.ts",
     "dev": "esbuild *.ts --bundle --minify --platform=node --target=node20 --outdir=dist --watch",
     "sam": "sam local start-api --template template.yml --port 4000 --host 0.0.0.0 --docker-network sam-app-network --env-vars sam-env.json --docker-volume-basedir \"/c/Hexlink/hexlink-app/lambdas\" --container-host host.docker.internal"
   },

@@ -61,6 +61,10 @@ jobs:
         working-directory: lambdas
         run: npm run build
 
+      - name: Compile Email Templates
+        working-directory: lambdas
+        run: npm run build:emails
+
       - name: SAM Build
         working-directory: lambdas
         run: sam build --template template.yml

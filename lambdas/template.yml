@@ -17,7 +17,10 @@ Parameters:
   CognitoClientId:
     Type: String
     NoEcho: true
-
+  SesFromAddress:
+    Type: String
+  AppUrl:
+    Type: String
 Globals:
   Function:
     Runtime: nodejs20.x
@@ -29,7 +32,8 @@ Globals:
         NODE_ENV: production
         COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
         COGNITO_CLIENT_ID: !Ref CognitoClientId
-
+        SES_FROM_ADDRESS: !Ref SesFromAddress
+        APP_URL: !Ref AppUrl
 Resources:
 
   HttpApi:
@@ -44,7 +48,18 @@ Resources:
         AllowMethods: [GET, POST, OPTIONS]
         AllowHeaders: [content-type, authorization]
         MaxAge: 86400
-
+  SesPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub "${ProjectName}-ses-send"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: "*"
   GetCommunitiesFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -79,6 +94,8 @@ Resources:
       FunctionName: !Sub "${ProjectName}-createCommunity"
       CodeUri: dist/
       Handler: createCommunity.handler
+      Policies:
+        - !Ref SesPolicy
       Events:
         ApiEvent:
           Type: HttpApi
