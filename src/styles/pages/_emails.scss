@@ -1,0 +1,82 @@
+.email-body {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: $font-sans;
+  background-color: $color-bg-subtle;
+  color: $color-text;
+}
+
+.email-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: $space-xl;
+}
+
+.email-card {
+  background: $color-bg;
+  padding: $space-3xl;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+  border: 1px solid $color-border;
+}
+
+.email-logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: $color-accent;
+  margin-bottom: $space-xl;
+  text-align: center;
+}
+
+.email-title {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 30px;
+  margin-top: 0;
+  margin-bottom: $space-lg;
+  color: $color-text;
+  text-align: center;
+}
+
+.email-text {
+  font-size: 16px;
+  line-height: 24px;
+  margin-bottom: $space-lg;
+  color: $color-muted;
+  text-align: center;
+
+  &.text-sm {
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: $space-xl;
+  }
+}
+
+.email-button-container {
+  text-align: center;
+  margin: $space-xl;
+}
+
+.email-button {
+  display: inline-block;
+  padding: $space-md $space-2xl;
+  background-color: $color-accent-light;
+  color: $color-bg;
+  text-decoration: none;
+  border-radius: $radius-sm;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 4px 12px $color-border-accent;
+}
+
+.email-footer {
+  font-size: 12px;
+  line-height: 18px;
+  color: #a1a1b2;
+  margin-bottom: 0;
+  text-align: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: $space-xl;
+}
