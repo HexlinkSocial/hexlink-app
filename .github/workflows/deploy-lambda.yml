@@ -63,7 +63,7 @@ jobs:
 
       - name: Bundle TypeScript with esbuild
         working-directory: lambdas
-        run: esbuild *.ts --bundle --minify --platform=node --target=node20 --outdir=dist --external:react --external:react-dom --external:react/jsx-runtime --external:react-dom/server
+        run: npm run build
 
       - name: SAM Build
         working-directory: lambdas

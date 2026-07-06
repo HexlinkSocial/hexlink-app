@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "esbuild *.ts --bundle --minify --platform=node --target=node20 --outdir=dist",
+    "build": "esbuild *.ts --bundle --minify --platform=node --target=node20 --outdir=dist --external:react --external:react-dom --external:react/jsx-runtime --external:react-dom/server",
     "build:emails": "tsx scripts/buildEmails.ts",
     "watch:emails": "tsx scripts/buildEmails.ts --watch",
     "dev": "esbuild *.ts --bundle --minify --platform=node --target=node20 --outdir=dist --watch",
