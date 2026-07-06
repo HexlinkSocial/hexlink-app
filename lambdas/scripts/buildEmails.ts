@@ -14,7 +14,7 @@ async function main(): Promise<void> {
   const ctx = await context({
     entryPoints,
     bundle: true,
-    format: "esm",
+    format: "cjs",
     jsx: "automatic",
     outdir: outDir,
     external: ["react", "react-dom", "react-dom/server"],
