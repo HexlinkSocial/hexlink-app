@@ -35,7 +35,7 @@ export async function sendEmail(params: {
 
   await ses.send(
     new SendEmailCommand({
-      Source: FROM_ADDRESS,
+      Source: `Hexlink <${FROM_ADDRESS}>`,
       Destination: {
         ToAddresses: [params.to],
       },
