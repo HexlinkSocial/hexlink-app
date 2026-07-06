@@ -95,7 +95,7 @@ export const handler = async (
         templateName: "communitySubmissionConfirmation",
         variables: {
           communityName: name,
-          appUrl: process.env.APP_URL ?? "",
+          backendUrl: process.env.BACKEND_URL ?? "",
         },
       });
     }

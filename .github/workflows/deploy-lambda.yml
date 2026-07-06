@@ -83,4 +83,6 @@ jobs:
               SupabaseDatabaseUrl="${{ secrets.DATABASE_URL }}" \
               AllowedOriginsUrl="${{ secrets.ALLOWED_ORIGINS_URL }}" \
               CognitoUserPoolId="${{ secrets.COGNITO_POOL }}" \
-              CognitoClientId="${{ secrets.COGNITO_CLIENT }}"
+              CognitoClientId="${{ secrets.COGNITO_CLIENT }}" \
+              BackendUrl="${{ secrets.BACKEND_URL }}" \
+              SesFromAddress="${{ secrets.SES_FROM_ADDRESS }}"
