@@ -1,3 +1,5 @@
+@use "../abstracts" as *;
+
 .email-body {
   width: 100% !important;
   height: 100% !important;
@@ -63,7 +65,7 @@
   display: inline-block;
   padding: $space-md $space-2xl;
   background-color: $color-accent-light;
-  color: $color-bg;
+  color: #ffffff !important;
   text-decoration: none;
   border-radius: $radius-sm;
   font-weight: 600;
