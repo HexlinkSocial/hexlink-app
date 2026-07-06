@@ -15,7 +15,8 @@
     "@aws-sdk/client-ses": "^3.0.0",
     "aws-jwt-verify": "^5.2.1",
     "esbuild": "^0.28.1",
-    "pg": "^8.21.0"
+    "pg": "^8.21.0",
+    "tsx": "^4.23.0"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",
