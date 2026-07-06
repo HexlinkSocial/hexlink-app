@@ -17,7 +17,6 @@ async function main(): Promise<void> {
     format: "cjs",
     jsx: "automatic",
     outdir: outDir,
-    external: ["react", "react-dom", "react-dom/server"],
     plugins: [sassPlugin({ type: "css-text" })],
   });
 
