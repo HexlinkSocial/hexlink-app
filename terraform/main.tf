@@ -176,7 +176,7 @@ resource "aws_cognito_user_pool" "users" {
   verification_message_template {
     default_email_option = "CONFIRM_WITH_CODE"
     email_subject        = "Verify your account"
-    email_message        = file("${path.module}/../email_templates/accounts_verification.html")
+    email_message        = file("${path.module}/../lambdas/emails/VerifyEmail.html")
   }
 }
 
@@ -368,7 +368,22 @@ resource "aws_iam_role_policy" "github_policy" {
           "arn:aws:iam::*:role/${var.project_name}-backend-stack-*",
           "arn:aws:iam::*:role/${var.project_name}-*"
         ]
+      },
+
+      {
+        Effect = "Allow"
+        Action = [
+          "iam:CreatePolicy",
+          "iam:DeletePolicy",
+          "iam:GetPolicy",
+          "iam:GetPolicyVersion",
+          "iam:ListPolicyVersions",
+          "iam:CreatePolicyVersion",
+          "iam:DeletePolicyVersion"
+        ]
+        Resource = "arn:aws:iam::*:policy/${var.project_name}-*"
       }
+
     ]
   })
 }
