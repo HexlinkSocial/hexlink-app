@@ -3,14 +3,14 @@ import { readdirSync } from "fs";
 import { resolve, extname } from "path";
 import { sassPlugin } from "esbuild-sass-plugin";
 
-const emailsDir = resolve(__dirname);
+const emailsDir = resolve(__dirname, "../emails");
 const entryPoints = readdirSync(emailsDir)
   .filter((f) => extname(f) === ".tsx" && !f.includes("EmailLayout"))
   .map((f) => resolve(emailsDir, f));
 
-const outDir = resolve(__dirname, "../lambdas/dist/email_templates");
+const outDir = resolve(__dirname, "../dist/email_templates");
 
-async function main() {
+async function main(): Promise<void> {
   const ctx = await context({
     entryPoints,
     bundle: true,
@@ -18,12 +18,10 @@ async function main() {
     jsx: "automatic",
     outdir: outDir,
     external: ["react", "react-dom", "react-dom/server"],
-    plugins: [
-      sassPlugin({ type: "css-text" }),
-    ],
+    plugins: [sassPlugin({ type: "css-text" })],
   });
   await ctx.watch();
   console.log("watching emails...");
 }
 
-main();
+void main();
