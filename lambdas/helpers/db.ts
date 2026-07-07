@@ -23,32 +23,18 @@ export async function getDatabase(): Promise<DbInstance> {
 
   if (process.env.NODE_ENV === "production") {
     try {
-      const [cert1, cert2, cert3] = await Promise.all([
+      const [cert1] = await Promise.all([
         ssm.send(
           new GetParameterCommand({
             Name: "db-ca-cert-1",
             WithDecryption: true,
           }),
         ),
-        ssm.send(
-          new GetParameterCommand({
-            Name: "db-ca-cert-2",
-            WithDecryption: true,
-          }),
-        ),
-        ssm.send(
-          new GetParameterCommand({
-            Name: "db-ca-cert-3",
-            WithDecryption: true,
-          }),
-        ),
       ]);
 
       const val1 = cert1.Parameter?.Value?.trim() ?? "";
-      const val2 = cert2.Parameter?.Value?.trim() ?? "";
-      const val3 = cert3.Parameter?.Value?.trim() ?? "";
 
-      caCert = `${val1}\n${val2}\n${val3}`;
+      caCert = `${val1}`;
     } catch (error) {
       console.error(
         "Failed to fetch split DB CA Certificates from SSM Parameter Store:",
