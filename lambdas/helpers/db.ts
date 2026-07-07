@@ -35,6 +35,25 @@ async function getCaCert(): Promise<string | undefined> {
   return cachedCaCert ?? undefined;
 }
 
+function getSslConfig(ca: string | undefined): any {
+  const isProd = process.env.NODE_ENV === "production";
+
+  if (!isProd) {
+    return false;
+  }
+
+  if (ca == null) {
+    throw new Error(
+      "Production database connection aborted: Missing required CA certificate for secure SSL validation.",
+    );
+  }
+
+  return {
+    ca,
+    rejectUnauthorized: true,
+  };
+}
+
 export async function getDatabase(): Promise<DbInstance> {
   if (cachedDb != null) {
     return cachedDb;
@@ -44,16 +63,19 @@ export async function getDatabase(): Promise<DbInstance> {
   url.searchParams.delete("sslmode");
 
   const ca = await getCaCert();
+  const ssl = getSslConfig(ca);
 
   cachedPool = new Pool({
     connectionString: url.toString(),
-    ssl:
-      process.env.NODE_ENV === "production"
-        ? ca != null
-          ? { ca, rejectUnauthorized: true }
-          : { rejectUnauthorized: false }
-        : false,
+    ssl,
     max: 1,
+    connectionTimeoutMillis: 5000,
+  });
+
+  cachedPool.on("error", (err) => {
+    console.error("Unexpected error on idle Lambda database client:", err);
+    cachedDb = null;
+    cachedPool = null;
   });
 
   cachedDb = drizzle(cachedPool, { schema });
