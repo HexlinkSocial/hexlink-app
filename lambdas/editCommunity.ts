@@ -126,6 +126,21 @@ async function createNewApprovalRequest(
   return newApproval;
 }
 
+async function notifyCommunitySubmission(
+  userEmail: string,
+  communityName: string,
+): Promise<void> {
+  await sendEmail({
+    to: userEmail,
+    subject: `Community Edit Submitted: ${communityName}`,
+    templateName: "communityEditSubmitted",
+    variables: {
+      communityName,
+      frontendUrl: FRONTEND_URL,
+    },
+  });
+}
+
 export const handler = async (
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   event: APIGatewayProxyEventV2,
@@ -187,15 +202,7 @@ export const handler = async (
         await updateExistingApproval(tx, input, userEmail);
       });
 
-      await sendEmail({
-        to: userEmail,
-        subject: `Community Edit Submitted: ${input.name}`,
-        templateName: "communityEditSubmitted",
-        variables: {
-          communityName: input.name!,
-          frontendUrl: FRONTEND_URL,
-        },
-      });
+      await notifyCommunitySubmission(userEmail, input.name!);
 
       return {
         statusCode: 200,
@@ -221,15 +228,7 @@ export const handler = async (
         );
       });
 
-      await sendEmail({
-        to: userEmail,
-        subject: `Community Edit Submitted: ${input.name}`,
-        templateName: "communityEditSubmitted",
-        variables: {
-          communityName: input.name!,
-          frontendUrl: FRONTEND_URL,
-        },
-      });
+      await notifyCommunitySubmission(userEmail, input.name!);
 
       return {
         statusCode: 201,
