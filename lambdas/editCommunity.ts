@@ -10,13 +10,18 @@ import { getRequestBody } from "./helpers/request";
 import { getOwnerEmail, getUser } from "./helpers/auth";
 import { sendEmail } from "./helpers/ses";
 
+const caCert =
+  process.env.DB_CA_CERT != null
+    ? Buffer.from(process.env.DB_CA_CERT, "base64").toString("utf-8")
+    : undefined;
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL!,
   ssl:
     process.env.NODE_ENV === "production"
       ? {
           rejectUnauthorized: true,
-          ca: process.env.DB_CA_CERT,
+          ca: caCert,
         }
       : false,
   max: 1,
