@@ -74,7 +74,7 @@ Resources:
             Action:
               - ssm:GetParameter
               - ssm:GetParameters
-            Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/hexlink/db-ca-cert-*"
+            Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/db-ca-cert-*"
 
   GetCommunitiesFunction:
     Type: AWS::Serverless::Function
