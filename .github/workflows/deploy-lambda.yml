@@ -71,8 +71,6 @@ jobs:
 
       - name: SAM Deploy
         working-directory: lambdas
-        env:
-          DB_CA_CERT: ${{ secrets.DB_CA_CERT }}
         run: |
           sam deploy \
             --no-confirm-changeset \
