@@ -84,5 +84,5 @@ jobs:
               AllowedOriginsUrl="${{ secrets.ALLOWED_ORIGINS_URL }}" \
               CognitoUserPoolId="${{ secrets.COGNITO_POOL }}" \
               CognitoClientId="${{ secrets.COGNITO_CLIENT }}" \
-              BackendUrl="${{ secrets.BACKEND_URL }}" \
+              FrontendUrl="${{ secrets.FRONTEND_URL }}" \
               SesFromAddress="${{ secrets.SES_FROM_ADDRESS }}"
