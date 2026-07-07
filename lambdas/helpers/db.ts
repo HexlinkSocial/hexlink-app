@@ -44,9 +44,9 @@ export async function getDatabase(): Promise<DbInstance> {
         ),
       ]);
 
-      const val1 = cert1.Parameter?.Value ?? "";
-      const val2 = cert2.Parameter?.Value ?? "";
-      const val3 = cert3.Parameter?.Value ?? "";
+      const val1 = cert1.Parameter?.Value?.trim() ?? "";
+      const val2 = cert2.Parameter?.Value?.trim() ?? "";
+      const val3 = cert3.Parameter?.Value?.trim() ?? "";
 
       caCert = `${val1}\n${val2}\n${val3}`;
     } catch (error) {
