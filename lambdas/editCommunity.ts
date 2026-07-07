@@ -2,37 +2,12 @@ import {
   APIGatewayProxyEventV2,
   APIGatewayProxyStructuredResultV2,
 } from "aws-lambda";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
 import { eq, and } from "drizzle-orm";
 import * as schema from "../database/drizzle/schema";
 import { getRequestBody } from "./helpers/request";
 import { getOwnerEmail, getUser } from "./helpers/auth";
 import { sendEmail } from "./helpers/ses";
-
-const caCert =
-  process.env.DB_CA_CERT != null
-    ? Buffer.from(process.env.DB_CA_CERT, "base64").toString("utf-8")
-    : undefined;
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL!,
-  ssl:
-    process.env.NODE_ENV === "production"
-      ? {
-          rejectUnauthorized: true,
-          ca: caCert,
-        }
-      : false,
-  max: 1,
-});
-
-const db = drizzle(pool, { schema });
-
-type DbInstance = typeof db;
-type TransactionContext = Parameters<
-  Parameters<DbInstance["transaction"]>[0]
->[0];
+import { getDatabase, DbInstance, TransactionContext } from "./helpers/db";
 
 interface EditCommunityInput {
   id?: string;
@@ -47,7 +22,10 @@ type ApprovalRecord = typeof schema.approvals.$inferSelect;
 
 const FRONTEND_URL = process.env.FRONTEND_URL ?? "";
 
-async function fetchCommunityCellIds(communityId: string): Promise<string[]> {
+async function fetchCommunityCellIds(
+  db: DbInstance,
+  communityId: string,
+): Promise<string[]> {
   const records = await db
     .select({ cellId: schema.cellCommunities.cellId })
     .from(schema.cellCommunities)
@@ -150,10 +128,11 @@ async function notifyCommunitySubmission(
 }
 
 export const handler = async (
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
+    const db = await getDatabase();
+
     const userEmail = await getOwnerEmail(event);
     if (userEmail == null) {
       return {
@@ -222,7 +201,7 @@ export const handler = async (
     }
 
     if (existingCommunity !== undefined && existingApproval === undefined) {
-      const cellIds = await fetchCommunityCellIds(targetId);
+      const cellIds = await fetchCommunityCellIds(db, targetId);
 
       // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
       let createdRecord: ApprovalRecord | undefined;

@@ -21,9 +21,7 @@ Parameters:
     Type: String
   FrontendUrl:
     Type: String
-  DbCaCert:
-    Type: String
-    NoEcho: true
+
 Globals:
   Function:
     Runtime: nodejs20.x
@@ -37,7 +35,10 @@ Globals:
         COGNITO_CLIENT_ID: !Ref CognitoClientId
         SES_FROM_ADDRESS: !Ref SesFromAddress
         FRONTEND_URL: !Ref FrontendUrl
-        DB_CA_CERT: !Ref DbCaCert
+    Policies:
+      - SSMParameterReadPolicy:
+          ParameterName: "db-ca-cert-*"
+
 Resources:
 
   HttpApi:

@@ -74,7 +74,6 @@ jobs:
         env:
           DB_CA_CERT: ${{ secrets.DB_CA_CERT }}
         run: |
-          ENCODED_CERT=$(echo "$DB_CA_CERT" | base64 -w 0)
           sam deploy \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
@@ -88,5 +87,4 @@ jobs:
               CognitoUserPoolId="${{ secrets.COGNITO_POOL }}" \
               CognitoClientId="${{ secrets.COGNITO_CLIENT }}" \
               FrontendUrl="${{ secrets.FRONTEND_URL }}" \
-              SesFromAddress="${{ secrets.SES_FROM_ADDRESS }}" \
-              DbCaCert="$ENCODED_CERT"
+              SesFromAddress="${{ secrets.SES_FROM_ADDRESS }}"
