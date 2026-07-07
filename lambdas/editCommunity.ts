@@ -8,14 +8,14 @@ import { eq, and } from "drizzle-orm";
 import * as schema from "../database/drizzle/schema";
 import { getRequestBody } from "./helpers/request";
 import { getOwnerEmail, getUser } from "./helpers/auth";
-
-// Supabase pooler uses a self-signed cert chain not trusted by Node's
-// default CA bundle. Disable verification for database connections only.
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+import { sendEmail } from "./helpers/ses";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL!,
-  ssl: process.env.NODE_ENV === "production" ? true : false,
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: true }
+      : false,
   max: 1,
 });
 
@@ -36,6 +36,8 @@ interface EditCommunityInput {
 }
 
 type ApprovalRecord = typeof schema.approvals.$inferSelect;
+
+const BACKEND_URL = process.env.BACKEND_URL ?? "";
 
 async function fetchCommunityCellIds(communityId: string): Promise<string[]> {
   const records = await db
@@ -185,6 +187,16 @@ export const handler = async (
         await updateExistingApproval(tx, input, userEmail);
       });
 
+      await sendEmail({
+        to: userEmail,
+        subject: `Community Edit Submitted: ${input.name}`,
+        templateName: "communityEditSubmitted",
+        variables: {
+          communityName: input.name!,
+          backendUrl: BACKEND_URL,
+        },
+      });
+
       return {
         statusCode: 200,
         body: JSON.stringify({
@@ -207,6 +219,16 @@ export const handler = async (
           userEmail,
           cellIds,
         );
+      });
+
+      await sendEmail({
+        to: userEmail,
+        subject: `Community Edit Submitted: ${input.name}`,
+        templateName: "communityEditSubmitted",
+        variables: {
+          communityName: input.name!,
+          backendUrl: BACKEND_URL,
+        },
       });
 
       return {
