@@ -31,4 +31,6 @@ const CommunitySubmissionEmail = (): JSX.Element => {
   );
 };
 
-export const html = renderToStaticMarkup(<CommunitySubmissionEmail />);
+const emailElement: React.ReactElement = <CommunitySubmissionEmail />;
+
+export const html = renderToStaticMarkup(emailElement);
