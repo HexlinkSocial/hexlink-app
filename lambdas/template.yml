@@ -110,6 +110,8 @@ Resources:
       FunctionName: !Sub "${ProjectName}-approveOrDenyCommunity"
       CodeUri: dist/
       Handler: approveOrDenyCommunity.handler
+      Policies:
+        - !Ref SesPolicy
       Events:
         ApiEvent:
           Type: HttpApi
@@ -152,6 +154,8 @@ Resources:
       FunctionName: !Sub "${ProjectName}-editCommunity"
       CodeUri: dist/
       Handler: editCommunity.handler
+      Policies:
+        - !Ref SesPolicy
       Events:
         ApiEvent:
           Type: HttpApi

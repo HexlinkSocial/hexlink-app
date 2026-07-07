@@ -8,6 +8,7 @@ import { eq } from "drizzle-orm";
 import * as schema from "../database/drizzle/schema";
 import { getRequestBody } from "./helpers/request";
 import { isAdmin } from "./helpers/auth";
+import { sendEmail } from "./helpers/ses";
 
 type ApprovalItem = typeof schema.approvals.$inferSelect;
 type DbInstance = typeof db;
@@ -26,6 +27,8 @@ const pool = new Pool({
 });
 
 const db = drizzle(pool, { schema });
+
+const BACKEND_URL = process.env.BACKEND_URL;
 
 async function handleApprove(
   tx: TransactionContext,
@@ -69,21 +72,62 @@ async function handleApprove(
   await tx
     .delete(schema.approvals)
     .where(eq(schema.approvals.id, approvalItem.id));
+
+  if (approvalItem.ownerEmail != null && BACKEND_URL != null) {
+    await sendEmail({
+      to: approvalItem.ownerEmail,
+      subject: `Community Approved: ${approvalItem.name}`,
+      templateName: "communityApproved",
+      variables: {
+        communityName: approvalItem.name,
+        backendUrl: BACKEND_URL,
+      },
+    });
+  }
 }
 
-async function handleReject(tx: TransactionContext, id: string): Promise<void> {
-  await tx.delete(schema.approvals).where(eq(schema.approvals.id, id));
+async function handleReject(
+  tx: TransactionContext,
+  approvalItem: ApprovalItem,
+): Promise<void> {
+  await tx
+    .delete(schema.approvals)
+    .where(eq(schema.approvals.id, approvalItem.id));
+
+  if (approvalItem.ownerEmail != null) {
+    await sendEmail({
+      to: approvalItem.ownerEmail,
+      subject: `Submission Update: ${approvalItem.name}`,
+      templateName: "communityDenied",
+      variables: {
+        communityName: approvalItem.name,
+      },
+    });
+  }
 }
 
 async function handleAmendments(
   tx: TransactionContext,
-  id: string,
+  approvalItem: ApprovalItem,
   comments: string,
 ): Promise<void> {
   await tx
     .update(schema.approvals)
     .set({ status: "amendments_requested", comments })
-    .where(eq(schema.approvals.id, id));
+    .where(eq(schema.approvals.id, approvalItem.id));
+
+  if (approvalItem.ownerEmail != null && BACKEND_URL != null) {
+    await sendEmail({
+      to: approvalItem.ownerEmail,
+      subject: `Changes required for ${approvalItem.name}`,
+      templateName: "communityAmendments",
+      variables: {
+        communityName: approvalItem.name,
+        backendUrl: BACKEND_URL,
+        comments,
+      },
+    });
+  }
 }
 
 export const handler = async (
@@ -131,14 +175,14 @@ export const handler = async (
           break;
 
         case "reject":
-          await handleReject(tx, id);
+          await handleReject(tx, approvalItem);
           break;
 
         case "amend":
           if (comments === undefined || comments === "") {
             throw new Error("Comments required for amendments");
           }
-          await handleAmendments(tx, id, comments);
+          await handleAmendments(tx, approvalItem, comments);
           break;
 
         default:
