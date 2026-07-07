@@ -35,9 +35,6 @@ Globals:
         COGNITO_CLIENT_ID: !Ref CognitoClientId
         SES_FROM_ADDRESS: !Ref SesFromAddress
         FRONTEND_URL: !Ref FrontendUrl
-    Policies:
-      - SSMParameterReadPolicy:
-          ParameterName: "db-ca-cert-*"
 
 Resources:
 
@@ -65,12 +62,28 @@ Resources:
               - ses:SendEmail
               - ses:SendRawEmail
             Resource: "*"
+
+  SsmDbCertPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub "${ProjectName}-ssm-db-cert-read"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - ssm:GetParameter
+              - ssm:GetParameters
+            Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/hexlink/db-ca-cert-*"
+
   GetCommunitiesFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub "${ProjectName}-getCommunitiesByCellId"
       CodeUri: dist/
       Handler: getCommunitiesByCellId.handler
+      Policies:
+        - !Ref SsmDbCertPolicy
       Events:
         ApiEvent:
           Type: HttpApi
@@ -85,6 +98,8 @@ Resources:
       FunctionName: !Sub "${ProjectName}-getCommunityCounts"
       CodeUri: dist/
       Handler: getCommunityCounts.handler
+      Policies:
+        - !Ref SsmDbCertPolicy
       Events:
         ApiEvent:
           Type: HttpApi
@@ -101,6 +116,7 @@ Resources:
       Handler: createCommunity.handler
       Policies:
         - !Ref SesPolicy
+        - !Ref SsmDbCertPolicy
       Events:
         ApiEvent:
           Type: HttpApi
@@ -117,6 +133,7 @@ Resources:
       Handler: approveOrDenyCommunity.handler
       Policies:
         - !Ref SesPolicy
+        - !Ref SsmDbCertPolicy
       Events:
         ApiEvent:
           Type: HttpApi
@@ -131,6 +148,8 @@ Resources:
       FunctionName: !Sub "${ProjectName}-getPendingCommunities"
       CodeUri: dist/
       Handler: getPendingCommunities.handler
+      Policies:
+        - !Ref SsmDbCertPolicy
       Events:
         ApiEvent:
           Type: HttpApi
@@ -145,6 +164,8 @@ Resources:
       FunctionName: !Sub "${ProjectName}-getUserCommunities"
       CodeUri: dist/
       Handler: getUserCommunities.handler
+      Policies:
+        - !Ref SsmDbCertPolicy
       Events:
         ApiEvent:
           Type: HttpApi
@@ -161,6 +182,7 @@ Resources:
       Handler: editCommunity.handler
       Policies:
         - !Ref SesPolicy
+        - !Ref SsmDbCertPolicy
       Events:
         ApiEvent:
           Type: HttpApi
