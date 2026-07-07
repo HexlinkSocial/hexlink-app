@@ -56,6 +56,7 @@ async function main(): Promise<void> {
   } else {
     await ctx.rebuild();
     await ctx.dispose();
+    process.exit(0);
   }
 }
 
