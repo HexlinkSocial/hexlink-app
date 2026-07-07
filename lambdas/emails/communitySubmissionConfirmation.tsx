@@ -23,7 +23,7 @@ const CommunitySubmissionEmail = (): JSX.Element => {
       </p>
 
       <div className="email-button-container">
-        <a href="{{backendUrl}}/manage" className="email-button">
+        <a href="{{frontendUrl}}/manage" className="email-button">
           View Submission Status
         </a>
       </div>

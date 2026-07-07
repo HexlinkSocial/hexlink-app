@@ -19,7 +19,7 @@ Parameters:
     NoEcho: true
   SesFromAddress:
     Type: String
-  BackendUrl:
+  FrontendUrl:
     Type: String
 Globals:
   Function:
@@ -33,7 +33,7 @@ Globals:
         COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
         COGNITO_CLIENT_ID: !Ref CognitoClientId
         SES_FROM_ADDRESS: !Ref SesFromAddress
-        BACKEND_URL: !Ref BackendUrl
+        FRONTEND_URL: !Ref FrontendUrl
 Resources:
 
   HttpApi:

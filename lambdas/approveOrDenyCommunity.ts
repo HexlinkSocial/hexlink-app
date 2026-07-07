@@ -28,7 +28,7 @@ const pool = new Pool({
 
 const db = drizzle(pool, { schema });
 
-const BACKEND_URL = process.env.BACKEND_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 async function handleApprove(
   tx: TransactionContext,
@@ -73,14 +73,14 @@ async function handleApprove(
     .delete(schema.approvals)
     .where(eq(schema.approvals.id, approvalItem.id));
 
-  if (approvalItem.ownerEmail != null && BACKEND_URL != null) {
+  if (approvalItem.ownerEmail != null && FRONTEND_URL != null) {
     await sendEmail({
       to: approvalItem.ownerEmail,
       subject: `Community Approved: ${approvalItem.name}`,
       templateName: "communityApproved",
       variables: {
         communityName: approvalItem.name,
-        backendUrl: BACKEND_URL,
+        frontendUrl: FRONTEND_URL,
       },
     });
   }
@@ -116,14 +116,14 @@ async function handleAmendments(
     .set({ status: "amendments_requested", comments })
     .where(eq(schema.approvals.id, approvalItem.id));
 
-  if (approvalItem.ownerEmail != null && BACKEND_URL != null) {
+  if (approvalItem.ownerEmail != null && FRONTEND_URL != null) {
     await sendEmail({
       to: approvalItem.ownerEmail,
       subject: `Changes required for ${approvalItem.name}`,
       templateName: "communityAmendments",
       variables: {
         communityName: approvalItem.name,
-        backendUrl: BACKEND_URL,
+        frontendUrl: FRONTEND_URL,
         comments,
       },
     });

@@ -37,7 +37,7 @@ interface EditCommunityInput {
 
 type ApprovalRecord = typeof schema.approvals.$inferSelect;
 
-const BACKEND_URL = process.env.BACKEND_URL ?? "";
+const FRONTEND_URL = process.env.FRONTEND_URL ?? "";
 
 async function fetchCommunityCellIds(communityId: string): Promise<string[]> {
   const records = await db
@@ -193,7 +193,7 @@ export const handler = async (
         templateName: "communityEditSubmitted",
         variables: {
           communityName: input.name!,
-          backendUrl: BACKEND_URL,
+          frontendUrl: FRONTEND_URL,
         },
       });
 
@@ -227,7 +227,7 @@ export const handler = async (
         templateName: "communityEditSubmitted",
         variables: {
           communityName: input.name!,
-          backendUrl: BACKEND_URL,
+          frontendUrl: FRONTEND_URL,
         },
       });
 
