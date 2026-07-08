@@ -2,21 +2,10 @@ import {
   APIGatewayProxyEventV2,
   APIGatewayProxyStructuredResultV2,
 } from "aws-lambda";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
 import { eq } from "drizzle-orm";
 import * as schema from "../database/drizzle/schema";
 import { getUser } from "./helpers/auth";
-
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL!,
-  ssl: process.env.NODE_ENV === "production" ? true : false,
-  max: 1,
-});
-
-const db = drizzle(pool, { schema });
+import { getDatabase } from "./helpers/db";
 
 export const handler = async (
   event: APIGatewayProxyEventV2,
@@ -31,6 +20,8 @@ export const handler = async (
         }),
       };
     }
+
+    const db = await getDatabase();
 
     const userApprovals = await db
       .select()

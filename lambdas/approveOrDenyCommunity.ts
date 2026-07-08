@@ -2,31 +2,14 @@ import {
   APIGatewayProxyEventV2,
   APIGatewayProxyStructuredResultV2,
 } from "aws-lambda";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
 import { eq } from "drizzle-orm";
 import * as schema from "../database/drizzle/schema";
 import { getRequestBody } from "./helpers/request";
 import { isAdmin } from "./helpers/auth";
 import { sendEmail } from "./helpers/ses";
+import { getDatabase, DbInstance, TransactionContext } from "./helpers/db";
 
 type ApprovalItem = typeof schema.approvals.$inferSelect;
-type DbInstance = typeof db;
-type TransactionContext = Parameters<
-  Parameters<DbInstance["transaction"]>[0]
->[0];
-
-// Supabase pooler uses a self-signed cert chain not trusted by Node's
-// default CA bundle. Disable verification for database connections only.
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL!,
-  ssl: process.env.NODE_ENV === "production" ? true : false,
-  max: 1,
-});
-
-const db = drizzle(pool, { schema });
 
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
@@ -155,6 +138,8 @@ export const handler = async (
         }),
       };
     }
+
+    const db = await getDatabase();
 
     const [approvalItem] = await db
       .select()

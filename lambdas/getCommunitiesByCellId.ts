@@ -2,22 +2,9 @@ import {
   APIGatewayProxyEventV2,
   APIGatewayProxyStructuredResultV2,
 } from "aws-lambda";
-import { drizzle } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
-import { Pool } from "pg";
 import * as schema from "../database/drizzle/schema";
-
-// Supabase pooler uses a self-signed cert chain not trusted by Node's
-// default CA bundle. Disable verification for database connections only.
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL!,
-  ssl: process.env.NODE_ENV === "production" ? true : false,
-  max: 1,
-});
-
-const db = drizzle(pool, { schema });
+import { getDatabase } from "./helpers/db";
 
 const CORS_HEADERS = {
   "Content-Type": "application/json",
@@ -53,6 +40,8 @@ export const handler = async (
   }
 
   try {
+    const db = await getDatabase();
+
     const cellCommunitiesResults = await db.query.cellCommunities.findMany({
       where: eq(schema.cellCommunities.cellId, cellId),
       with: {
