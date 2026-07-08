@@ -73,6 +73,7 @@ function ApprovalRow({
           ownerEmail={item.ownerEmail}
           communityLink={item.communityLink}
           cellIds={item.cellIds}
+          lastEdited={item.lastEdited}
         />
         <DescriptionBlock description={item.description} />
       </div>

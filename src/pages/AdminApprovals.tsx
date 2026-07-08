@@ -53,14 +53,19 @@ export default function AdminApprovals(): JSX.Element {
     try {
       setApiError(null);
       const data = await fetchApprovals();
-      setApprovals(data);
+      const sortedData = [...data].sort((a, b) => {
+        const timeA = new Date(a.lastEdited ?? a.createdAt).getTime();
+        const timeB = new Date(b.lastEdited ?? b.createdAt).getTime();
+        return timeA - timeB;
+      });
+      setApprovals(sortedData);
     } catch (error) {
       console.error("Failed to fetch approvals:", error);
       setApiError(error instanceof Error ? error.message : "Unknown error");
     } finally {
-      setLoading(false);
+      loading && setLoading(false);
     }
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
     if (isAuthLoading) return;

@@ -73,6 +73,7 @@ async function updateExistingApproval(
         input.communityLink !== undefined ? input.communityLink : null,
       status: "pending",
       comments: null,
+      lastEdited: new Date(),
     })
     .where(
       and(
@@ -106,6 +107,7 @@ async function createNewApprovalRequest(
       communityLink: communityLink ?? null,
       cellIds,
       status: "pending",
+      lastEdited: null,
     })
     .returning();
 

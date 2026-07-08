@@ -3,6 +3,7 @@ import styles from "../styles/components/StatusBadge.module.scss";
 
 interface StatusBadgeProps {
   status: "amendments_requested" | "pending" | "approved";
+  labelText?: string;
 }
 
 const STATUS_CONFIG: Record<
@@ -23,16 +24,21 @@ const STATUS_CONFIG: Record<
   },
 };
 
-function StatusBadge({ status }: StatusBadgeProps): JSX.Element | null {
+function StatusBadge({
+  status,
+  labelText,
+}: StatusBadgeProps): JSX.Element | null {
   const config = STATUS_CONFIG[status];
 
   if (config == null) {
     return null;
   }
 
+  const displayLabel = labelText ?? config.label;
+
   return (
     <span className={`${styles.badge} ${config.className}`}>
-      {config.label}
+      {displayLabel}
     </span>
   );
 }

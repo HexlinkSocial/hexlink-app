@@ -13,6 +13,7 @@ export interface ApprovalItem {
   status: string;
   comments: string | null;
   createdAt: string;
+  lastEdited: string;
 }
 
 export type ApprovalAction = "approve" | "reject" | "amend";

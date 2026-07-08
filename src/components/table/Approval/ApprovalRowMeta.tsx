@@ -1,10 +1,12 @@
 import { JSX } from "react";
+import StatusBadge from "../../StatusBadge";
 
 interface ApprovalRowMetaProps {
   name: string;
   ownerEmail: string;
   communityLink?: string | null;
   cellIds?: string[];
+  lastEdited?: string | null;
 }
 
 function buildH3MapUrl(cellIds?: string[]): string | null {
@@ -15,11 +17,22 @@ function buildH3MapUrl(cellIds?: string[]): string | null {
   return `https://h3geo.org/#hex=${encodedIds}`;
 }
 
+function formatBadgeDate(dateString: string): string {
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return "";
+
+  return d.toLocaleString(undefined, {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+}
+
 function ApprovalRowMeta({
   name,
   ownerEmail,
   communityLink,
   cellIds,
+  lastEdited,
 }: ApprovalRowMetaProps): JSX.Element {
   const mapUrl = buildH3MapUrl(cellIds);
 
@@ -52,6 +65,14 @@ function ApprovalRowMeta({
           >
             {communityLink}
           </a>
+        </span>
+      )}
+      {lastEdited != null && (
+        <span className="custom-table-row__link-wrapper custom-table-row__link-wrapper--badge">
+          <StatusBadge
+            status="pending"
+            labelText={`Edited on ${formatBadgeDate(lastEdited)}`}
+          />
         </span>
       )}
     </div>

@@ -7,7 +7,7 @@ import * as schema from "../database/drizzle/schema";
 import { getRequestBody } from "./helpers/request";
 import { isAdmin } from "./helpers/auth";
 import { sendEmail } from "./helpers/ses";
-import { getDatabase, DbInstance, TransactionContext } from "./helpers/db";
+import { getDatabase, TransactionContext } from "./helpers/db";
 
 type ApprovalItem = typeof schema.approvals.$inferSelect;
 

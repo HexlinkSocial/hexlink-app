@@ -41,6 +41,7 @@ export const approvals = pgTable("approvals", {
   status: text("status").notNull().default("pending"),
   comments: text("comments"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  lastEdited: timestamp("last_edited"),
 });
 
 export const communitiesRelations = relations(communities, ({ many }) => ({
