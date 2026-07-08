@@ -33,6 +33,4 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
-          supabase db execute \
-            --password "${{ secrets.SUPABASE_DB_PASSWORD }}" \
-            "SELECT 1;"
+          supabase db query "SELECT 1;"
