@@ -36,6 +36,7 @@ Globals:
         SES_FROM_ADDRESS: !Ref SesFromAddress
         FRONTEND_URL: !Ref FrontendUrl
         DB_CA_CERT_PARAM: "db-ca-cert-1"
+        SEND_EMAILS: "true"
 
 Resources:
 

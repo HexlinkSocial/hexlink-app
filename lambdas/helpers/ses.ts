@@ -35,6 +35,10 @@ export async function sendEmail(params: {
   templateName: string;
   variables: Record<string, string>;
 }): Promise<void> {
+  if (process.env.SEND_EMAILS !== "true") {
+    return;
+  }
+
   const rawHtml = templates[params.templateName];
 
   if (!rawHtml) {
