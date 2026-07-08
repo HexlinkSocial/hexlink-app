@@ -136,7 +136,7 @@ export default function CommunitiesCard({
           </button>
         </div>
 
-        <div className="communities-card-body" ref={scrollRef}>
+        <div className="communities-card__body" ref={scrollRef}>
           <CommunitiesList
             loading={loading}
             error={error}
