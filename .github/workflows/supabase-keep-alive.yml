@@ -33,4 +33,4 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
-          supabase db query "SELECT 1;"
+          supabase db query --linked "SELECT 1;"
