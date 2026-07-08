@@ -192,6 +192,23 @@ Resources:
             Path: /EditCommunity
             Method: POST
 
+  DeleteCommunityFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-deleteCommunity"
+      CodeUri: dist/
+      Handler: deleteCommunity.handler
+      Policies:
+        - !Ref SesPolicy
+        - !Ref SsmDbCertPolicy
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /DeleteCommunity
+            Method: POST
+
 Outputs:
   ApiUrl:
     Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"

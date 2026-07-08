@@ -4,6 +4,7 @@ import * as communityApprovedTemplate from "../dist/email_templates/communityApp
 import * as communityAmendmentsTemplate from "../dist/email_templates/communityAmendments";
 import * as communityDeniedTemplate from "../dist/email_templates/communityDenied";
 import * as communityEditSubmittedTemplate from "../dist/email_templates/communityEditSubmitted";
+import * as communityDeletedTemplate from "../dist/email_templates/communityDeleted";
 
 const ses = new SESClient({ region: process.env.AWS_REGION ?? "eu-west-1" });
 
@@ -15,6 +16,7 @@ const templates: Record<string, string> = {
   communityAmendments: communityAmendmentsTemplate.html,
   communityDenied: communityDeniedTemplate.html,
   communityEditSubmitted: communityEditSubmittedTemplate.html,
+  communityDeleted: communityDeletedTemplate.html,
 };
 
 function renderTemplate(

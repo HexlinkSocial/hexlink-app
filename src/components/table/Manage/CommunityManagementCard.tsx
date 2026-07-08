@@ -3,15 +3,18 @@ import { UnifiedCommunityItem } from "../../../helpers/userCommunitiesApiHelpers
 import StatusBadge from "../../StatusBadge";
 import DescriptionBlock from "../../DescriptionBlock";
 import PencilIcon from "../../icons/PencilIcon";
+import TrashIcon from "../../icons/TrashIcon";
 
 interface CommunityCardProps {
   item: UnifiedCommunityItem;
   onEditClick: (item: UnifiedCommunityItem) => void;
+  onDeleteClick: (item: UnifiedCommunityItem) => void;
 }
 
 function CommunityManagementCard({
   item,
   onEditClick,
+  onDeleteClick,
 }: CommunityCardProps): JSX.Element {
   return (
     <div className="custom-table-row">
@@ -28,6 +31,13 @@ function CommunityManagementCard({
             aria-label="Edit community"
           >
             <PencilIcon />
+          </button>
+          <button
+            className="custom-table-row__btn custom-table-row__btn--delete"
+            onClick={() => onDeleteClick(item)}
+            aria-label="Delete community"
+          >
+            <TrashIcon />
           </button>
         </div>
       </div>

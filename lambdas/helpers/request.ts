@@ -10,6 +10,7 @@ export interface RequestBodyData {
   ownerEmail?: string;
   communityLink?: string;
   cellIds?: string[];
+  scope?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents

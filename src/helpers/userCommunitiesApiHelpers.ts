@@ -96,3 +96,20 @@ export async function editCommunity(
   const data = await response.json();
   return data;
 }
+
+export async function deleteCommunity(
+  id: string,
+  scope: "approval" | "production",
+): Promise<{ message: string }> {
+  const response = await fetch(`${BACKEND_URL}/DeleteCommunity`, {
+    method: "POST",
+    headers: await adminHeaders(),
+    body: JSON.stringify({ id, scope }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete community: ${response.statusText}`);
+  }
+
+  return response.json();
+}

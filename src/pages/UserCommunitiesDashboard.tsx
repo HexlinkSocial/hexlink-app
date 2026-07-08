@@ -6,10 +6,12 @@ import Banner from "../components/Banner";
 import {
   fetchUserCommunities,
   editCommunity,
+  deleteCommunity,
   UnifiedCommunityItem,
 } from "../helpers/userCommunitiesApiHelpers";
 import CommunityManagementCard from "../components/table/Manage/CommunityManagementCard";
 import EditCommunityForm from "../components/forms/EditCommunityForm";
+import DeleteCommunityConfirmationModal from "../components/forms/DeleteCommunityConfirmationModal";
 
 export default function UserCommunitiesDashboard(): JSX.Element {
   const { signOut } = useAuthenticator();
@@ -20,10 +22,14 @@ export default function UserCommunitiesDashboard(): JSX.Element {
   const [apiError, setApiError] = useState<string | null>(null);
 
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [activeItem, setActiveItem] = useState<UnifiedCommunityItem | null>(
     null,
   );
+  const [deleteScope, setDeleteScope] = useState<
+    "approval" | "production" | null
+  >(null);
   const [formFields, setFormFields] = useState({
     name: "",
     description: "",
@@ -66,6 +72,13 @@ export default function UserCommunitiesDashboard(): JSX.Element {
     setIsFormOpen(true);
   };
 
+  const handleDeleteClick = (item: UnifiedCommunityItem): void => {
+    const scope = item.status === "approved" ? "production" : "approval";
+    setActiveItem(item);
+    setDeleteScope(scope);
+    setIsDeleteOpen(true);
+  };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ): void => {
@@ -99,6 +112,34 @@ export default function UserCommunitiesDashboard(): JSX.Element {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleExecuteDelete = async (): Promise<void> => {
+    if (!activeItem || !deleteScope) return;
+
+    try {
+      setIsSubmitting(true);
+      setApiError(null);
+
+      await deleteCommunity(activeItem.id, deleteScope);
+
+      setIsDeleteOpen(false);
+      setActiveItem(null);
+      setDeleteScope(null);
+      await loadData();
+    } catch (error) {
+      setApiError(
+        error instanceof Error ? error.message : "Error deleting community",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancelDelete = (): void => {
+    setIsDeleteOpen(false);
+    setActiveItem(null);
+    setDeleteScope(null);
   };
 
   if (isAuthLoading || loading) {
@@ -137,9 +178,10 @@ export default function UserCommunitiesDashboard(): JSX.Element {
         <div className="table-container__grid">
           {items.map((item) => (
             <CommunityManagementCard
-              key={item.id}
+              key={`${item.id}-${item.status}`}
               item={item}
               onEditClick={handleEditClick}
+              onDeleteClick={handleDeleteClick}
             />
           ))}
         </div>
@@ -154,6 +196,15 @@ export default function UserCommunitiesDashboard(): JSX.Element {
         onCancel={() => setIsFormOpen(false)}
         onSubmit={handleFormSubmit}
         onInputChange={handleInputChange}
+      />
+
+      <DeleteCommunityConfirmationModal
+        isOpen={isDeleteOpen}
+        isSubmitting={isSubmitting}
+        item={activeItem}
+        scope={deleteScope}
+        onCancel={handleCancelDelete}
+        onConfirm={handleExecuteDelete}
       />
     </div>
   );
