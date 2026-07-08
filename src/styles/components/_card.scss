@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "../abstracts" as *;
 
 @mixin card-base {
@@ -180,7 +181,7 @@
 
     &:hover {
       text-decoration: underline;
-      color: darken($color-accent, 10%);
+      color: color.adjust($color-accent, $lightness: -10%);
     }
   }
 
