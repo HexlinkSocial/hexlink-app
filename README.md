@@ -16,7 +16,6 @@ Main Hexlink app
         - This takes a while and it is recommended to run it outside of docker so that max power can be used. If using WSL you might need to update the limits using `.wslconfig`. Either way it can still take a while to generate
     - Update the file name in `utils\generateCounts.ts` to match your comma separate file name and run 
         ```
-        npm i dotenv (please don't commit this to the repo)
         npm run tile:counts
         ``` 
         this will get the counts from the DB and create a map layer with your communities

@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "-": "^0.0.1",
     "@aws-amplify/ui-react": "^6.15.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
@@ -15,6 +14,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "aws-amplify": "^6.16.2",
+    "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "h3-js": "^4.4.0",
     "jszip": "^3.10.1",
@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "@types/geojson": "^7946.0.16",
-    "@types/node": "^25.3.0",
+    "@types/node": "^24.0.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-react": "^5.1.4",

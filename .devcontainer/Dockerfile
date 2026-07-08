@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:24
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -6,7 +6,6 @@ RUN apt-get update && apt-get install -y \
     postgresql-client \
     unzip \
     gnupg \
-    software-properties-common \
     jq \
     build-essential \
     libsqlite3-dev \
