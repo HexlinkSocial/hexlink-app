@@ -27,6 +27,11 @@ export const useTurnstile = ({ siteKey }: UseTurnstileOptions) => {
   } | null>(null);
 
   useEffect(() => {
+    if (import.meta.env.DEV) {
+      setIsReady(true);
+      return;
+    }
+
     if (window.turnstile) {
       setIsReady(true);
       return;
@@ -127,6 +132,11 @@ export const useTurnstile = ({ siteKey }: UseTurnstileOptions) => {
 
   const executeChallenge = (): Promise<string> => {
     return new Promise((resolve, reject) => {
+      if (import.meta.env.DEV) {
+        resolve("dev-bypass-token");
+        return;
+      }
+
       if (!window.turnstile || !isReady) {
         reject(new Error("Turnstile engine has not finished loading yet."));
         return;

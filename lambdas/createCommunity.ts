@@ -9,6 +9,10 @@ import { getDatabase } from "./helpers/db";
 import { getUser, getOwnerEmail } from "./helpers/auth";
 
 async function verifyTurnstileToken(token: string): Promise<boolean> {
+  if (process.env.NODE_ENV === "development") {
+    return true;
+  }
+
   const secretKey = process.env.TURNSTILE_SECRET_KEY;
   if (!secretKey) {
     console.error(
@@ -45,10 +49,11 @@ export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
+    const isDev = process.env.NODE_ENV === "development";
     const captchaToken =
       event.headers["x-captcha-token"] || event.headers["X-Captcha-Token"];
 
-    if (!captchaToken) {
+    if (!captchaToken && !isDev) {
       return {
         statusCode: 400,
         body: JSON.stringify({
@@ -57,7 +62,8 @@ export const handler = async (
       };
     }
 
-    const isHuman = await verifyTurnstileToken(captchaToken);
+    const isHuman =
+      isDev || (captchaToken && (await verifyTurnstileToken(captchaToken)));
     if (!isHuman) {
       return {
         statusCode: 403,
