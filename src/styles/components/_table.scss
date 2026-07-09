@@ -9,7 +9,7 @@
 
   &__empty-state {
     text-align: center;
-    color: #71717a;
+    color: var(--color-muted);
     margin-top: $space-2xl;
   }
 
@@ -30,16 +30,16 @@
   left: 0;
   right: 0;
   z-index: $z-overlay;
-  background-color: $color-bg;
+  background-color: var(--color-bg);
   max-width: 1200px;
   margin: 0 auto;
   padding: $space-xl $space-xl;
-  border-bottom: 1px solid $color-border;
+  border-bottom: 1px solid var(--color-border);
 
   &__title {
     font-size: 24px;
     font-weight: 700;
-    color: $color-text;
+    color: var(--color-text);
     margin: 0;
   }
 
@@ -71,7 +71,7 @@
   transition: border-color $transition-fast, box-shadow $transition-fast;
 
   &:hover {
-    border-color: $color-border-accent;
+    border-color: var(--color-border-accent);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   }
 
@@ -99,14 +99,14 @@
   &__title {
     font-size: 15px;
     font-weight: 700;
-    color: $color-text;
+    color: var(--color-text);
     word-break: break-word;
     overflow-wrap: anywhere;
   }
 
   &__subtitle {
     font-size: 13px;
-    color: $color-muted;
+    color: var(--color-muted);
     font-style: italic;
     word-break: break-word;
     overflow-wrap: anywhere;
@@ -118,7 +118,7 @@
 
   &__link-wrapper {
     font-size: 13px;
-    color: $color-muted;
+    color: var(--color-muted);
     font-weight: 500;
     word-break: break-all;
     overflow-wrap: anywhere;
@@ -143,7 +143,7 @@
 
     &:hover {
       text-decoration: underline;
-      color: color.adjust($color-accent, $lightness: -10%);
+      color: $color-accent-light;
     }
   }
 
@@ -156,7 +156,7 @@
 
   &__description {
     font-size: 13px;
-    color: $color-muted;
+    color: var(--color-muted);
     margin: 0;
     width: 100%;
     word-break: break-word;
@@ -189,13 +189,13 @@
     gap: $space-xs;
 
     &--amendments {
-      background-color: rgba($color-error, 0.06);
-      border: 1px solid rgba($color-error, 0.15);
+      background-color: var(--color-status-danger-bg);
+      border: 1px solid var(--color-status-danger-border);
     }
   }
 
   &__feedback-label {
-    color: color.adjust($color-error, $lightness: -15%);
+    color: var(--color-status-danger-text);
     font-weight: 600;
     flex-shrink: 0;
   }
@@ -204,27 +204,12 @@
     max-height: 100px;
     overflow-y: auto;
     padding-right: $space-xs;
-
-    scrollbar-width: thin;
-    scrollbar-color: rgba($color-text, 0.2) transparent;
-
-    &::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: rgba($color-text, 0.2);
-      border-radius: $radius-md;
-    }
+    @include scrollable;
   }
 
   &__feedback-text {
     margin: 0;
-    color: $color-text;
+    color: var(--color-text);
     white-space: pre-wrap;
   }
 
@@ -238,7 +223,7 @@
 
   &__btn {
     background: transparent;
-    border: 1px solid $color-border;
+    border: 1px solid var(--color-border);
     border-radius: $radius-md;
     color: $color-accent;
     cursor: pointer;
@@ -250,7 +235,7 @@
     transition: background $transition-fast, border-color $transition-fast;
 
     &:hover {
-      background: $color-bg-hover;
+      background: var(--color-bg-hover);
       border-color: $color-accent-soft;
     }
 
@@ -274,7 +259,7 @@
   transition: border-color $transition-fast, box-shadow $transition-fast;
 
   &:hover {
-    border-color: $color-border-accent;
+    border-color: var(--color-border-accent);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   }
 
@@ -293,7 +278,7 @@
   &__title {
     font-size: 15px;
     font-weight: 700;
-    color: $color-text;
+    color: var(--color-text);
     word-break: break-word;
     overflow-wrap: anywhere;
   }
@@ -307,7 +292,7 @@
 
   &__description {
     font-size: 13px;
-    color: $color-muted;
+    color: var(--color-muted);
     margin: 0;
     width: 100%;
     word-break: break-word;
@@ -320,12 +305,12 @@
     justify-content: space-between;
     gap: $space-sm;
     padding-top: $space-sm;
-    border-top: 1px solid $color-border;
+    border-top: 1px solid var(--color-border);
   }
 
   &__btn {
     background: transparent;
-    border: 1px solid $color-border;
+    border: 1px solid var(--color-border);
     border-radius: $radius-md;
     color: $color-accent;
     cursor: pointer;
@@ -337,7 +322,7 @@
     transition: background $transition-fast, border-color $transition-fast;
 
     &:hover {
-      background: $color-bg-hover;
+      background: var(--color-bg-hover);
       border-color: $color-accent-soft;
     }
 
@@ -379,15 +364,24 @@
     font-family: inherit;
     font-size: 13px;
     padding: $space-sm;
-    border: 1px solid $color-border;
+    background-color: var(--color-input-bg);
+    border: 1px solid var(--color-input-border);
+    color: var(--color-text);
     border-radius: $radius-md;
     outline: none;
     resize: vertical;
     width: 100%;
     box-sizing: border-box;
+    transition: border-color $transition-fast, box-shadow $transition-fast;
+
+    &::placeholder {
+      color: var(--color-muted);
+      opacity: 0.6;
+    }
 
     &:focus {
-      border-color: $color-accent;
+      border-color: var(--color-border-accent);
+      box-shadow: 0 0 0 3px rgba(179, 92, 183, 0.25);
     }
   }
 
@@ -404,7 +398,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -416,8 +410,8 @@
 
 .modal-content {
   @include card-surface($space-xl);
-  background-color: $color-bg;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  background-color: var(--color-bg);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 500px;
   display: flex;
@@ -429,18 +423,18 @@
 .modal-title {
   font-size: 18px;
   font-weight: 700;
-  color: $color-text;
+  color: var(--color-text);
   margin: 0;
 }
 
 .modal-text {
   font-size: 14px;
-  color: $color-muted;
+  color: var(--color-muted);
   line-height: 1.6;
   margin: 0;
 
   strong {
-    color: $color-text;
+    color: var(--color-text);
   }
 }
 

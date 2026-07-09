@@ -1,4 +1,19 @@
-// ── Brand palette ──────────────────────────────
+@mixin declare-themes($light-map, $dark-map) {
+  :root {
+    @each $key, $value in $light-map {
+      --color-#{$key}: #{$value};
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      @each $key, $value in $dark-map {
+        --color-#{$key}: #{$value};
+      }
+    }
+  }
+}
+
 $color-accent:         #73197a;
 $color-accent-light:   #a83db0;
 $color-accent-dark:    #7A0081;
@@ -70,8 +85,8 @@ $z-backdrop: 999;
 $z-overlay:  2000;
 
 // ── Breakpoints ────────────────────────────────
-$bp-mobile: 959px;  // max-width: mobile styles
-$bp-desktop: 960px; // min-width: desktop styles
+$bp-mobile: 959px;
+$bp-desktop: 960px;
 
 // ── Spacing ────────────────────────────────────
 $space-xs:  4px;
@@ -81,3 +96,84 @@ $space-lg:  16px;
 $space-xl:  24px;
 $space-2xl: 32px;
 $space-3xl: 40px;
+
+$color-bg-dark:         #231f26; 
+$color-bg-dark-subtle:  #17141a; 
+$color-text-dark:       #ffffff;
+$color-muted-dark:      #a39eb0; 
+
+$color-input-bg-dark:    #17141a; 
+$color-input-border-dark: rgba(255, 255, 255, 0.1);
+
+// ── Dynamic Theme Maps ─────────────────────────
+$light-theme: (
+  "bg": $color-bg,
+  "bg-subtle": $color-bg-subtle,
+  "bg-hover": $color-bg-hover,
+  "border": $color-border,
+  "border-accent": $color-border-accent,
+  "text": $color-text,
+  "muted": $color-muted,
+  "error-details-bg": $color-error-details-bg,
+  "error-details-text": $color-error-details-text,
+  "status-pending-bg": #f3edf4,
+  "status-pending-text": #73197a,
+  "status-approved-bg": #e3fbe3,
+  "status-approved-text": #197a1c,
+  "status-danger-bg": #fbe3e3,
+  "status-danger-text": #c00000,
+  "status-danger-border": rgba(223, 44, 44, 0.15),
+  
+  "input-bg": #ffffff,
+  "input-border": rgba(0, 0, 0, 0.15),
+
+  // ── Light Mode Banners (Clean, legible pastel purple spectrum) ──
+  "banner-error-bg":      #fdf2f8, // Soft pink-purple
+  "banner-error-text":    #831843, // Deep reddish-purple
+  "banner-error-border":  #fbcfe8,
+  
+  "banner-warning-bg":    #fae8ff, // Pastel purple
+  "banner-warning-text":  #6b21a8, // Rich true purple
+  "banner-warning-border": #f3d8ff,
+  
+  "banner-info-bg":       #f5f3ff, // Light lilac tint
+  "banner-info-text":     #5b21b6, // Deep lilac-indigo
+  "banner-info-border":   #ede9fe
+);
+
+$dark-theme: (
+  "bg": $color-bg-dark,
+  "bg-subtle": $color-bg-dark-subtle, 
+  "bg-hover": rgba(243, 237, 244, 0.06),
+  "border": rgba(255, 255, 255, 0.05),
+  "border-accent": rgba(179, 92, 183, 0.3),
+  "text": $color-text-dark,
+  "muted": $color-muted-dark,
+  "error-details-bg": $color-error-details-bg-dark,
+  "error-details-text": $color-error-details-text-dark,
+  "status-pending-bg": rgba(115, 25, 122, 0.5),
+  "status-pending-text": #ffffff,
+  "status-approved-bg": #146116,
+  "status-approved-text": #ffffff,
+  "status-danger-bg": rgba(140, 25, 25, 0.4),
+  "status-danger-text": #ffffff,
+  "status-danger-border": rgba(239, 68, 68, 0.3),
+  
+  "input-bg": $color-input-bg-dark,
+  "input-border": $color-input-border-dark,
+
+  // ── Dark Mode Banners ──
+  "banner-error-bg":      rgba(131, 24, 67),
+  "banner-error-text":    #fbcfe8,
+  "banner-error-border":  rgba(251, 207, 232),
+  
+  "banner-warning-bg":    rgba(107, 33, 168),
+  "banner-warning-text":  #f3d8ff,
+  "banner-warning-border": rgba(243, 216, 255),
+  
+  "banner-info-bg":       rgba(91, 33, 182),
+  "banner-info-text":     #ddd6fe,
+  "banner-info-border":   rgba(221, 214, 254)
+);
+
+@include declare-themes($light-theme, $dark-theme);

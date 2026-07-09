@@ -14,11 +14,11 @@
 // ── Card surface ───────────────────────────────
 // Shared surface style used by floating cards, dialogs, banners.
 @mixin card-surface($padding: null) {
-  background: $color-bg;
-  border: 1px solid $color-border;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
   box-shadow: $shadow-card;
   border-radius: $radius-xl;
-  color: $color-text;
+  color: var(--color-text);
   font-family: $font-sans;
   @if $padding { padding: $padding; }
 }
@@ -57,4 +57,51 @@
   -webkit-line-clamp: $lines;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+// ── Badge Global Utilities ─────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: $radius-sm;
+  white-space: nowrap;
+
+  &.badge-pending {
+    background-color: var(--color-status-pending-bg);
+    color: var(--color-status-pending-text);
+  }
+
+  &.badge-approved {
+    background-color: var(--color-status-approved-bg);
+    color: var(--color-status-approved-text);
+  }
+
+  &.badge-danger {
+    background-color: var(--color-status-danger-bg);
+    color: var(--color-status-danger-text);
+  }
+}
+
+.danger-zone-box {
+  background-color: var(--color-status-danger-bg);
+  border: 1px solid var(--color-status-danger-border);
+  border-radius: $radius-md;
+  padding: $space-sm $space-md;
+  margin: $space-sm 0;
+
+  .danger-title {
+    color: var(--color-status-danger-text);
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: $space-xs;
+  }
+
+  .danger-content {
+    color: var(--color-text);
+    font-size: 0.9rem;
+  }
 }

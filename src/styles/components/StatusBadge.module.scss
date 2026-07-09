@@ -1,24 +1,28 @@
 @use "../abstracts/variables" as *;
 
 .badge {
-  padding: $space-xs $space-sm;
-  border-radius: $radius-sm;
-  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  font-size: 0.85rem;
   font-weight: 700;
-  display: inline-block;
-
-  &--amendments-requested {
-    background-color: $color-error-background;
-    color: $color-error-text;
-  }
+  border-radius: $radius-sm;
+  white-space: nowrap;
+  line-height: 1;
 
   &--pending {
-    background-color: $color-accent-tint;
-    color: $color-accent;
+    background-color: var(--color-status-pending-bg);
+    color: var(--color-status-pending-text);
   }
 
   &--approved {
-    background-color: $color-success-background;
-    color: $color-success-text;
+    background-color: var(--color-status-approved-bg);
+    color: var(--color-status-approved-text);
+  }
+
+  &--amendments-requested {
+    background-color: var(--color-status-danger-bg);
+    color: var(--color-status-danger-text);
   }
 }

@@ -19,22 +19,24 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: $space-lg;
+  
+  transition: background-color $transition-fast, color $transition-fast, border-color $transition-fast;
 
-  // ── Default / Error variant ─────────────────
-  background-color: $color-error-banner-bg;
-  color: $color-accent-dark;
-  border: 1px solid $color-accent-dark;
+  // ── Default / Error Variant (Reddish Purple) ─────────────────
+  background-color: var(--color-banner-error-bg);
+  color: var(--color-banner-error-text);
+  border: 1px solid var(--color-banner-error-border);
 
   &--warning {
-    background-color: #fef3c7;
-    color: #92400e;
-    border-color: #d97706;
+    background-color: var(--color-banner-warning-bg);
+    color: var(--color-banner-warning-text);
+    border-color: var(--color-banner-warning-border);
   }
 
   &--info {
-    background-color: #e0f2fe;
-    color: #0369a1;
-    border-color: #0284c7;
+    background-color: var(--color-banner-info-bg);
+    color: var(--color-banner-info-text);
+    border-color: var(--color-banner-info-border);
   }
 
   &__content {
