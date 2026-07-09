@@ -13,6 +13,7 @@ import {
   savePending,
 } from "../../helpers/userCommunitiesApiHelpers";
 import Banner from "../Banner";
+import { useAuth } from "../../hooks/useAuth";
 
 const MAX_SELECTIONS = 50;
 
@@ -37,6 +38,8 @@ const BuilderMap: React.FC<{
     { maxSelections: MAX_SELECTIONS },
   );
   useH3LayerStack(map, isMapReady);
+
+  const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
 
   const [step, setStep] = useState<"select" | "form">("select");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,18 +75,19 @@ const BuilderMap: React.FC<{
     } catch (err) {
       console.error(err);
       setSubmitError("Something went wrong, please try again.");
+      throw err;
     } finally {
       setIsSubmitting(false);
     }
   }
 
   useEffect(() => {
+    if (isAuthLoading || !isLoggedIn) return;
     const pending = loadPending();
     if (pending == null) return;
-
     clearPending();
     void submit(pending);
-  }, [submit]);
+  }, [isAuthLoading, isLoggedIn, submit]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -99,14 +103,20 @@ const BuilderMap: React.FC<{
     e.preventDefault();
     setSubmitError(null);
 
+    if (isAuthLoading) {
+      setSubmitError("Still checking your login status, please try again.");
+      return;
+    }
+
     const payload = buildPayload(communityData, selectedIds);
 
-    try {
+    if (isLoggedIn) {
       await submit(payload, captchaToken);
-    } catch {
-      savePending(payload);
-      window.location.href = "/join";
+      return;
     }
+
+    savePending(payload);
+    window.location.href = "/join";
   };
 
   return (
