@@ -21,6 +21,9 @@ Parameters:
     Type: String
   FrontendUrl:
     Type: String
+  TurnstileSecretKey:
+    Type: String
+    NoEcho: true
 
 Globals:
   Function:
@@ -37,6 +40,7 @@ Globals:
         FRONTEND_URL: !Ref FrontendUrl
         DB_CA_CERT_PARAM: "db-ca-cert-1"
         SEND_EMAILS: "true"
+        TURNSTILE_SECRET_KEY: !Ref TurnstileSecretKey
 
 Resources:
 
@@ -50,7 +54,7 @@ Resources:
           - "http://localhost:3000"
           - "http://localhost:5173"
         AllowMethods: [GET, POST, OPTIONS]
-        AllowHeaders: [content-type, authorization]
+        AllowHeaders: [content-type, authorization, x-captcha-token]
         MaxAge: 86400
   SesPolicy:
     Type: AWS::IAM::ManagedPolicy

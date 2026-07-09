@@ -62,13 +62,22 @@ export function buildPayload(
   };
 }
 
-export async function postCommunity(payload: CommunityPayload): Promise<void> {
+export async function postCommunity(
+  payload: CommunityPayload,
+  captchaToken?: string,
+): Promise<void> {
+  const headers: Record<string, string> = {
+    ...(await adminHeaders()),
+    "Content-Type": "application/json",
+  };
+
+  if (captchaToken) {
+    headers["x-captcha-token"] = captchaToken;
+  }
+
   const res = await fetch(`${BACKEND_URL}/CreateCommunity`, {
     method: "POST",
-    headers: {
-      ...(await adminHeaders()),
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error("Database insertion failure");

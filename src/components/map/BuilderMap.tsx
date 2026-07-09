@@ -59,12 +59,15 @@ const BuilderMap: React.FC<{
     if (!isAtLimit) setLimitBannerDismissed(false);
   }, [isAtLimit]);
 
-  async function submit(payload: CommunityPayload): Promise<void> {
+  async function submit(
+    payload: CommunityPayload,
+    captchaToken?: string,
+  ): Promise<void> {
     setIsSubmitting(true);
     setSubmitError(null);
     setStep("form");
     try {
-      await postCommunity(payload);
+      await postCommunity(payload, captchaToken);
       onSuccess();
     } catch (err) {
       console.error(err);
@@ -91,6 +94,7 @@ const BuilderMap: React.FC<{
 
   const handleFormSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
+    captchaToken?: string,
   ): Promise<void> => {
     e.preventDefault();
     setSubmitError(null);
@@ -98,7 +102,7 @@ const BuilderMap: React.FC<{
     const payload = buildPayload(communityData, selectedIds);
 
     try {
-      await submit(payload);
+      await submit(payload, captchaToken);
     } catch {
       savePending(payload);
       window.location.href = "/join";

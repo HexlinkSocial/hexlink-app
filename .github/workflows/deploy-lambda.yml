@@ -85,4 +85,5 @@ jobs:
               CognitoUserPoolId="${{ secrets.COGNITO_POOL }}" \
               CognitoClientId="${{ secrets.COGNITO_CLIENT }}" \
               FrontendUrl="${{ secrets.FRONTEND_URL }}" \
-              SesFromAddress="${{ secrets.SES_FROM_ADDRESS }}"
+              SesFromAddress="${{ secrets.SES_FROM_ADDRESS }}" \
+              TurnstileSecretKey="${{ secrets.TURNSTILE_SECRET_KEY }}"

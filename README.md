@@ -32,6 +32,11 @@ Main Hexlink app
             "NODE_ENV": "development",
             "COGNITO_USER_POOL_ID": "<your cognito user pool ID>",
             "COGNITO_CLIENT_ID": "<your cognito client ID"
+            "SES_FROM_ADDRESS": "<email>",
+            "FRONTEND_URL": "http://localhost:5173",
+            "AWS_REGION": "eu-west-1",
+            "SEND_EMAILS": "false",
+            "TURNSTILE_SECRET_KEY": "<your turnstile secret key from cloudflare>"
         }
     }
     ```
