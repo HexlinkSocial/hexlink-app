@@ -65,40 +65,44 @@ function ApprovalRow({
 
   return (
     <TableRow>
-      <div
-        className={`custom-table-row__content${isDisabled ? " custom-table-row__content--disabled" : ""}`}
-      >
-        <ApprovalRowMeta
-          name={item.name}
-          ownerEmail={item.ownerEmail}
-          communityLink={item.communityLink}
-          cellIds={item.cellIds}
-          lastEdited={item.lastEdited}
-        />
-        <DescriptionBlock description={item.description} />
+      <div className="custom-table-row__main">
+        <div
+          className={`custom-table-row__content${isDisabled ? " custom-table-row__content--disabled" : ""}`}
+        >
+          <ApprovalRowMeta
+            name={item.name}
+            ownerEmail={item.ownerEmail}
+            communityLink={item.communityLink}
+            cellIds={item.cellIds}
+            lastEdited={item.lastEdited}
+          />
+          <DescriptionBlock description={item.description} />
+        </div>
+        <div className="custom-table-row__actions">
+          <ActionButton
+            title="Approve"
+            onClick={handleApprove}
+            disabled={isDisabled}
+            isPending={pendingAction === "approve"}
+            icon={<CheckIcon />}
+          />
+          <ActionButton
+            title="Reject"
+            onClick={handleReject}
+            disabled={isDisabled}
+            isPending={pendingAction === "reject"}
+            icon={<CrossIcon />}
+          />
+          <ActionButton
+            title="Request Amendments"
+            onClick={onToggleAmend}
+            disabled={isDisabled}
+            icon={<PencilIcon />}
+          />
+        </div>
       </div>
-      <div className="custom-table-row__actions">
-        <ActionButton
-          title="Approve"
-          onClick={handleApprove}
-          disabled={isDisabled}
-          isPending={pendingAction === "approve"}
-          icon={<CheckIcon />}
-        />
-        <ActionButton
-          title="Reject"
-          onClick={handleReject}
-          disabled={isDisabled}
-          isPending={pendingAction === "reject"}
-          icon={<CrossIcon />}
-        />
-        <ActionButton
-          title="Request Amendments"
-          onClick={onToggleAmend}
-          disabled={isDisabled}
-          icon={<PencilIcon />}
-        />
-        {isAmending && (
+      {isAmending && (
+        <div className="custom-table-row__amend-container">
           <AmendPopover
             commentText={commentText}
             onCommentChange={onCommentChange}
@@ -106,8 +110,8 @@ function ApprovalRow({
             isPending={pendingAction === "amend"}
             isDisabled={isDisabled}
           />
-        )}
-      </div>
+        </div>
+      )}
     </TableRow>
   );
 }

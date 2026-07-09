@@ -365,8 +365,14 @@
 
   @media (max-width: 576px) {
     right: 0;
-    bottom: calc(100% + $space-xs);
-    top: auto;
+    top: calc(100% + $space-xs);
+    bottom: auto;
+  }
+
+  @media (max-width: 768px) {
+    position: static;
+    width: 100%;
+    margin-top: $space-sm;
   }
 
   &__textarea {

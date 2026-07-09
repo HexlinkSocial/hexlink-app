@@ -27,10 +27,17 @@ function AmendPopover({
       />
       <button
         className="btn btn--primary amend-popover__submit"
-        disabled={!commentText.trim() || isDisabled}
+        disabled={!commentText.trim() || isDisabled || isPending}
         onClick={onSubmit}
       >
-        {isPending ? <SpinnerIcon /> : "Submit"}
+        {isPending ? (
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <SpinnerIcon />
+            <span>Submitting...</span>
+          </div>
+        ) : (
+          "Submit"
+        )}
       </button>
     </div>
   );
