@@ -54,6 +54,13 @@ export default function AdminApprovals(): JSX.Element {
       setApiError(null);
       const data = await fetchApprovals();
       const sortedData = [...data].sort((a, b) => {
+        const hasCommentA = Boolean((a as any).comment || (a as any).comments);
+        const hasCommentB = Boolean((b as any).comment || (b as any).comments);
+
+        if (hasCommentA !== hasCommentB) {
+          return hasCommentA ? 1 : -1;
+        }
+
         const timeA = new Date(a.lastEdited ?? a.createdAt).getTime();
         const timeB = new Date(b.lastEdited ?? b.createdAt).getTime();
         return timeA - timeB;

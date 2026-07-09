@@ -11,7 +11,7 @@ const STATUS_CONFIG: Record<
   { label: string; className: string }
 > = {
   amendments_requested: {
-    label: "Requires change",
+    label: "Requires changes",
     className: styles["badge--amendments-requested"],
   },
   pending: {

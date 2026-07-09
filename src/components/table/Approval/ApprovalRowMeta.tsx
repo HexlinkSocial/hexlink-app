@@ -7,6 +7,7 @@ interface ApprovalRowMetaProps {
   communityLink?: string | null;
   cellIds?: string[];
   lastEdited?: string | null;
+  hasChangesRequested?: boolean;
 }
 
 function buildH3MapUrl(cellIds?: string[]): string | null {
@@ -33,6 +34,7 @@ function ApprovalRowMeta({
   communityLink,
   cellIds,
   lastEdited,
+  hasChangesRequested,
 }: ApprovalRowMetaProps): JSX.Element {
   const mapUrl = buildH3MapUrl(cellIds);
 
@@ -67,13 +69,19 @@ function ApprovalRowMeta({
           </a>
         </span>
       )}
-      {lastEdited != null && (
+      {hasChangesRequested ? (
         <span className="custom-table-row__link-wrapper custom-table-row__link-wrapper--badge">
-          <StatusBadge
-            status="pending"
-            labelText={`Edited on ${formatBadgeDate(lastEdited)}`}
-          />
+          <StatusBadge status="amendments_requested" />
         </span>
+      ) : (
+        lastEdited != null && (
+          <span className="custom-table-row__link-wrapper custom-table-row__link-wrapper--badge">
+            <StatusBadge
+              status="pending"
+              labelText={`Edited on ${formatBadgeDate(lastEdited)}`}
+            />
+          </span>
+        )
       )}
     </div>
   );

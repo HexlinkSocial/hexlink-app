@@ -75,6 +75,7 @@ function ApprovalRow({
             communityLink={item.communityLink}
             cellIds={item.cellIds}
             lastEdited={item.lastEdited}
+            hasChangesRequested={item.comments != null}
           />
           <DescriptionBlock description={item.description} />
         </div>
