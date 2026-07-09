@@ -19,13 +19,6 @@ body {
   font-family: $font-system;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
-  // ── Dynamic Theme Colors ───────────────────────
-  background-color: var(--color-bg-subtle);
-  color: var(--color-text);
-  
-  // Smoothly morphs backgrounds on system scheme changes
-  transition: background-color $transition-fast, color $transition-fast;
 }
 
 code {

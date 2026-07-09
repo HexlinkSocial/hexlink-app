@@ -3,7 +3,7 @@
 // ── Backdrop (full-screen dimmed overlay) ──────
 .form-overlay-backdrop {
   @include fixed-cover;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(2px);
   z-index: $z-overlay;
   display: flex;
@@ -11,9 +11,9 @@
   justify-content: center;
 }
 
-// ── Container (white/purple box centred on backdrop) ──
+// ── Container (white box centred on backdrop) ──
 .form-overlay-container {
-  background: var(--color-bg);
+  background: $color-bg;
   width: 100%;
   box-sizing: border-box;
 
@@ -34,7 +34,7 @@
 
 @include mobile {
   .form-overlay-backdrop {
-    background-color: var(--color-bg);
+    background-color: $color-bg;
     backdrop-filter: none;
   }
 }
@@ -66,7 +66,7 @@
   font-family: $font-sans;
   font-size: 20px;
   font-weight: 700;
-  color: var(--color-text);
+  color: $color-text;
 }
 
 // ── Label + input group ────────────────────────
@@ -79,7 +79,7 @@
     font-family: $font-sans;
     font-size: 13px;
     font-weight: 700;
-    color: var(--color-text);
+    color: $color-text;
   }
 
   input,
@@ -87,28 +87,14 @@
     font-family: inherit;
     font-size: 14px;
     padding: $space-md;
-    background-color: var(--color-input-bg);
-    border: 1px solid var(--color-input-border);
-    color: var(--color-text);
+    border: 1px solid $color-border;
     border-radius: $radius-md;
     outline: none;
-    transition: border-color $transition-medium, box-shadow $transition-medium;
+    transition: border-color $transition-medium;
     box-sizing: border-box;
     width: 100%;
 
-    &::placeholder {
-      color: var(--color-muted);
-      opacity: 0.6;
-    }
-
-    &:focus { 
-      border-color: var(--color-border-accent);
-      box-shadow: 0 0 0 3px rgba(115, 25, 122, 0.15);
-      
-      @media (prefers-color-scheme: dark) {
-        box-shadow: 0 0 0 3px rgba(179, 92, 183, 0.25);
-      }
-    }
+    &:focus { border-color: $color-accent; }
   }
 
   textarea {
@@ -122,7 +108,6 @@
 
   &:focus {
     border-color: $color-error !important;
-    box-shadow: 0 0 0 3px rgba(223, 44, 44, 0.2) !important;
   }
 }
 
@@ -136,7 +121,7 @@
   animation: form-fade-in 0.2s ease-out;
 
   &--warning {
-    color: var(--color-muted);
+    color: #71717a;
   }
 }
 
@@ -149,7 +134,7 @@
   @include mobile {
     flex-shrink: 0;
     margin-top: auto;
-    background: var(--color-bg);
+    background: $color-bg;
     padding-top: $space-md;
   }
 }

@@ -32,12 +32,12 @@
 }
 // ── Secondary (ghost / cancel) ─────────────────
 .btn--secondary {
-  background: var(--color-bg-subtle);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
+  background: $color-bg-subtle;
+  border: 1px solid $color-border;
+  color: $color-text;
   &:hover {
-    background: var(--color-bg-hover);
-    border-color: var(--color-border-accent);
+    background: $color-bg-hover;
+    border-color: $color-border-accent;
   }
 }
 // ── Modifier: full-width form button ───────────
@@ -57,7 +57,7 @@
 .btn-icon-close {
   background: none;
   border: none;
-  color: var(--color-muted);
+  color: $color-muted;
   width: 32px;
   height: 32px;
   display: flex;
@@ -68,7 +68,7 @@
   transition: color $transition-fast, background $transition-fast;
   flex-shrink: 0;
   &:hover {
-    color: var(--color-text);
+    color: $color-text;
     background: rgba(0, 0, 0, 0.06);
   }
 }
