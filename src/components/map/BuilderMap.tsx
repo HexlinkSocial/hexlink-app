@@ -8,12 +8,10 @@ import {
   buildPayload,
   clearPending,
   CommunityPayload,
-  getAuthUserEmail,
-  getAuthUserId,
   loadPending,
   postCommunity,
   savePending,
-} from "./helpers/builderMapHelpers";
+} from "../../helpers/userCommunitiesApiHelpers";
 import Banner from "../Banner";
 
 const MAX_SELECTIONS = 50;
@@ -79,13 +77,9 @@ const BuilderMap: React.FC<{
   useEffect(() => {
     const pending = loadPending();
     if (pending == null) return;
-    void (async (): Promise<void> => {
-      const userId = await getAuthUserId();
-      const userEmail = await getAuthUserEmail();
-      if (userId == null || userEmail == null) return;
-      clearPending();
-      await submit({ ...pending, owner: userId, ownerEmail: userEmail });
-    })();
+
+    clearPending();
+    void submit(pending);
   }, [submit]);
 
   const handleInputChange = (
@@ -101,15 +95,12 @@ const BuilderMap: React.FC<{
     e.preventDefault();
     setSubmitError(null);
 
-    const userId = await getAuthUserId();
-    const userEmail = await getAuthUserEmail();
+    const payload = buildPayload(communityData, selectedIds);
 
-    if (userId != null && userEmail != null) {
-      await submit(buildPayload(communityData, selectedIds, userId, userEmail));
-    } else {
-      savePending(
-        buildPayload(communityData, selectedIds, "PENDING", "PENDING"),
-      );
+    try {
+      await submit(payload);
+    } catch {
+      savePending(payload);
       window.location.href = "/join";
     }
   };

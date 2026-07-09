@@ -6,27 +6,35 @@ import * as schema from "../database/drizzle/schema";
 import { getRequestBody } from "./helpers/request";
 import { sendEmail } from "./helpers/ses";
 import { getDatabase } from "./helpers/db";
+import { getUser, getOwnerEmail } from "./helpers/auth";
 
 export const handler = async (
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
-    const bodyData = getRequestBody(event);
-    const { name, description, owner, ownerEmail, communityLink, cellIds } =
-      bodyData;
 
-    if (
-      name == null ||
-      owner == null ||
-      !Array.isArray(cellIds) ||
-      cellIds.length === 0
-    ) {
+    const owner = await getUser(event);
+    const ownerEmail = await getOwnerEmail(event);
+
+    if (!owner || !ownerEmail) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({
+          error: "Unauthorized. Missing or invalid session token.",
+        }),
+      };
+    }
+
+    const bodyData = getRequestBody(event);
+    const { name, description, communityLink, cellIds } = bodyData;
+
+    if (name == null || !Array.isArray(cellIds) || cellIds.length === 0) {
       return {
         statusCode: 400,
         body: JSON.stringify({
           error:
-            "Missing fields. 'name', 'owner', and a non-empty array of 'cellIds' are required.",
+            "Missing fields. 'name' and a non-empty array of 'cellIds' are required.",
         }),
       };
     }
@@ -77,17 +85,15 @@ export const handler = async (
       })
       .returning();
 
-    if (ownerEmail != null) {
-      await sendEmail({
-        to: ownerEmail,
-        subject: "Community Submission Confirmation",
-        templateName: "communitySubmissionConfirmation",
-        variables: {
-          communityName: name,
-          frontendUrl: process.env.FRONTEND_URL ?? "",
-        },
-      });
-    }
+    await sendEmail({
+      to: ownerEmail,
+      subject: "Community Submission Confirmation",
+      templateName: "communitySubmissionConfirmation",
+      variables: {
+        communityName: name,
+        frontendUrl: process.env.FRONTEND_URL ?? "",
+      },
+    });
 
     return {
       statusCode: 201,
