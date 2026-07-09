@@ -42,6 +42,21 @@ export const theme = createTheme({
           },
         },
       },
+      tabs: {
+            backgroundColor: { value: "{colors.background.secondary.value}" },
+            item: {
+              color: { value: "#00000080" },
+              backgroundColor: { value: "{colors.background.secondary.value}" },
+              _hover: {
+                color: { value: "#000000b3" },
+                backgroundColor: { value: "{colors.background.primary.value}" },
+              },
+              _active: {
+                color: { value: "{colors.brand.primary.80.value}" },
+                backgroundColor: { value: "{colors.background.primary.value}" },
+              },
+            },
+          },
     },
   },
   overrides: [
@@ -51,7 +66,7 @@ export const theme = createTheme({
         colors: {
           background: {
             primary: { value: "#2e2c33" },
-            secondary: { value: "#1c1827" },
+            secondary: { value: "#252528" },
           },
           font: {
             primary: { value: "{colors.white.value}" },
@@ -65,6 +80,23 @@ export const theme = createTheme({
               background: { value: "{colors.neutral.90.value}" },
               color: { value: "{colors.white.value}" },
               border: { value: "{colors.neutral.70.value}" },
+            },
+          },
+        },
+        components: {
+          tabs: {
+            backgroundColor: { value: "{colors.background.secondary.value}" },
+            item: {
+              color: { value: "#ffffff80" },
+              backgroundColor: { value: "{colors.background.secondary.value}" },
+              _hover: {
+                color: { value: "#ffffffb3" },
+                backgroundColor: { value: "{colors.background.primary.value}" },
+              },
+              _active: {
+                color: { value: "{colors.brand.primary.80.value}" },
+                backgroundColor: { value: "{colors.background.primary.value}" },
+              },
             },
           },
         },
