@@ -406,3 +406,28 @@
     }
   }
 }
+
+.custom-table-row__links-group {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-md;
+  vertical-align: middle;
+}
+
+.custom-table-row__link-wrapper {
+  &--icon-pair {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    font-weight: 600;
+
+    svg {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+  }
+}
