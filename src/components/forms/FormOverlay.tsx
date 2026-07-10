@@ -28,7 +28,7 @@ const FormOverlay: React.FC<FormOverlayProps> = ({
       <div className="form-overlay-container">
         <form onSubmit={onSubmit} className="form">
           <h2 className="form__heading">{title}</h2>
-          {children}
+          <div className="form__body">{children}</div>
           <div className="form__actions">
             <button
               type="button"

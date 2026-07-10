@@ -16,9 +16,12 @@
   background: $color-bg;
   width: 100%;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 
   @include desktop {
     max-width: 500px;
+    max-height: calc(100dvh - 40px);
     border-radius: $radius-xl;
     box-shadow: $shadow-dialog;
     padding: $space-2xl;
@@ -26,8 +29,7 @@
 
   @include mobile {
     height: 100dvh;
-    display: flex;
-    flex-direction: column;
+    max-height: 100dvh;
     padding: $space-xl;
   }
 }
@@ -45,19 +47,28 @@
   flex-direction: column;
   gap: $space-xl;
   width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  flex: 1;
 }
 
-// ── Scrollable fields area (mobile) ────────────
+// ── Form body content wrapper ──────────────────
+.form__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xl;
+  overflow: hidden;
+}
+
+// ── Scrollable fields area ─────────────────────
 .form__fields {
   display: flex;
   flex-direction: column;
   gap: 18px;
-
-  @include mobile {
-    flex: 1;
-    overflow-y: auto;
-    padding-bottom: $space-lg;
-  }
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: $space-lg;
 }
 
 // ── Heading ────────────────────────────────────
@@ -67,6 +78,7 @@
   font-size: 20px;
   font-weight: 700;
   color: $color-text;
+  flex-shrink: 0;
 }
 
 // ── Label + input group ────────────────────────
@@ -130,22 +142,23 @@
   display: flex;
   gap: $space-md;
   margin-top: $space-sm;
+  flex-shrink: 0;
+  background: $color-bg;
 
   @include mobile {
-    flex-shrink: 0;
     margin-top: auto;
-    background: $color-bg;
     padding-top: $space-md;
   }
 }
 
 // ── Legal Agreement Checkbox Block ────────────
 .community-form__legal-checkbox {
-  margin-top: 1rem;
-  padding: 0;
+  margin-top: auto;
+  padding: $space-sm 0 0 0;
   background-color: transparent;
   border: none;
   animation: form-fade-in 0.2s ease-out;
+  flex-shrink: 0;
 
   label {
     display: flex;
