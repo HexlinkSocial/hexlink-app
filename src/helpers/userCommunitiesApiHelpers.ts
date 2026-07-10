@@ -3,59 +3,43 @@ import { adminHeaders } from "./authHeaders";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "";
 const PENDING_KEY = "pendingCommunityPayload";
 
-export type CommunityPayload = {
+export interface BaseCommunity {
   name: string;
-  description: string;
-  whatsapp: string;
-  discord: string;
-  facebook: string;
-  other: string;
-  cellIds: string[];
-};
-
-export interface UnifiedCommunityItem {
-  id: string;
-  name: string;
-  description: string;
-  whatsapp?: string | null;
-  discord?: string | null;
-  facebook?: string | null;
-  other: string;
-  status: "amendments_requested" | "pending" | "approved";
-  comments?: string | null;
-}
-
-export interface UserCommunitiesPayload {
-  approvals: Array<{
-    id: string;
-    name: string;
-    description: string | null;
-    whatsapp: string | null;
-    discord: string | null;
-    facebook: string | null;
-    other: string | null;
-    status: string;
-    comments?: string | null;
-  }>;
-  communities: Array<{
-    id: string;
-    name: string;
-    description: string | null;
-    whatsapp: string | null;
-    discord: string | null;
-    facebook: string | null;
-    other: string | null;
-  }>;
-}
-
-export interface EditCommunityPayload {
-  id: string;
-  name: string;
-  description?: string | null;
+  description?: string;
   whatsapp?: string | null;
   discord?: string | null;
   facebook?: string | null;
   other?: string | null;
+}
+
+export type CommunityPayload = BaseCommunity & {
+  cellIds: string[];
+};
+
+export interface UnifiedCommunityItem extends BaseCommunity {
+  id: string;
+  status: "amendments_requested" | "pending" | "approved";
+  comments?: string | null;
+}
+
+export interface ApprovalItem extends BaseCommunity {
+  id: string;
+  status: string;
+  comments?: string | null;
+}
+
+export interface CommunityItem extends BaseCommunity {
+  id: string;
+  name: string;
+}
+
+export interface UserCommunitiesPayload {
+  approvals: ApprovalItem[];
+  communities: CommunityItem[];
+}
+
+export interface EditCommunityPayload extends BaseCommunity {
+  id: string;
   cognitoToken?: string | null;
 }
 

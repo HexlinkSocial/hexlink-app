@@ -1,4 +1,5 @@
 import React from "react";
+import { FormInputField } from "./FormInputField";
 
 export interface SharedCommunityFormData {
   name: string;
@@ -50,6 +51,10 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
   placeholderOther,
   rows = 5,
 }) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onInputChange(e);
+  };
+
   return (
     <div className="form__fields">
       <div className="form__group">
@@ -92,69 +97,49 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
         )}
       </div>
 
-      <div className="form__group">
-        <label htmlFor="whatsapp">WhatsApp Link</label>
-        <input
-          id="whatsapp"
-          name="whatsapp"
-          type="text"
-          value={formData.whatsapp}
-          onChange={onInputChange}
-          placeholder={placeholderWhatsapp}
-          className={isWhatsappInvalid ? "form__input--error" : ""}
-        />
-        {isWhatsappInvalid && (
-          <div className="form__error">WhatsApp URL format is incorrect</div>
-        )}
-      </div>
+      <FormInputField
+        id="whatsapp"
+        name="whatsapp"
+        label="WhatsApp Link"
+        value={formData.whatsapp}
+        onChange={handleInputChange}
+        placeholder={placeholderWhatsapp}
+        isInvalid={isWhatsappInvalid}
+        errorMessage="WhatsApp URL format is incorrect"
+      />
 
-      <div className="form__group">
-        <label htmlFor="discord">Discord Link</label>
-        <input
-          id="discord"
-          name="discord"
-          type="text"
-          value={formData.discord}
-          onChange={onInputChange}
-          placeholder={placeholderDiscord}
-          className={isDiscordInvalid ? "form__input--error" : ""}
-        />
-        {isDiscordInvalid && (
-          <div className="form__error">Discord URL format is incorrect</div>
-        )}
-      </div>
+      <FormInputField
+        id="discord"
+        name="discord"
+        label="Discord Link"
+        value={formData.discord}
+        onChange={handleInputChange}
+        placeholder={placeholderDiscord}
+        isInvalid={isDiscordInvalid}
+        errorMessage="Discord URL format is incorrect"
+      />
 
-      <div className="form__group">
-        <label htmlFor="facebook">Facebook Link</label>
-        <input
-          id="facebook"
-          name="facebook"
-          type="text"
-          value={formData.facebook}
-          onChange={onInputChange}
-          placeholder={placeholderFacebook}
-          className={isFacebookInvalid ? "form__input--error" : ""}
-        />
-        {isFacebookInvalid && (
-          <div className="form__error">Facebook URL format is incorrect</div>
-        )}
-      </div>
+      <FormInputField
+        id="facebook"
+        name="facebook"
+        label="Facebook Link"
+        value={formData.facebook}
+        onChange={handleInputChange}
+        placeholder={placeholderFacebook}
+        isInvalid={isFacebookInvalid}
+        errorMessage="Facebook URL format is incorrect"
+      />
 
-      <div className="form__group">
-        <label htmlFor="other">Other</label>
-        <input
-          id="other"
-          name="other"
-          type="text"
-          value={formData.other}
-          onChange={onInputChange}
-          placeholder={placeholderOther}
-          className={isOtherInvalid ? "form__input--error" : ""}
-        />
-        {isOtherInvalid && (
-          <div className="form__error">Other URL format is incorrect</div>
-        )}
-      </div>
+      <FormInputField
+        id="other"
+        name="other"
+        label="Other"
+        value={formData.other}
+        onChange={handleInputChange}
+        placeholder={placeholderOther}
+        isInvalid={isOtherInvalid}
+        errorMessage="Other URL format is incorrect"
+      />
 
       {hasNoChanges && (
         <div className="form__error form__error--warning">

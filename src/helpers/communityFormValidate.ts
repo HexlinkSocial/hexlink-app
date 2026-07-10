@@ -4,7 +4,7 @@ export const NAME_LIMIT = 100;
 export const DESCRIPTION_LIMIT = 3000;
 
 export const urlRegex =
-  /^(?:https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{2,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&//=]*)$/
+  /^(?:https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{2,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&//=]*)$/;
 export const whatsappRegex =
   /^(?:https?:\/\/)?(?:www\.)?(?:chat\.whatsapp\.com|wa\.me)\b(?:[-a-zA-Z0-9()@:%_+.~#?&//=]*)$/;
 
@@ -25,49 +25,40 @@ interface CommunityValidationResult {
   isValid: boolean;
 }
 
+const isUrlInvalid = (value: string | undefined, regex: RegExp): boolean => {
+  const trimmed = (value ?? "").trim();
+  return trimmed.length > 0 && !regex.test(trimmed);
+};
+
 export const validateCommunityData = (
   data: SharedCommunityFormData,
 ): CommunityValidationResult => {
   const nameText = (data?.name ?? "").trim();
   const descriptionText = (data?.description ?? "").trim();
 
-  const isNameOverLimit = (data?.name ?? "").length > NAME_LIMIT;
-  const isDescriptionOverLimit =
-    (data?.description ?? "").length > DESCRIPTION_LIMIT;
+  const isNameOverLimit = nameText.length > NAME_LIMIT;
+  const isDescriptionOverLimit = descriptionText.length > DESCRIPTION_LIMIT;
 
-  const trimmedWhatsapp = (data?.whatsapp ?? "").trim();
-  const trimmedDiscord = (data?.discord ?? "").trim();
-  const trimmedFacebook = (data?.facebook ?? "").trim();
-  const trimmedOther = (data?.other ?? "").trim();
-
-  const isWhatsappInvalid =
-    trimmedWhatsapp.length > 0 && !whatsappRegex.test(trimmedWhatsapp);
-  const isDiscordInvalid =
-    trimmedDiscord.length > 0 && !discordRegex.test(trimmedDiscord);
-  const isFacebookInvalid =
-    trimmedFacebook.length > 0 && !facebookRegex.test(trimmedFacebook);
-  const isOtherInvalid =
-    trimmedOther.length > 0 && !urlRegex.test(trimmedOther);
+  const isWhatsappInvalid = isUrlInvalid(data?.whatsapp, whatsappRegex);
+  const isDiscordInvalid = isUrlInvalid(data?.discord, discordRegex);
+  const isFacebookInvalid = isUrlInvalid(data?.facebook, facebookRegex);
+  const isOtherInvalid = isUrlInvalid(data?.other, urlRegex);
 
   const hasNoUrls =
-    trimmedWhatsapp.length === 0 &&
-    trimmedDiscord.length === 0 &&
-    trimmedFacebook.length === 0 &&
-    trimmedOther.length === 0;
-
-  const anyUrlInvalid =
-    isWhatsappInvalid ||
-    isDiscordInvalid ||
-    isFacebookInvalid ||
-    isOtherInvalid;
-
-  const hasRequiredText = nameText.length > 0 && descriptionText.length > 0;
+    !(data?.whatsapp ?? "").trim() &&
+    !(data?.discord ?? "").trim() &&
+    !(data?.facebook ?? "").trim() &&
+    !(data?.other ?? "").trim();
 
   const isValid =
-    hasRequiredText &&
+    nameText.length > 0 &&
+    descriptionText.length > 0 &&
     !isNameOverLimit &&
     !isDescriptionOverLimit &&
-    !anyUrlInvalid &&
+    !isWhatsappInvalid &&
+    !isDiscordInvalid &&
+    !isFacebookInvalid &&
+    !isOtherInvalid &&
     !hasNoUrls;
 
   return {
