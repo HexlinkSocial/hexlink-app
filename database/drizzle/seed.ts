@@ -20,19 +20,54 @@ function generateConnectedH3Cells(count: number): string[] {
   return shuffled.slice(0, count);
 }
 
+function generatePlatformLinks(): {
+  whatsapp: string | null;
+  discord: string | null;
+  facebook: string | null;
+  other: string | null;
+} {
+  const randomSuffix = () => faker.string.alphanumeric(10);
+  
+  const platforms = [
+    { key: "whatsapp", value: () => `https://chat.whatsapp.com/${randomSuffix()}` },
+    { key: "discord", value: () => faker.helpers.arrayElement([`https://discord.gg/${randomSuffix()}`, `https://discord.com/${randomSuffix()}`]) },
+    { key: "facebook", value: () => `https://facebook.com/groups/${randomSuffix()}` },
+    { key: "other", value: () => faker.internet.url() },
+  ];
+
+  const shuffledPlatforms = faker.helpers.shuffle(platforms);
+  const fieldsCount = faker.number.int({ min: 1, max: 4 });
+  const selectedPlatforms = shuffledPlatforms.slice(0, fieldsCount);
+
+  const links = {
+    whatsapp: null,
+    discord: null,
+    facebook: null,
+    other: null,
+  };
+
+  for (const platform of selectedPlatforms) {
+    links[platform.key as keyof typeof links] = platform.value();
+  }
+
+  return links;
+}
+
 async function main(): Promise<void> {
   try {
     console.log("Seeding...");
     await db.delete(communities);
 
     for (let i = 0; i < 20; i++) {
+      const platformLinks = generatePlatformLinks();
+
       const [newCommunity] = await db
         .insert(communities)
         .values({
           name: faker.company.name(),
           description: faker.lorem.paragraph(),
           owner: faker.string.uuid(),
-          communityLink: faker.internet.url(),
+          ...platformLinks,
         })
         .returning();
 
