@@ -1,13 +1,20 @@
 import { JSX } from "react";
 import StatusBadge from "../../StatusBadge";
+import DiscordIcon from "../../icons/DiscordIcon";
+import FacebookIcon from "../../icons/FacebookIcon";
+import WhatsAppIcon from "../../icons/WhatsAppIcon";
+import OtherIcon from "../../icons/OtherIcon";
 
 interface ApprovalRowMetaProps {
   name: string;
   ownerEmail: string;
-  communityLink?: string | null;
   cellIds?: string[];
   lastEdited?: string | null;
   hasChangesRequested?: boolean;
+  whatsapp?: string | null;
+  discord?: string | null;
+  facebook?: string | null;
+  other?: string | null;
 }
 
 function buildH3MapUrl(cellIds?: string[]): string | null {
@@ -31,10 +38,13 @@ function formatBadgeDate(dateString: string): string {
 function ApprovalRowMeta({
   name,
   ownerEmail,
-  communityLink,
   cellIds,
   lastEdited,
   hasChangesRequested,
+  whatsapp,
+  discord,
+  facebook,
+  other,
 }: ApprovalRowMetaProps): JSX.Element {
   const mapUrl = buildH3MapUrl(cellIds);
 
@@ -44,31 +54,74 @@ function ApprovalRowMeta({
       <span className="custom-table-row__subtitle">
         submitted by {ownerEmail}
       </span>
-      {mapUrl != null && (
-        <span className="custom-table-row__link-wrapper">
-          <a
-            href={mapUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="custom-table-row__link"
-          >
-            Map
-          </a>
-        </span>
-      )}
-      {communityLink != null && (
-        <span className="custom-table-row__link-wrapper">
-          Link:{" "}
-          <a
-            href={communityLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="custom-table-row__link"
-          >
-            {communityLink}
-          </a>
-        </span>
-      )}
+
+      <div className="custom-table-row__links-group">
+        {mapUrl != null && (
+          <span className="custom-table-row__link-wrapper">
+            <a
+              href={mapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="custom-table-row__link"
+            >
+              Map
+            </a>
+          </span>
+        )}
+        {whatsapp && (
+          <span className="custom-table-row__link-wrapper custom-table-row__link-wrapper--icon-pair">
+            <WhatsAppIcon />
+            <a
+              href={whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="custom-table-row__link"
+            >
+              {whatsapp}
+            </a>
+          </span>
+        )}
+        {discord && (
+          <span className="custom-table-row__link-wrapper custom-table-row__link-wrapper--icon-pair">
+            <DiscordIcon />
+            <a
+              href={discord}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="custom-table-row__link"
+            >
+              {discord}
+            </a>
+          </span>
+        )}
+        {facebook && (
+          <span className="custom-table-row__link-wrapper custom-table-row__link-wrapper--icon-pair">
+            <FacebookIcon />
+            <a
+              href={facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="custom-table-row__link"
+            >
+              {facebook}
+            </a>
+          </span>
+        )}
+        {other && (
+          <span className="custom-table-row__link-wrapper custom-table-row__link-wrapper--icon-pair">
+            <OtherIcon />
+            <a
+              href={other}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="custom-table-row__link"
+            >
+              {other}
+            </a>
+          </span>
+        )}
+      </div>
+
       {hasChangesRequested ? (
         <span className="custom-table-row__link-wrapper custom-table-row__link-wrapper--badge">
           <StatusBadge status="amendments_requested" />

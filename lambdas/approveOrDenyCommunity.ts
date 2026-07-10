@@ -24,7 +24,10 @@ async function handleApprove(
       name: approvalItem.name,
       description: approvalItem.description,
       owner: approvalItem.owner,
-      communityLink: approvalItem.communityLink,
+      whatsapp: approvalItem.whatsapp,
+      discord: approvalItem.discord,
+      facebook: approvalItem.facebook,
+      other: approvalItem.other,
     })
     .onConflictDoUpdate({
       target: schema.communities.id,
@@ -32,7 +35,10 @@ async function handleApprove(
         name: approvalItem.name,
         description: approvalItem.description,
         owner: approvalItem.owner,
-        communityLink: approvalItem.communityLink,
+        whatsapp: approvalItem.whatsapp,
+        discord: approvalItem.discord,
+        facebook: approvalItem.facebook,
+        other: approvalItem.other,
       },
     })
     .returning();

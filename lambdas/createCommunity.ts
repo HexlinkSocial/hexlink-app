@@ -86,7 +86,8 @@ export const handler = async (
     }
 
     const bodyData = getRequestBody(event);
-    const { name, description, communityLink, cellIds } = bodyData;
+    const { name, description, whatsapp, discord, facebook, other, cellIds } =
+      bodyData;
 
     if (name == null || !Array.isArray(cellIds) || cellIds.length === 0) {
       return {
@@ -138,7 +139,10 @@ export const handler = async (
         description: description !== undefined ? description : null,
         owner,
         ownerEmail,
-        communityLink: communityLink !== undefined ? communityLink : null,
+        whatsapp: whatsapp !== undefined ? whatsapp : null,
+        discord: discord !== undefined ? discord : null,
+        facebook: facebook !== undefined ? facebook : null,
+        other: other !== undefined ? other : null,
         cellIds: cellIds,
         status: "pending",
       })

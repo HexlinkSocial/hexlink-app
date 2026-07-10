@@ -33,7 +33,10 @@ export default function UserCommunitiesDashboard(): JSX.Element {
   const [formFields, setFormFields] = useState({
     name: "",
     description: "",
-    url: "",
+    whatsapp: "",
+    discord: "",
+    facebook: "",
+    other: "",
   });
 
   const loadData = useCallback(async (): Promise<void> => {
@@ -67,7 +70,10 @@ export default function UserCommunitiesDashboard(): JSX.Element {
     setFormFields({
       name: item.name,
       description: item.description ?? "",
-      url: item.communityLink ?? "",
+      whatsapp: item.whatsapp ?? "",
+      discord: item.discord ?? "",
+      facebook: item.facebook ?? "",
+      other: item.other ?? "",
     });
     setIsFormOpen(true);
   };
@@ -100,7 +106,10 @@ export default function UserCommunitiesDashboard(): JSX.Element {
         id: activeItem.id,
         name: formFields.name,
         description: formFields.description,
-        communityLink: formFields.url,
+        whatsapp: formFields.whatsapp,
+        discord: formFields.discord,
+        facebook: formFields.facebook,
+        other: formFields.other,
       });
 
       setIsFormOpen(false);

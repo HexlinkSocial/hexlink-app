@@ -8,12 +8,15 @@ export interface ApprovalItem {
   description: string | null;
   owner: string;
   ownerEmail: string;
-  communityLink: string | null;
   cellIds: string[];
   status: string;
   comments: string | null;
   createdAt: string;
   lastEdited: string;
+  whatsapp?: string | null;
+  discord?: string | null;
+  facebook?: string | null;
+  other?: string | null;
 }
 
 export type ApprovalAction = "approve" | "reject" | "amend";

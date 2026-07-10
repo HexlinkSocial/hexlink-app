@@ -72,10 +72,13 @@ function ApprovalRow({
           <ApprovalRowMeta
             name={item.name}
             ownerEmail={item.ownerEmail}
-            communityLink={item.communityLink}
             cellIds={item.cellIds}
             lastEdited={item.lastEdited}
             hasChangesRequested={item.comments != null}
+            whatsapp={item.whatsapp}
+            discord={item.discord}
+            facebook={item.facebook}
+            other={item.other}
           />
           <DescriptionBlock description={item.description} />
         </div>

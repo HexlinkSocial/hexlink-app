@@ -30,14 +30,24 @@ function EditCommunityForm({
   onSubmit,
   onInputChange,
 }: EditCommunityFormProps): JSX.Element {
-  const { isNameOverLimit, isDescriptionOverLimit, isUrlInvalid, isValid } =
-    validateCommunityData(formData);
+  const {
+    isNameOverLimit,
+    isDescriptionOverLimit,
+    isWhatsappInvalid,
+    isDiscordInvalid,
+    isFacebookInvalid,
+    isOtherInvalid,
+    isValid,
+  } = validateCommunityData(formData);
 
   const hasNoChanges =
     originalData != null &&
-    formData.name.trim() === originalData.name &&
-    formData.description.trim() === (originalData.description || "") &&
-    formData.url.trim() === (originalData.communityLink || "");
+    (formData.name ?? "").trim() === originalData.name &&
+    (formData.description ?? "").trim() === (originalData.description || "") &&
+    (formData.whatsapp ?? "").trim() === (originalData.whatsapp || "") &&
+    (formData.discord ?? "").trim() === (originalData.discord || "") &&
+    (formData.facebook ?? "").trim() === (originalData.facebook || "") &&
+    (formData.other ?? "").trim() === (originalData.other || "");
 
   const isFormInvalid = !isValid || hasNoChanges;
 
@@ -56,7 +66,10 @@ function EditCommunityForm({
         onInputChange={onInputChange}
         isNameOverLimit={isNameOverLimit}
         isDescriptionOverLimit={isDescriptionOverLimit}
-        isUrlInvalid={isUrlInvalid}
+        isWhatsappInvalid={isWhatsappInvalid}
+        isDiscordInvalid={isDiscordInvalid}
+        isFacebookInvalid={isFacebookInvalid}
+        isOtherInvalid={isOtherInvalid}
         errorMessage={errorMessage}
         hasNoChanges={hasNoChanges}
         rows={5}

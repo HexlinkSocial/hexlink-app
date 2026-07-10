@@ -13,7 +13,10 @@ export const communities = pgTable("communities", {
   name: text("name").notNull(),
   description: text("description"),
   owner: text("owner").notNull(),
-  communityLink: text("community_link"),
+  whatsapp: text("whatsapp"),
+  discord: text("discord"),
+  facebook: text("facebook"),
+  other: text("other_url"),
 });
 
 export const cellCommunities = pgTable(
@@ -36,7 +39,10 @@ export const approvals = pgTable("approvals", {
   description: text("description"),
   owner: text("owner").notNull(),
   ownerEmail: text("owner_email").notNull(),
-  communityLink: text("community_link"),
+  whatsapp: text("whatsapp"),
+  discord: text("discord"),
+  facebook: text("facebook"),
+  other: text("other_url"),
   cellIds: text("cell_ids").array().notNull(),
   status: text("status").notNull().default("pending"),
   comments: text("comments"),

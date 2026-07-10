@@ -131,6 +131,7 @@ export default function CommunitiesCard({
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
           </button>

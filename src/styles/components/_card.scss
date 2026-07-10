@@ -185,11 +185,22 @@
     }
   }
 
-  &__join {
+  &__action-container {
     flex-shrink: 0;
+    align-self: flex-start;
+  }
+
+  &__arrow {
+    margin-left: 6px;
+    transition: transform $transition-fast;
+  }
+
+  &__join {
+    display: inline-flex;
+    align-items: center;
     appearance: none;
     border: none;
-    padding: 7px 14px;
+    padding: 7px 12px;
     border-radius: $radius-md;
     font-size: 12px;
     font-weight: 700;
@@ -199,11 +210,18 @@
     background: $color-accent;
     color: #fff !important;
     transition: background $transition-fast, transform 0.1s;
-    align-self: flex-start;
 
     &:hover {
       background: $color-accent-light;
       transform: translateY(-1px);
+    }
+
+    &--active {
+      background: $color-accent-light;
+      
+      .community-item__arrow {
+        transform: rotate(180deg);
+      }
     }
 
     &--disabled {
@@ -212,6 +230,43 @@
       cursor: not-allowed;
       transform: none !important;
     }
+  }
+
+  &__dropdown {
+    z-index: calc(#{$z-card} + 10);
+    background: $color-bg;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+    width: 140px;
+    display: flex;
+    flex-direction: column;
+    padding: 4px 0;
+    overflow: hidden;
+  }
+
+  &__dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: $color-text;
+    text-decoration: none;
+    transition: background $transition-fast;
+
+    &:hover {
+      background: $color-bg-hover;
+    }
+  }
+
+  &__dropdown-icon {
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
   }
 }
 
@@ -327,7 +382,6 @@
     margin-top: $space-xs;
   }
 
-  // Inlined rather than @extend .btn across module boundary
   &__close {
     flex: 1;
     appearance: none;
@@ -349,6 +403,31 @@
     &:hover {
       background: $color-accent-light;
       transform: translateY(-1px);
+    }
+  }
+}
+
+.custom-table-row__links-group {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-md;
+  vertical-align: middle;
+}
+
+.custom-table-row__link-wrapper {
+  &--icon-pair {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    font-weight: 600;
+
+    svg {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
     }
   }
 }
