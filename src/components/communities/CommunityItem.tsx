@@ -84,18 +84,23 @@ export default function CommunityItem({
   }, [isOpen]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !buttonRef.current) return;
 
-    const handleScroll = () => {
-      setIsOpen(false);
-    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          setIsOpen(false);
+        }
+      },
+      {
+        threshold: 0,
+      },
+    );
 
-    window.addEventListener("scroll", handleScroll, {
-      capture: true,
-      passive: true,
-    });
+    observer.observe(buttonRef.current);
+
     return () => {
-      window.removeEventListener("scroll", handleScroll, { capture: true });
+      observer.disconnect();
     };
   }, [isOpen]);
 
