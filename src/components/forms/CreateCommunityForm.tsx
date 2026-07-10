@@ -32,8 +32,15 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
   onSubmit,
   onInputChange,
 }) => {
-  const { isNameOverLimit, isDescriptionOverLimit, isUrlInvalid, isValid } =
-    validateCommunityData(communityData);
+  const {
+    isNameOverLimit,
+    isDescriptionOverLimit,
+    isWhatsappInvalid,
+    isDiscordInvalid,
+    isFacebookInvalid,
+    isOtherInvalid,
+    isValid,
+  } = validateCommunityData(communityData);
 
   const {
     executeChallenge,
@@ -44,12 +51,13 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
   });
 
   const isFormInvalid = !isValid;
+  const isPendingSubmission = isSubmitting || isTurnstileOpen;
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
   ): Promise<void> => {
     e.preventDefault();
-    if (isFormInvalid) {
+    if (isFormInvalid || isPendingSubmission) {
       return;
     }
 
@@ -68,7 +76,7 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
         title="Create Community"
         submitLabel="Create"
         isSubmitting={isSubmitting}
-        isDisabled={isFormInvalid}
+        isDisabled={isFormInvalid || isPendingSubmission}
         onCancel={onCancel}
         onSubmit={handleSubmit}
       >
@@ -77,11 +85,17 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
           onInputChange={onInputChange}
           isNameOverLimit={isNameOverLimit}
           isDescriptionOverLimit={isDescriptionOverLimit}
-          isUrlInvalid={isUrlInvalid}
+          isWhatsappInvalid={isWhatsappInvalid}
+          isDiscordInvalid={isDiscordInvalid}
+          isFacebookInvalid={isFacebookInvalid}
+          isOtherInvalid={isOtherInvalid}
           errorMessage={errorMessage}
-          placeholderName="e.g. Westside Gardeners"
+          placeholderName="e.g. UK Friends"
           placeholderDescription="What is your community about?"
-          placeholderUrl="example.com"
+          placeholderWhatsapp="e.g. https://chat.whatsapp.com/abc123"
+          placeholderDiscord="e.g. https://discord.gg/abc123"
+          placeholderFacebook="e.g. https://facebook.com/groups/abc123"
+          placeholderOther="e.g. mycommunity.com"
           rows={3}
         />
       </FormOverlay>

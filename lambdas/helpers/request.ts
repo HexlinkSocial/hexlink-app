@@ -8,7 +8,10 @@ export interface RequestBodyData {
   description?: string;
   owner?: string;
   ownerEmail?: string;
-  communityLink?: string;
+  whatsapp?: string;
+  discord?: string;
+  facebook?: string;
+  other?: string;
   cellIds?: string[];
   scope?: string;
 }

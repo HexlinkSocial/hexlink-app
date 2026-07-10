@@ -13,7 +13,10 @@ interface EditCommunityInput {
   id?: string;
   name?: string;
   description?: string | null;
-  communityLink?: string | null;
+  whatsapp?: string | null;
+  discord?: string | null;
+  facebook?: string | null;
+  other?: string | null;
   ownerEmail?: string | null;
   cellIds?: string[] | null;
 }
@@ -69,8 +72,10 @@ async function updateExistingApproval(
     .set({
       name: input.name,
       description: input.description !== undefined ? input.description : null,
-      communityLink:
-        input.communityLink !== undefined ? input.communityLink : null,
+      whatsapp: input.whatsapp !== undefined ? input.whatsapp : null,
+      discord: input.discord !== undefined ? input.discord : null,
+      facebook: input.facebook !== undefined ? input.facebook : null,
+      other: input.other !== undefined ? input.other : null,
       status: "pending",
       comments: null,
       lastEdited: new Date(),
@@ -90,7 +95,7 @@ async function createNewApprovalRequest(
   ownerEmail: string,
   cellIds: string[],
 ): Promise<ApprovalRecord> {
-  const { id, name, description, communityLink } = input;
+  const { id, name, description, whatsapp, discord, facebook, other } = input;
 
   if (name == null) {
     throw new Error("Missing required fields for approval creation");
@@ -104,7 +109,10 @@ async function createNewApprovalRequest(
       description: description ?? null,
       owner,
       ownerEmail,
-      communityLink: communityLink ?? null,
+      whatsapp: whatsapp ?? null,
+      discord: discord ?? null,
+      facebook: facebook ?? null,
+      other: other ?? null,
       cellIds,
       status: "pending",
       lastEdited: null,
@@ -160,7 +168,10 @@ export const handler = async (
       name: bodyData.name,
       description: bodyData.description,
       ownerEmail: userEmail,
-      communityLink: bodyData.communityLink,
+      whatsapp: bodyData.whatsapp,
+      discord: bodyData.discord,
+      facebook: bodyData.facebook,
+      other: bodyData.other,
     };
 
     const targetId = input.id!;

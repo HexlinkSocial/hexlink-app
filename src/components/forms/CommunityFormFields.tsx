@@ -3,7 +3,10 @@ import React from "react";
 export interface SharedCommunityFormData {
   name: string;
   description: string;
-  url: string;
+  whatsapp: string;
+  discord: string;
+  facebook: string;
+  other: string;
 }
 
 export interface CommunityFormFieldsProps {
@@ -13,12 +16,18 @@ export interface CommunityFormFieldsProps {
   ) => void;
   isNameOverLimit: boolean;
   isDescriptionOverLimit: boolean;
-  isUrlInvalid: boolean;
+  isWhatsappInvalid: boolean;
+  isDiscordInvalid: boolean;
+  isFacebookInvalid: boolean;
+  isOtherInvalid: boolean;
   errorMessage: string | null;
   hasNoChanges?: boolean;
   placeholderName?: string;
   placeholderDescription?: string;
-  placeholderUrl?: string;
+  placeholderWhatsapp?: string;
+  placeholderDiscord?: string;
+  placeholderFacebook?: string;
+  placeholderOther?: string;
   rows?: number;
 }
 
@@ -27,12 +36,18 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
   onInputChange,
   isNameOverLimit,
   isDescriptionOverLimit,
-  isUrlInvalid,
+  isWhatsappInvalid,
+  isDiscordInvalid,
+  isFacebookInvalid,
+  isOtherInvalid,
   errorMessage,
   hasNoChanges = false,
   placeholderName,
   placeholderDescription,
-  placeholderUrl,
+  placeholderWhatsapp,
+  placeholderDiscord,
+  placeholderFacebook,
+  placeholderOther,
   rows = 5,
 }) => {
   return (
@@ -78,21 +93,66 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
       </div>
 
       <div className="form__group">
-        <label htmlFor="url">Community URL</label>
+        <label htmlFor="whatsapp">WhatsApp Link</label>
         <input
-          id="url"
-          name="url"
+          id="whatsapp"
+          name="whatsapp"
           type="text"
-          required
-          value={formData.url}
+          value={formData.whatsapp}
           onChange={onInputChange}
-          placeholder={placeholderUrl}
-          className={isUrlInvalid ? "form__input--error" : ""}
+          placeholder={placeholderWhatsapp}
+          className={isWhatsappInvalid ? "form__input--error" : ""}
         />
-        {isUrlInvalid && (
-          <div className="form__error">
-            Please enter a valid URL (e.g., example.com)
-          </div>
+        {isWhatsappInvalid && (
+          <div className="form__error">WhatsApp URL format is incorrect</div>
+        )}
+      </div>
+
+      <div className="form__group">
+        <label htmlFor="discord">Discord Link</label>
+        <input
+          id="discord"
+          name="discord"
+          type="text"
+          value={formData.discord}
+          onChange={onInputChange}
+          placeholder={placeholderDiscord}
+          className={isDiscordInvalid ? "form__input--error" : ""}
+        />
+        {isDiscordInvalid && (
+          <div className="form__error">Discord URL format is incorrect</div>
+        )}
+      </div>
+
+      <div className="form__group">
+        <label htmlFor="facebook">Facebook Link</label>
+        <input
+          id="facebook"
+          name="facebook"
+          type="text"
+          value={formData.facebook}
+          onChange={onInputChange}
+          placeholder={placeholderFacebook}
+          className={isFacebookInvalid ? "form__input--error" : ""}
+        />
+        {isFacebookInvalid && (
+          <div className="form__error">Facebook URL format is incorrect</div>
+        )}
+      </div>
+
+      <div className="form__group">
+        <label htmlFor="other">Other</label>
+        <input
+          id="other"
+          name="other"
+          type="text"
+          value={formData.other}
+          onChange={onInputChange}
+          placeholder={placeholderOther}
+          className={isOtherInvalid ? "form__input--error" : ""}
+        />
+        {isOtherInvalid && (
+          <div className="form__error">Other URL format is incorrect</div>
         )}
       </div>
 

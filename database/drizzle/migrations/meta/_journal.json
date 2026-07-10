@@ -29,6 +29,13 @@
       "when": 1783517857280,
       "tag": "0003_add_last_edited_to_approvals",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1783685145876,
+      "tag": "0004_add_separate_url_platforms",
+      "breakpoints": true
     }
   ]
 }

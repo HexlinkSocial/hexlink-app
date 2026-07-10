@@ -6,7 +6,10 @@ const PENDING_KEY = "pendingCommunityPayload";
 export type CommunityPayload = {
   name: string;
   description: string;
-  communityLink: string;
+  whatsapp: string;
+  discord: string;
+  facebook: string;
+  other: string;
   cellIds: string[];
 };
 
@@ -14,7 +17,10 @@ export interface UnifiedCommunityItem {
   id: string;
   name: string;
   description: string;
-  communityLink: string;
+  whatsapp?: string | null;
+  discord?: string | null;
+  facebook?: string | null;
+  other: string;
   status: "amendments_requested" | "pending" | "approved";
   comments?: string | null;
 }
@@ -24,7 +30,10 @@ export interface UserCommunitiesPayload {
     id: string;
     name: string;
     description: string | null;
-    communityLink: string | null;
+    whatsapp: string | null;
+    discord: string | null;
+    facebook: string | null;
+    other: string | null;
     status: string;
     comments?: string | null;
   }>;
@@ -32,7 +41,10 @@ export interface UserCommunitiesPayload {
     id: string;
     name: string;
     description: string | null;
-    communityLink: string | null;
+    whatsapp: string | null;
+    discord: string | null;
+    facebook: string | null;
+    other: string | null;
   }>;
 }
 
@@ -40,24 +52,37 @@ export interface EditCommunityPayload {
   id: string;
   name: string;
   description?: string | null;
-  communityLink?: string | null;
+  whatsapp?: string | null;
+  discord?: string | null;
+  facebook?: string | null;
+  other?: string | null;
   cognitoToken?: string | null;
 }
 
-function normaliseUrl(url: string): string {
-  const trimmed = url.trim();
+function normaliseUrl(url: string | undefined | null): string {
+  const trimmed = (url ?? "").trim();
   if (trimmed && !/^https?:\/\//i.test(trimmed)) return `http://${trimmed}`;
   return trimmed;
 }
 
 export function buildPayload(
-  communityData: { name: string; description: string; url: string },
+  communityData: {
+    name: string;
+    description: string;
+    whatsapp: string;
+    discord: string;
+    facebook: string;
+    other: string;
+  },
   selectedIds: Set<string>,
 ): CommunityPayload {
   return {
     name: communityData.name,
     description: communityData.description,
-    communityLink: normaliseUrl(communityData.url),
+    whatsapp: normaliseUrl(communityData.whatsapp),
+    discord: normaliseUrl(communityData.discord),
+    facebook: normaliseUrl(communityData.facebook),
+    other: normaliseUrl(communityData.other),
     cellIds: Array.from(selectedIds),
   };
 }
@@ -113,7 +138,10 @@ export async function fetchUserCommunities(): Promise<UnifiedCommunityItem[]> {
       id: item.id,
       name: item.name,
       description: item.description!,
-      communityLink: item.communityLink!,
+      whatsapp: item.whatsapp,
+      discord: item.discord,
+      facebook: item.facebook,
+      other: item.other!,
       status:
         item.status === "amendments_requested"
           ? "amendments_requested"
@@ -127,7 +155,10 @@ export async function fetchUserCommunities(): Promise<UnifiedCommunityItem[]> {
       id: item.id,
       name: item.name,
       description: item.description!,
-      communityLink: item.communityLink!,
+      whatsapp: item.whatsapp,
+      discord: item.discord,
+      facebook: item.facebook,
+      other: item.other!,
       status: "approved",
     }),
   );
@@ -141,10 +172,22 @@ export async function fetchUserCommunities(): Promise<UnifiedCommunityItem[]> {
 export async function editCommunity(
   payload: EditCommunityPayload,
 ): Promise<{ message: string; approval?: UnifiedCommunityItem }> {
+  const normalizedPayload: EditCommunityPayload = {
+    ...payload,
+    whatsapp: payload.whatsapp
+      ? normaliseUrl(payload.whatsapp)
+      : payload.whatsapp,
+    discord: payload.discord ? normaliseUrl(payload.discord) : payload.discord,
+    facebook: payload.facebook
+      ? normaliseUrl(payload.facebook)
+      : payload.facebook,
+    other: payload.other ? normaliseUrl(payload.other) : payload.other,
+  };
+
   const response = await fetch(`${BACKEND_URL}/EditCommunity`, {
     method: "POST",
     headers: await adminHeaders(),
-    body: JSON.stringify(payload),
+    body: JSON.stringify(normalizedPayload),
   });
 
   if (!response.ok) {
