@@ -22,8 +22,7 @@ const formatCommunityUrl = (url: string | null | undefined): string => {
   try {
     const parsed = new URL(url);
     cleanUrl = parsed.host + parsed.pathname;
-  } catch {
-  }
+  } catch {}
 
   return `${cleanUrl.substring(0, 14)}...`;
 };
@@ -82,6 +81,22 @@ export default function CommunityItem({
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleScroll = () => {
+      setIsOpen(false);
+    };
+
+    window.addEventListener("scroll", handleScroll, {
+      capture: true,
+      passive: true,
+    });
+    return () => {
+      window.removeEventListener("scroll", handleScroll, { capture: true });
+    };
   }, [isOpen]);
 
   const handleLinkClick = (
