@@ -13,6 +13,20 @@ interface CommunityItemProps {
   community: Community;
 }
 
+  const formatCommunityUrl = (url: string | null | undefined): string => {
+  if (!url) return "...";
+
+  let cleanUrl = url;
+
+  try {
+    const parsed = new URL(url);
+    cleanUrl = parsed.host + parsed.pathname;
+  } catch {
+  }
+
+  return `${cleanUrl.substring(0, 14)}...`;
+};
+
 export default function CommunityItem({
   community,
 }: CommunityItemProps): JSX.Element {
@@ -41,7 +55,7 @@ export default function CommunityItem({
       url: community.facebook,
       icon: <FacebookIcon />,
     },
-    { key: "other", label: "Other", url: community.other, icon: <OtherIcon /> },
+    { key: "other", label: formatCommunityUrl(community.other), url: community.other, icon: <OtherIcon /> },
   ].filter((link) => link.url && link.url.trim() !== "");
 
   const hasLinks = links.length > 0;
