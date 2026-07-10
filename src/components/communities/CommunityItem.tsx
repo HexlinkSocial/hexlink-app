@@ -8,12 +8,13 @@ import DiscordIcon from "../icons/DiscordIcon";
 import FacebookIcon from "../icons/FacebookIcon";
 import OtherIcon from "../icons/OtherIcon";
 import ArrowIcon from "../icons/ArrowIcon";
+import { DisclaimerModal } from "./DisclaimerModal";
 
 interface CommunityItemProps {
   community: Community;
 }
 
-  const formatCommunityUrl = (url: string | null | undefined): string => {
+const formatCommunityUrl = (url: string | null | undefined): string => {
   if (!url) return "...";
 
   let cleanUrl = url;
@@ -31,6 +32,8 @@ export default function CommunityItem({
   community,
 }: CommunityItemProps): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
+  const [pendingTargetUrl, setPendingTargetUrl] = useState<string | null>(null);
+
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -55,7 +58,12 @@ export default function CommunityItem({
       url: community.facebook,
       icon: <FacebookIcon />,
     },
-    { key: "other", label: formatCommunityUrl(community.other), url: community.other, icon: <OtherIcon /> },
+    {
+      key: "other",
+      label: formatCommunityUrl(community.other),
+      url: community.other,
+      icon: <OtherIcon />,
+    },
   ].filter((link) => link.url && link.url.trim() !== "");
 
   const hasLinks = links.length > 0;
@@ -75,6 +83,22 @@ export default function CommunityItem({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
+
+  const handleLinkClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    url: string,
+  ): void => {
+    e.preventDefault();
+    setIsOpen(false);
+    setPendingTargetUrl(url);
+  };
+
+  const confirmExternalNavigation = (): void => {
+    if (pendingTargetUrl) {
+      window.open(pendingTargetUrl, "_blank", "noopener,noreferrer");
+    }
+    setPendingTargetUrl(null);
+  };
 
   return (
     <div className="community-item">
@@ -122,10 +146,8 @@ export default function CommunityItem({
                 <a
                   key={link.key}
                   href={link.url ?? "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="community-item__dropdown-link"
-                  onClick={() => setIsOpen(false)}
+                  onClick={(e) => handleLinkClick(e, link.url ?? "#")}
                 >
                   <span className="community-item__dropdown-icon">
                     {link.icon}
@@ -136,6 +158,12 @@ export default function CommunityItem({
             </div>,
             document.body,
           )}
+
+        <DisclaimerModal
+          isOpen={pendingTargetUrl !== null}
+          onCancel={() => setPendingTargetUrl(null)}
+          onConfirm={confirmExternalNavigation}
+        />
       </div>
     </div>
   );

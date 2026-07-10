@@ -47,6 +47,9 @@ jobs:
           VITE_COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_POOL }}
           VITE_COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_CLIENT }}
           VITE_TURNSTILE_SITE_KEY: ${{ secrets.TURNSTILE_SITE_KEY }}
+          VITE_TERMS_URL: ${{ secrets.LEGAL_TERMS_URL }}
+          VITE_PRIVACY_URL: ${{ secrets.LEGAL_PRIVACY_URL }}
+          VITE_GUIDELINES_URL: ${{ secrets.LEGAL_GUIDELINES_URL }}
 
       - name: Deploy frontend to S3
         run: aws s3 sync dist/ s3://$FRONTEND_S3_BUCKET --delete --exclude "tiles/*" --quiet

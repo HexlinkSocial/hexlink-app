@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import FormOverlay from "./FormOverlay";
 import {
   CommunityFormFields,
@@ -32,6 +32,14 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
   onSubmit,
   onInputChange,
 }) => {
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setAgreedToTerms(false);
+    }
+  }, [isOpen]);
+
   const {
     isNameOverLimit,
     isDescriptionOverLimit,
@@ -50,7 +58,7 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
     siteKey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
   });
 
-  const isFormInvalid = !isValid;
+  const isFormInvalid = !isValid || !agreedToTerms;
   const isPendingSubmission = isSubmitting || isTurnstileOpen;
 
   const handleSubmit = async (
@@ -68,6 +76,10 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
       console.error("Captcha verification failed:", error);
     }
   };
+
+  const termsUrl = import.meta.env.VITE_TERMS_URL ?? "#";
+  const privacyUrl = import.meta.env.VITE_PRIVACY_URL ?? "#";
+  const guidelinesUrl = import.meta.env.VITE_GUIDELINES_URL ?? "#";
 
   return (
     <>
@@ -98,6 +110,31 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
           placeholderOther="e.g. mycommunity.com"
           rows={3}
         />
+
+        <div className="community-form__legal-checkbox">
+          <label>
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+            />
+            <span>
+              I confirm that this group adheres to the{" "}
+              <a href={guidelinesUrl} target="_blank" rel="noopener noreferrer">
+                Community Guidelines
+              </a>
+              . I agree to the{" "}
+              <a href={termsUrl} target="_blank" rel="noopener noreferrer">
+                Terms & Conditions
+              </a>{" "}
+              and acknowledge the{" "}
+              <a href={privacyUrl} target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a>
+              .
+            </span>
+          </label>
+        </div>
       </FormOverlay>
 
       {isTurnstileOpen && <TurnstileOverlay containerRef={containerRef} />}

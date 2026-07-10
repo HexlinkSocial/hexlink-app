@@ -139,6 +139,54 @@
   }
 }
 
+// ── Legal Agreement Checkbox Block ────────────
+.community-form__legal-checkbox {
+  margin-top: 1rem;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  animation: form-fade-in 0.2s ease-out;
+
+  label {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    cursor: pointer;
+    font-family: $font-sans;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: $color-text;
+    user-select: none;
+  }
+
+  input[type="checkbox"] {
+    appearance: checkbox;
+    width: 16px;
+    height: 16px;
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+    accent-color: $color-accent;
+    cursor: pointer;
+  }
+
+  span {
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  a {
+    color: $color-accent;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color $transition-fast;
+
+    &:hover {
+      text-decoration: underline;
+      color: $color-accent-dark;
+    }
+  }
+}
+
 @keyframes form-fade-in {
   from { opacity: 0; transform: translateY(-2px); }
   to   { opacity: 1; transform: translateY(0); }
