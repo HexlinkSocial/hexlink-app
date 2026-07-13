@@ -27,6 +27,12 @@ function getQueryParam(
 export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
+  {
+      statusCode: 500,
+      headers: CORS_HEADERS,
+      body: "test error",
+  };
+
   const cellId = getQueryParam(event, "cellId");
 
   if (cellId === undefined) {
