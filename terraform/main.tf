@@ -383,16 +383,43 @@ resource "aws_iam_role_policy" "github_policy" {
         ]
         Resource = "arn:aws:iam::*:policy/${var.project_name}-*"
       },
+
       {
         Effect = "Allow"
         Action = [
           "logs:CreateLogGroup",
           "logs:DeleteLogGroup",
-          "logs:DescribeLogGroups",
           "logs:PutRetentionPolicy"
         ]
-        Resource = "arn:aws:logs:${var.aws_region}:*:log-group:/aws/apigateway/*"
+        Resource = [
+          "arn:aws:logs:${var.aws_region}:*:log-group:/aws/apigateway/*",
+          "arn:aws:logs:${var.aws_region}:*:log-group:/aws/vendedlogs/*"
+        ]
+      },
+
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:DescribeLogGroups",
+          "logs:DescribeResourcePolicies",
+          "logs:PutResourcePolicy",
+          "logs:DeleteResourcePolicy"
+        ]
+        Resource = "*"
+      },
+
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogDelivery",
+          "logs:DeleteLogDelivery",
+          "logs:GetLogDelivery",
+          "logs:ListLogDeliveries",
+          "logs:UpdateLogDelivery"
+        ]
+        Resource = "*"
       }
+
     ]
   })
 }
