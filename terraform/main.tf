@@ -382,8 +382,17 @@ resource "aws_iam_role_policy" "github_policy" {
           "iam:DeletePolicyVersion"
         ]
         Resource = "arn:aws:iam::*:policy/${var.project_name}-*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:DeleteLogGroup",
+          "logs:DescribeLogGroups",
+          "logs:PutRetentionPolicy"
+        ]
+        Resource = "arn:aws:logs:${var.aws_region}:*:log-group:/aws/apigateway/*"
       }
-
     ]
   })
 }
