@@ -135,7 +135,7 @@ resource "aws_cloudwatch_log_metric_filter" "route_status_filters" {
   for_each = local.route_monitoring
 
   name           = "${var.project_name}-${each.key}-error-filter"
-  pattern        = "{ ($.status >= 400 && $.status <= 599) && $.routeKey = \"${each.value.route_key}\" }"
+  pattern        = "{ ($.status = \"4*\" || $.status = \"5*\") && $.routeKey = \"${each.value.route_key}\" }"
   log_group_name = "/aws/vendedlogs/apigateway/${var.project_name}-backend-stack-access-logs"
 
   metric_transformation {
@@ -148,10 +148,10 @@ resource "aws_cloudwatch_log_metric_filter" "route_status_filters" {
 resource "aws_cloudwatch_metric_alarm" "route_status_alarms" {
   for_each = local.route_monitoring
 
-  alarm_name          = "${var.project_name}-${each.key}-errors"
+  alarm_name          = "${var.project_name}-${each.key}-route-errors"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
-  metric_name          = "${each.key}-Error-Count"
+  metric_name         = "${each.key}-Error-Count"
   namespace           = "${var.project_name}/ApiRoutes"
   period              = "60"
   statistic           = "Sum"
