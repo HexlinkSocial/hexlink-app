@@ -44,36 +44,28 @@ resource "aws_cloudwatch_metric_alarm" "api_5xx" {
 locals {
   route_monitoring = {
     getCommunitiesByCellId = {
-      route_key    = "GET /CommunitiesByCellId"
-      status_codes = ["400", "404", "500"]
+      route_key = "GET /CommunitiesByCellId"
     }
     getCommunityCounts = {
-      route_key    = "GET /CommunityCounts"
-      status_codes = ["500"]
+      route_key = "GET /CommunityCounts"
     }
     createCommunity = {
-      route_key    = "POST /CreateCommunity"
-      status_codes = ["400", "401", "403", "500"]
+      route_key = "POST /CreateCommunity"
     }
     approveOrDenyCommunity = {
-      route_key    = "POST /ApproveOrDenyCommunity"
-      status_codes = ["400", "403", "404", "500"]
+      route_key = "POST /ApproveOrDenyCommunity"
     }
     getPendingCommunities = {
-      route_key    = "POST /GetPendingCommunities"
-      status_codes = ["403", "500"]
+      route_key = "POST /GetPendingCommunities"
     }
     getUserCommunities = {
-      route_key    = "GET /GetUserCommunities"
-      status_codes = ["401", "500"]
+      route_key = "GET /GetUserCommunities"
     }
     editCommunity = {
-      route_key    = "POST /EditCommunity"
-      status_codes = ["400", "401", "404", "500"]
+      route_key = "POST /EditCommunity"
     }
     deleteCommunity = {
-      route_key    = "POST /DeleteCommunity"
-      status_codes = ["400", "401", "404", "500"]
+      route_key = "POST /DeleteCommunity"
     }
   }
 
@@ -87,17 +79,6 @@ locals {
     "${var.project_name}-editCommunity",
     "${var.project_name}-deleteCommunity"
   ]
-
-  flat_status_monitoring = merge([
-    for func_key, config in local.route_monitoring : {
-      for code in config.status_codes : "${func_key}-${code}" => {
-        function_name = "${var.project_name}-${func_key}"
-        route_key     = config.route_key
-        status_code   = code
-        metric_name   = "${func_key}-${code}-Count"
-      }
-    }
-  ]...)
 }
 
 resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
@@ -146,59 +127,36 @@ resource "aws_cloudwatch_metric_alarm" "lambda_throttles" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "lambda_duration" {
-  for_each = toset(local.monitored_functions)
-
-  alarm_name          = "${each.value}-p95-duration"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "1"
-  metric_name         = "Duration"
-  namespace           = "AWS/Lambda"
-  period              = "300"
-  extended_statistic  = "p95"
-  threshold           = "5000"
-  alarm_description   = "P95 latency breach for ${each.value}"
-  treat_missing_data  = "notBreaching"
-
-  alarm_actions = [
-    aws_sns_topic.ops_alerts.arn
-  ]
-
-  dimensions = {
-    FunctionName = each.value
-  }
-}
-
 #################################
 # GRANULAR API ROUTE STATUS ALARMS
 #################################
 
 resource "aws_cloudwatch_log_metric_filter" "route_status_filters" {
-  for_each = local.flat_status_monitoring
+  for_each = local.route_monitoring
 
-  name           = "${each.value.function_name}-${each.value.status_code}-filter"
-  pattern        = "{ $.status = ${each.value.status_code} && $.routeKey = \"${each.value.route_key}\" }"
+  name           = "${var.project_name}-${each.key}-error-filter"
+  pattern        = "{ ($.status >= 400 && $.status <= 599) && $.routeKey = \"${each.value.route_key}\" }"
   log_group_name = "/aws/vendedlogs/apigateway/${var.project_name}-backend-stack-access-logs"
 
   metric_transformation {
-    name      = each.value.metric_name
+    name      = "${each.key}-Error-Count"
     namespace = "${var.project_name}/ApiRoutes"
     value     = "1"
   }
 }
 
 resource "aws_cloudwatch_metric_alarm" "route_status_alarms" {
-  for_each = local.flat_status_monitoring
+  for_each = local.route_monitoring
 
-  alarm_name          = "${each.value.function_name}-status-${each.value.status_code}"
+  alarm_name          = "${var.project_name}-${each.key}-errors"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
-  metric_name         = each.value.metric_name
+  metric_name          = "${each.key}-Error-Count"
   namespace           = "${var.project_name}/ApiRoutes"
   period              = "60"
   statistic           = "Sum"
   threshold           = "1"
-  alarm_description   = "HTTP Status ${each.value.status_code} anomaly detected on ${each.value.route_key} endpoint"
+  alarm_description   = "HTTP 4xx/5xx errors detected on ${each.value.route_key} endpoint"
   treat_missing_data  = "notBreaching"
 
   alarm_actions = [
