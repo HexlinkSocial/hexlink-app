@@ -24,7 +24,7 @@ resource "aws_cloudwatch_metric_alarm" "api_5xx" {
   namespace           = "AWS/ApiGateway"
   period              = "300"
   statistic           = "Sum"
-  threshold           = "1"
+  threshold           = "10"
   alarm_description   = "Gateway 5XX Errors encountered for ${var.project_name}-api"
   treat_missing_data  = "notBreaching"
 
@@ -46,17 +46,8 @@ locals {
     getCommunitiesByCellId = {
       route_key = "GET /CommunitiesByCellId"
     }
-    getCommunityCounts = {
-      route_key = "GET /CommunityCounts"
-    }
     createCommunity = {
       route_key = "POST /CreateCommunity"
-    }
-    approveOrDenyCommunity = {
-      route_key = "POST /ApproveOrDenyCommunity"
-    }
-    getPendingCommunities = {
-      route_key = "POST /GetPendingCommunities"
     }
     getUserCommunities = {
       route_key = "GET /GetUserCommunities"
@@ -71,10 +62,7 @@ locals {
 
   monitored_functions = [
     "${var.project_name}-getCommunitiesByCellId",
-    "${var.project_name}-getCommunityCounts",
     "${var.project_name}-createCommunity",
-    "${var.project_name}-approveOrDenyCommunity",
-    "${var.project_name}-getPendingCommunities",
     "${var.project_name}-getUserCommunities",
     "${var.project_name}-editCommunity",
     "${var.project_name}-deleteCommunity"
@@ -89,9 +77,9 @@ resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
   evaluation_periods  = "1"
   metric_name         = "Errors"
   namespace           = "AWS/Lambda"
-  period              = "60"
+  period              = "300"
   statistic           = "Sum"
-  threshold           = "1"
+  threshold           = "10"
   alarm_description   = "Function errors encountered for ${each.value}"
   treat_missing_data  = "notBreaching"
 
@@ -112,9 +100,9 @@ resource "aws_cloudwatch_metric_alarm" "lambda_throttles" {
   evaluation_periods  = "1"
   metric_name         = "Throttles"
   namespace           = "AWS/Lambda"
-  period              = "60"
+  period              = "300"
   statistic           = "Sum"
-  threshold           = "1"
+  threshold           = "10"
   alarm_description   = "Throttling encountered for ${each.value}"
   treat_missing_data  = "notBreaching"
 
@@ -153,9 +141,9 @@ resource "aws_cloudwatch_metric_alarm" "route_status_alarms" {
   evaluation_periods  = "1"
   metric_name         = "${each.key}-Error-Count"
   namespace           = "${var.project_name}/ApiRoutes"
-  period              = "60"
+  period              = "300"
   statistic           = "Sum"
-  threshold           = "1"
+  threshold           = "10"
   alarm_description   = "HTTP 4xx/5xx errors detected on ${each.value.route_key} endpoint"
   treat_missing_data  = "notBreaching"
 
