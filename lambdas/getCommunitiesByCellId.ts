@@ -27,7 +27,7 @@ function getQueryParam(
 export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
-  {
+  return {
       statusCode: 500,
       headers: CORS_HEADERS,
       body: "test error",
