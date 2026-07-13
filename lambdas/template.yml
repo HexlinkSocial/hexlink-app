@@ -56,6 +56,23 @@ Resources:
         AllowMethods: [GET, POST, OPTIONS]
         AllowHeaders: [content-type, authorization, x-captcha-token]
         MaxAge: 86400
+
+  HttpApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/apigateway/${ProjectName}-api-access-logs"
+      RetentionInDays: 30
+
+  HttpApiStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref HttpApi
+      StageName: '$default'
+      AutoDeploy: true
+      AccessLogSettings:
+        DestinationArn: !GetAtt HttpApiLogGroup.Arn
+        Format: '{"requestId":"$context.requestId", "ip":"$context.identity.sourceIp", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod", "routeKey":"$context.routeKey", "status":"$context.status", "protocol":"$context.protocol", "responseLength":"$context.responseLength", "integrationErrorMessage":"$context.integrationErrorMessage"}'
+
   SesPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
