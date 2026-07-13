@@ -47,7 +47,7 @@ Resources:
   HttpApiLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/apigateway/${ProjectName}-api-access-logs"
+      LogGroupName: !Sub "/aws/vendedlogs/apigateway/${AWS::StackName}-access-logs"
       RetentionInDays: 30
 
   HttpApi:
