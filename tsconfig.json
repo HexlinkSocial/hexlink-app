@@ -24,6 +24,7 @@
     "src",
     "database/**/*.ts",
     "database/**/*.tsx",
-    "lambdas/*.ts"
-, "emails"  ]
+    "lambdas/*.ts",
+    "lambdas/**/*.ts", 
+    "emails"  ]
 }

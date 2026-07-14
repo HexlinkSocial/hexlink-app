@@ -60,7 +60,7 @@ const BuilderMap: React.FC<{
     whatsapp: "",
     discord: "",
     facebook: "",
-    other: ""
+    other: "",
   });
 
   const activeError = error != null && error !== dismissedError ? error : null;
@@ -74,15 +74,12 @@ const BuilderMap: React.FC<{
     if (!isAtLimit) setLimitBannerDismissed(false);
   }, [isAtLimit]);
 
-  async function submit(
-    payload: CommunityPayload,
-    captchaToken?: string,
-  ): Promise<void> {
+  async function submit(payload: CommunityPayload): Promise<void> {
     setIsSubmitting(true);
     setSubmitError(null);
     setStep("form");
     try {
-      await postCommunity(payload, captchaToken);
+      await postCommunity(payload);
       onSuccess();
     } catch (err) {
       console.error(err);
@@ -110,7 +107,6 @@ const BuilderMap: React.FC<{
 
   const handleFormSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
-    captchaToken?: string,
   ): Promise<void> => {
     e.preventDefault();
     setSubmitError(null);
@@ -123,7 +119,7 @@ const BuilderMap: React.FC<{
     const payload = buildPayload(communityData, selectedIds);
 
     if (isLoggedIn) {
-      await submit(payload, captchaToken);
+      await submit(payload);
       return;
     }
 

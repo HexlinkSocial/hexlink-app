@@ -162,6 +162,14 @@ resource "aws_s3_bucket_public_access_block" "lambda_deployments" {
 }
 
 #################################
+# SAM STACK OUTPUT READER
+#################################
+
+data "aws_cloudformation_stack" "backend" {
+  name = "${var.project_name}-backend-stack"
+}
+
+#################################
 # COGNITO
 #################################
 
@@ -178,11 +186,23 @@ resource "aws_cognito_user_pool" "users" {
     email_subject        = "Verify your account"
     email_message        = file("${path.module}/../lambdas/emails/VerifyEmail.html")
   }
+
+  lambda_config {
+    pre_sign_up = data.aws_cloudformation_stack.backend.outputs["PreSignUpFunctionArn"]
+  }
+}
+
+resource "aws_lambda_permission" "cognito_pre_signup" {
+  statement_id  = "AllowCognitoInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = data.aws_cloudformation_stack.backend.outputs["PreSignUpFunctionArn"]
+  principal     = "cognito-idp.amazonaws.com"
+  source_arn    = aws_cognito_user_pool.users.arn
 }
 
 resource "aws_cognito_user_group" "admins" {
-  name         = "Admins"
   user_pool_id = aws_cognito_user_pool.users.id
+  name         = "Admins"
   description  = "Administrative users with access to the approval workflows"
 }
 
