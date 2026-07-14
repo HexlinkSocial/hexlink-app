@@ -1,9 +1,9 @@
 import { Authenticator, ThemeProvider } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 import { JSX } from "react";
+import { Navigate } from "react-router-dom";
 import { theme } from "../styles/LoginTheme";
 import { logger } from "../helpers/logger";
-import AuthSuccessRedirect from "../components/helpers/AuthSuccessRedirect";
 
 const LOGIN_FORM_FIELDS = {
   signIn: {
@@ -37,7 +37,7 @@ export default function Login(): JSX.Element {
               if (user == null) {
                 logger.error("Failed to log in user");
               }
-              return <AuthSuccessRedirect />;
+              return <Navigate to="/manage" replace />;
             }}
           </Authenticator>
         </div>
