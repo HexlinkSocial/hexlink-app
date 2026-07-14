@@ -7,13 +7,10 @@ import { getRequestBody } from "./helpers/request";
 import { sendEmail } from "./helpers/ses";
 import { getDatabase } from "./helpers/db";
 import { getUser, getOwnerEmail } from "./helpers/auth";
-
 export const handler = async (
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
-  try {
-
     const owner = await getUser(event);
     const ownerEmail = await getOwnerEmail(event);
 
