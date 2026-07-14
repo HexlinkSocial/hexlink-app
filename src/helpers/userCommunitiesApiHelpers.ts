@@ -2,6 +2,7 @@ import { adminHeaders } from "./authHeaders";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "";
 const PENDING_KEY = "pendingCommunityPayload";
+const PENDING_TOKEN_KEY = "pendingCaptchaToken";
 
 export interface BaseCommunity {
   name: string;
@@ -92,8 +93,11 @@ export async function postCommunity(
   if (!res.ok) throw new Error("Database insertion failure");
 }
 
-export function savePending(payload: CommunityPayload): void {
+export function savePending(payload: CommunityPayload, token?: string): void {
   sessionStorage.setItem(PENDING_KEY, JSON.stringify(payload));
+  if (token) {
+    sessionStorage.setItem(PENDING_TOKEN_KEY, token);
+  }
 }
 
 export function loadPending(): CommunityPayload | null {
@@ -101,8 +105,13 @@ export function loadPending(): CommunityPayload | null {
   return raw != null ? (JSON.parse(raw) as CommunityPayload) : null;
 }
 
+export function loadPendingToken(): string | null {
+  return sessionStorage.getItem(PENDING_TOKEN_KEY);
+}
+
 export function clearPending(): void {
   sessionStorage.removeItem(PENDING_KEY);
+  sessionStorage.removeItem(PENDING_TOKEN_KEY);
 }
 
 export async function fetchUserCommunities(): Promise<UnifiedCommunityItem[]> {

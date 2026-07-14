@@ -92,6 +92,14 @@ Resources:
               - ssm:GetParameters
             Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/db-ca-cert-*"
 
+  CognitoPreSignUpFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-cognitoPreSignUp"
+      CodeUri: dist/
+      Handler: cognitoPreSignUp.handler
+      Policies: []
+
   GetCommunitiesFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -242,3 +250,5 @@ Resources:
 Outputs:
   ApiUrl:
     Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+  PreSignUpLambdaArn:
+    Value: !GetAtt CognitoPreSignUpFunction.Arn

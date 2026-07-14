@@ -9,6 +9,7 @@ import {
   clearPending,
   CommunityPayload,
   loadPending,
+  loadPendingToken,
   postCommunity,
   savePending,
 } from "../../helpers/userCommunitiesApiHelpers";
@@ -60,7 +61,7 @@ const BuilderMap: React.FC<{
     whatsapp: "",
     discord: "",
     facebook: "",
-    other: ""
+    other: "",
   });
 
   const activeError = error != null && error !== dismissedError ? error : null;
@@ -97,9 +98,10 @@ const BuilderMap: React.FC<{
     if (isAuthLoading || !isLoggedIn) return;
     const pending = loadPending();
     if (pending == null) return;
+    const pendingToken = loadPendingToken() ?? undefined;
     clearPending();
-    void submit(pending);
-  }, [isAuthLoading, isLoggedIn, submit]);
+    void submit(pending, pendingToken);
+  }, [isAuthLoading, isLoggedIn]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -127,7 +129,7 @@ const BuilderMap: React.FC<{
       return;
     }
 
-    savePending(payload);
+    savePending(payload, captchaToken);
     window.location.href = "/join";
   };
 
