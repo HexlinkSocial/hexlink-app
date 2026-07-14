@@ -12,6 +12,15 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Docker CLI (client only — talks to host daemon via mounted socket)
+RUN curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.3.1.tgz \
+    -o docker.tgz \
+    && tar xzvf docker.tgz --strip-components=1 -C /usr/local/bin docker/docker \
+    && rm docker.tgz
+
+# Give node access to the mounted docker.sock (owned root:root on the host side)
+RUN usermod -aG root node
+
 # Install AWS CLI
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
