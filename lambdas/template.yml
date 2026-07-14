@@ -239,16 +239,6 @@ Resources:
             Path: /LogFrontendError
             Method: POST
 
-  CognitoPreSignUpFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub "${ProjectName}-cognitoPreSignUp"
-      CodeUri: dist/
-      Handler: cognitoPreSignUp.handler
-      Policies: []
-
 Outputs:
   ApiUrl:
     Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
-  PreSignUpFunctionArn:
-    Value: !GetAtt CognitoPreSignUpFunction.Arn

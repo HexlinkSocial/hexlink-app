@@ -2,12 +2,9 @@ import { Authenticator, ThemeProvider } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 import { JSX } from "react";
 import { Navigate } from "react-router-dom";
-import { signUp } from "aws-amplify/auth";
 import { theme } from "../styles/LoginTheme";
 import { logger } from "../helpers/logger";
 import AuthSuccessRedirect from "../components/helpers/AuthSuccessRedirect";
-import { useTurnstile } from "../hooks/useTurnstile";
-import { TurnstileOverlay } from "../components/TurnstileOverlay";
 
 const PENDING_KEY = "pendingCommunityPayload";
 const FORM_FIELDS = {
@@ -48,50 +45,15 @@ function hasPendingPayload(): boolean {
 }
 
 export default function Join(): JSX.Element {
-  const {
-    executeChallenge,
-    isOpen: isTurnstileOpen,
-    containerRef,
-  } = useTurnstile({
-    siteKey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
-  });
-
   if (!hasPendingPayload()) {
     return <Navigate to="/" replace />;
   }
-
-  const services = {
-    async handleSignUp(formData: any) {
-      const { username, password, options } = formData;
-      try {
-        const token = await executeChallenge();
-        return await signUp({
-          username,
-          password,
-          options: {
-            ...options,
-            validationData: {
-              ...options?.validationData,
-              token,
-            },
-          },
-        });
-      } catch (error) {
-        logger.error(`Sign up verification failed during registration sequence: ${error}`);
-        throw error;
-      }
-    },
-  };
 
   return (
     <ThemeProvider theme={theme}>
       <div className="auth-page">
         <div className="auth-flex-overlay">
-          <Authenticator
-            formFields={FORM_FIELDS}
-            loginMechanisms={["email"]}
-            services={services}
-          >
+          <Authenticator formFields={FORM_FIELDS} loginMechanisms={["email"]}>
             {({ user }) => {
               if (user == null) {
                 logger.error("Failed to authenticate user");
@@ -101,8 +63,6 @@ export default function Join(): JSX.Element {
           </Authenticator>
         </div>
       </div>
-
-      {isTurnstileOpen && <TurnstileOverlay containerRef={containerRef} />}
     </ThemeProvider>
   );
 }
