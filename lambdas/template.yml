@@ -100,6 +100,14 @@ Resources:
       Handler: cognitoPreSignUp.handler
       Policies: []
 
+  CognitoPreSignUpPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CognitoPreSignUpFunction
+      Principal: cognito-idp.amazonaws.com
+      SourceArn: !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}"
+
   GetCommunitiesFunction:
     Type: AWS::Serverless::Function
     Properties:

@@ -169,14 +169,6 @@ data "aws_lambda_function" "presignup" {
   function_name = "${var.project_name}-cognitoPreSignUp"
 }
 
-resource "aws_lambda_permission" "allow_cognito_presignup" {
-  statement_id  = "AllowExecutionFromCognito"
-  action        = "lambda:InvokeFunction"
-  function_name = data.aws_lambda_function.presignup.function_name
-  principal     = "cognito-idp.amazonaws.com"
-  source_arn    = aws_cognito_user_pool.users.arn
-}
-
 resource "aws_cognito_user_pool" "users" {
   name                     = "${var.project_name}-users"
   auto_verified_attributes = ["email"]
