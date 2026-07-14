@@ -5,6 +5,7 @@ import { useH3LayerStack } from "../../hooks/useH3LayerStack";
 import Banner from "../Banner";
 import type { CameraState } from "../../hooks/useMapCore";
 import SuccessOverlay from "./components/SuccessOverlay";
+import { logger } from "../../helpers/logger";
 
 const DisplayMap: React.FC<{
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -37,6 +38,14 @@ const DisplayMap: React.FC<{
   );
 
   useH3LayerStack(map, isMapReady);
+
+  useEffect(() => {
+    if (error) {
+      logger.error(
+        `DisplayMap: Map layers failed to load or initialize: ${error}`
+      );
+    }
+  }, [error, isMapReady, selectedCellId]);
 
   useEffect(() => {
     if (showSuccess && selectedCellId != null) {

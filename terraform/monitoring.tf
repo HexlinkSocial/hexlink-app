@@ -151,3 +151,36 @@ resource "aws_cloudwatch_metric_alarm" "route_status_alarms" {
     aws_sns_topic.ops_alerts.arn
   ]
 }
+
+resource "aws_sns_topic" "frontend_alerts" {
+  name = "${var.project_name}-frontend-alerts-topic"
+}
+
+resource "aws_cloudwatch_log_metric_filter" "frontend_errors" {
+  name           = "${var.project_name}-frontend-error-filter"
+  pattern        = "{ $.source = \"frontend\" }"
+  log_group_name = "/aws/lambda/${var.project_name}-logFrontendError"
+
+  metric_transformation {
+    name      = "FrontendErrorCount"
+    namespace = "FrontendTelemetry"
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "frontend_high_error_rate" {
+  alarm_name          = "${var.project_name}-frontend-high-error-rate"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = aws_cloudwatch_log_metric_filter.frontend_errors.metric_transformation[0].name
+  namespace           = aws_cloudwatch_log_metric_filter.frontend_errors.metric_transformation[0].namespace
+  period              = 300
+  statistic           = "Sum"
+  threshold           = 10
+  alarm_description   = "This alarm fires if the frontend app experiences more than 10 errors in 5 minutes."
+  treat_missing_data  = "notBreaching"
+
+  alarm_actions = [
+    aws_sns_topic.frontend_alerts.arn
+  ]
+}

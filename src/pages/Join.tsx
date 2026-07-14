@@ -1,8 +1,10 @@
 import { Authenticator, ThemeProvider } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
-import { JSX, useEffect } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { JSX } from "react";
+import { Navigate } from "react-router-dom";
 import { theme } from "../styles/LoginTheme";
+import { logger } from "../helpers/logger";
+import AuthSuccessRedirect from "../components/helpers/AuthSuccessRedirect";
 
 const PENDING_KEY = "pendingCommunityPayload";
 const FORM_FIELDS = {
@@ -38,16 +40,6 @@ const FORM_FIELDS = {
   },
 };
 
-function AuthSuccessRedirect(): JSX.Element {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate("/", { replace: true });
-  }, [navigate]);
-
-  return <div />;
-}
-
 function hasPendingPayload(): boolean {
   return sessionStorage.getItem(PENDING_KEY) !== null;
 }
@@ -62,7 +54,12 @@ export default function Join(): JSX.Element {
       <div className="auth-page">
         <div className="auth-flex-overlay">
           <Authenticator formFields={FORM_FIELDS} loginMechanisms={["email"]}>
-            {() => <AuthSuccessRedirect />}
+            {({ user }) => {
+              if (user == null) {
+                logger.error("Failed to authenticate user");
+              }
+              return <AuthSuccessRedirect />;
+            }}
           </Authenticator>
         </div>
       </div>

@@ -14,6 +14,7 @@ import {
 } from "../../helpers/userCommunitiesApiHelpers";
 import Banner from "../Banner";
 import { useAuth } from "../../hooks/useAuth";
+import { logger } from "../../helpers/logger";
 
 const MAX_SELECTIONS = 50;
 
@@ -39,6 +40,14 @@ const BuilderMap: React.FC<{
   );
   useH3LayerStack(map, isMapReady);
 
+  useEffect(() => {
+    if (error) {
+      logger.error(
+        `DisplayMap: Map layers failed to load or initialize: ${error}`,
+      );
+    }
+  }, [error, isMapReady]);
+
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
 
   const [step, setStep] = useState<"select" | "form">("select");
@@ -48,7 +57,10 @@ const BuilderMap: React.FC<{
   const [communityData, setCommunityData] = useState({
     name: "",
     description: "",
-    url: "",
+    whatsapp: "",
+    discord: "",
+    facebook: "",
+    other: ""
   });
 
   const activeError = error != null && error !== dismissedError ? error : null;

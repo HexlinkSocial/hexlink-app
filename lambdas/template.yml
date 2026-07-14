@@ -224,6 +224,21 @@ Resources:
             Path: /DeleteCommunity
             Method: POST
 
+  LogFrontendErrorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-logFrontendError"
+      CodeUri: dist/
+      Handler: logFrontendError.handler
+      Policies: []
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /LogFrontendError
+            Method: POST
+
 Outputs:
   ApiUrl:
     Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"

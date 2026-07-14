@@ -1,9 +1,13 @@
-import React, { JSX } from "react";
+import React, { JSX, useEffect } from "react";
 import { useRouteError } from "react-router-dom";
+import { logger } from "../helpers/logger";
 
 export default function ErrorPage(): JSX.Element {
   const error = useRouteError();
-  console.error("Runtime App Error caught by boundary:", error);
+
+  useEffect(() => {
+    logger.error(`Runtime App Error caught by boundary: {error}`);
+  }, [error]);
 
   const handleReload = (): void => {
     window.location.assign("/");
