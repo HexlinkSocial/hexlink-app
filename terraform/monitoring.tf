@@ -156,10 +156,21 @@ resource "aws_sns_topic" "frontend_alerts" {
   name = "${var.project_name}-frontend-alerts-topic"
 }
 
+resource "aws_sns_topic_subscription" "frontend_email" {
+  topic_arn = aws_sns_topic.frontend_alerts.arn
+  protocol  = "email"
+  endpoint  = var.alarm_notification_email
+}
+
+resource "aws_cloudwatch_log_group" "frontend_errors_log_group" {
+  name              = "/aws/lambda/${var.project_name}-logFrontendError"
+  retention_in_days = 30
+}
+
 resource "aws_cloudwatch_log_metric_filter" "frontend_errors" {
   name           = "${var.project_name}-frontend-error-filter"
   pattern        = "{ $.source = \"frontend\" }"
-  log_group_name = "/aws/lambda/${var.project_name}-logFrontendError"
+  log_group_name = aws_cloudwatch_log_group.frontend_errors_log_group.name
 
   metric_transformation {
     name      = "FrontendErrorCount"
