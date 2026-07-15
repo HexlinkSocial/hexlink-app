@@ -2,7 +2,8 @@ import { adminHeaders } from "./authHeaders";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "";
 const PENDING_KEY = "pendingCommunityPayload";
-const PENDING_TOKEN_KEY = "pendingCaptchaToken";
+const PENDING_TOKEN_KEY = "pendingCommunityCaptchaToken";
+const REGISTER_TOKEN_KEY = "pendingCaptchaToken";
 
 export interface BaseCommunity {
   name: string;
@@ -112,6 +113,7 @@ export function loadPendingToken(): string | null {
 export function clearPending(): void {
   sessionStorage.removeItem(PENDING_KEY);
   sessionStorage.removeItem(PENDING_TOKEN_KEY);
+  sessionStorage.removeItem(REGISTER_TOKEN_KEY);
 }
 
 export async function fetchUserCommunities(): Promise<UnifiedCommunityItem[]> {
