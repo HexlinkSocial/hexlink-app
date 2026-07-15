@@ -112,7 +112,8 @@ const BuilderMap: React.FC<{
 
   const handleFormSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
-    captchaToken?: string,
+    communityToken?: string,
+    registerToken?: string,
   ): Promise<void> => {
     e.preventDefault();
     setSubmitError(null);
@@ -125,11 +126,14 @@ const BuilderMap: React.FC<{
     const payload = buildPayload(communityData, selectedIds);
 
     if (isLoggedIn) {
-      await submit(payload, captchaToken);
+      await submit(payload, communityToken);
       return;
     }
 
-    savePending(payload, captchaToken);
+    savePending(payload, communityToken);
+    if (registerToken) {
+      sessionStorage.setItem("pendingCaptchaToken", registerToken);
+    }
     window.location.href = "/join";
   };
 
@@ -156,6 +160,7 @@ const BuilderMap: React.FC<{
         isSubmitting={isSubmitting}
         communityData={communityData}
         errorMessage={submitError}
+        isLoggedIn={isLoggedIn}
         onCancel={() => {
           setSubmitError(null);
           setStep("select");

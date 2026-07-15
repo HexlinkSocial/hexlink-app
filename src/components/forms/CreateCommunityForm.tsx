@@ -13,10 +13,12 @@ interface CreateCommunityFormProps {
   isSubmitting: boolean;
   communityData: SharedCommunityFormData;
   errorMessage: string | null;
+  isLoggedIn: boolean;
   onCancel: () => void;
   onSubmit: (
     e: React.FormEvent<HTMLFormElement>,
-    captchaToken?: string,
+    communityToken?: string,
+    registerToken?: string,
   ) => void;
   onInputChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -28,6 +30,7 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
   isSubmitting,
   communityData,
   errorMessage,
+  isLoggedIn,
   onCancel,
   onSubmit,
   onInputChange,
@@ -51,15 +54,24 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
   } = validateCommunityData(communityData);
 
   const {
-    executeChallenge,
-    isOpen: isTurnstileOpen,
-    containerRef,
+    executeChallenge: executeCommunityChallenge,
+    isOpen: isCommunityTurnstileOpen,
+    containerRef: communityContainerRef,
+  } = useTurnstile({
+    siteKey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
+  });
+
+  const {
+    executeChallenge: executeRegisterChallenge,
+    isOpen: isRegisterTurnstileOpen,
+    containerRef: registerContainerRef,
   } = useTurnstile({
     siteKey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
   });
 
   const isFormInvalid = !isValid || !agreedToTerms;
-  const isPendingSubmission = isSubmitting || isTurnstileOpen;
+  const isPendingSubmission =
+    isSubmitting || isCommunityTurnstileOpen || isRegisterTurnstileOpen;
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
@@ -70,8 +82,14 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
     }
 
     try {
-      const token = await executeChallenge();
-      onSubmit(e, token);
+      const communityToken = await executeCommunityChallenge();
+      let registerToken: string | undefined = undefined;
+
+      if (!isLoggedIn) {
+        registerToken = await executeRegisterChallenge();
+      }
+
+      onSubmit(e, communityToken, registerToken);
     } catch (error) {
       console.error("Captcha verification failed:", error);
     }
@@ -137,7 +155,12 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
         </div>
       </FormOverlay>
 
-      {isTurnstileOpen && <TurnstileOverlay containerRef={containerRef} />}
+      {isCommunityTurnstileOpen && (
+        <TurnstileOverlay containerRef={communityContainerRef} />
+      )}
+      {isRegisterTurnstileOpen && (
+        <TurnstileOverlay containerRef={registerContainerRef} />
+      )}
     </>
   );
 };
