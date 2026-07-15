@@ -14,6 +14,8 @@ interface CreateCommunityFormProps {
   communityData: SharedCommunityFormData;
   errorMessage: string | null;
   isLoggedIn: boolean;
+  agreedToTerms: boolean;
+  onAgreeChange: (checked: boolean) => void;
   onCancel: () => void;
   onSubmit: (
     e: React.FormEvent<HTMLFormElement>,
@@ -31,18 +33,12 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
   communityData,
   errorMessage,
   isLoggedIn,
+  agreedToTerms,
+  onAgreeChange,
   onCancel,
   onSubmit,
   onInputChange,
 }) => {
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
-
-  useEffect(() => {
-    if (!isOpen) {
-      setAgreedToTerms(false);
-    }
-  }, [isOpen]);
-
   const {
     isNameOverLimit,
     isDescriptionOverLimit,
@@ -127,14 +123,16 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
           placeholderFacebook="e.g. https://facebook.com/groups/abc123"
           placeholderOther="e.g. mycommunity.com"
           rows={3}
+          isDisabled={isPendingSubmission}
         />
 
         <div className="community-form__legal-checkbox">
           <label>
             <input
               type="checkbox"
+              disabled={isPendingSubmission}
               checked={agreedToTerms}
-              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              onChange={(e) => onAgreeChange(e.target.checked)}
             />
             <span>
               I confirm that this group adheres to the{" "}

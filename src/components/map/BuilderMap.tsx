@@ -18,6 +18,38 @@ import { useAuth } from "../../hooks/useAuth";
 import { logger } from "../../helpers/logger";
 
 const MAX_SELECTIONS = 50;
+const STORAGE_KEY_FORM = "draft_community_form_data";
+
+interface DraftData {
+  name: string;
+  description: string;
+  whatsapp: string;
+  discord: string;
+  facebook: string;
+  other: string;
+  agreedToTerms: boolean;
+}
+
+const getStoredDraft = (): DraftData | null => {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY_FORM);
+    return data ? JSON.parse(data) : null;
+  } catch {
+    return null;
+  }
+};
+
+const storeDraft = (data: DraftData): void => {
+  try {
+    localStorage.setItem(STORAGE_KEY_FORM, JSON.stringify(data));
+  } catch (err) {
+    logger.error(`Failed saving form to localStorage ${err}`);
+  }
+};
+
+const removeStoredDraft = (): void => {
+  localStorage.removeItem(STORAGE_KEY_FORM);
+};
 
 const BuilderMap: React.FC<{
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -51,17 +83,24 @@ const BuilderMap: React.FC<{
 
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
 
-  const [step, setStep] = useState<"select" | "form">("select");
+  const [step, setStep] = useState<"select" | "form">(() => {
+    return getStoredDraft() !== null ? "form" : "select";
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [limitBannerDismissed, setLimitBannerDismissed] = useState(false);
-  const [communityData, setCommunityData] = useState({
-    name: "",
-    description: "",
-    whatsapp: "",
-    discord: "",
-    facebook: "",
-    other: "",
+  const [communityData, setCommunityData] = useState<DraftData>(() => {
+    return (
+      getStoredDraft() ?? {
+        name: "",
+        description: "",
+        whatsapp: "",
+        discord: "",
+        facebook: "",
+        other: "",
+        agreedToTerms: false,
+      }
+    );
   });
 
   const activeError = error != null && error !== dismissedError ? error : null;
@@ -84,6 +123,7 @@ const BuilderMap: React.FC<{
     setStep("form");
     try {
       await postCommunity(payload, captchaToken);
+      removeStoredDraft();
       onSuccess();
     } catch (err) {
       console.error(err);
@@ -107,7 +147,19 @@ const BuilderMap: React.FC<{
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ): void => {
     const { name, value } = e.target;
-    setCommunityData((prev) => ({ ...prev, [name]: value }));
+    setCommunityData((prev) => {
+      const updated = { ...prev, [name]: value };
+      storeDraft(updated);
+      return updated;
+    });
+  };
+
+  const handleAgreeChange = (checked: boolean): void => {
+    setCommunityData((prev) => {
+      const updated = { ...prev, agreedToTerms: checked };
+      storeDraft(updated);
+      return updated;
+    });
   };
 
   const handleFormSubmit = async (
@@ -131,6 +183,7 @@ const BuilderMap: React.FC<{
     }
 
     savePending(payload, communityToken);
+    storeDraft(communityData);
     if (registerToken) {
       sessionStorage.setItem("pendingCaptchaToken", registerToken);
     }
@@ -161,8 +214,20 @@ const BuilderMap: React.FC<{
         communityData={communityData}
         errorMessage={submitError}
         isLoggedIn={isLoggedIn}
+        agreedToTerms={communityData.agreedToTerms}
+        onAgreeChange={handleAgreeChange}
         onCancel={() => {
           setSubmitError(null);
+          removeStoredDraft();
+          setCommunityData({
+            name: "",
+            description: "",
+            whatsapp: "",
+            discord: "",
+            facebook: "",
+            other: "",
+            agreedToTerms: false,
+          });
           setStep("select");
         }}
         onSubmit={handleFormSubmit}

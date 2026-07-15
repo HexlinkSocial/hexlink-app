@@ -9,6 +9,7 @@ export interface FormInputFieldProps {
   placeholder?: string;
   isInvalid: boolean;
   errorMessage: string;
+  disabled?: boolean;
 }
 
 export const FormInputField: React.FC<FormInputFieldProps> = ({
@@ -20,6 +21,7 @@ export const FormInputField: React.FC<FormInputFieldProps> = ({
   placeholder,
   isInvalid,
   errorMessage,
+  disabled,
 }) => {
   return (
     <div className="form__group">
@@ -32,6 +34,7 @@ export const FormInputField: React.FC<FormInputFieldProps> = ({
         onChange={onChange}
         placeholder={placeholder}
         className={isInvalid ? "form__input--error" : ""}
+        disabled={disabled}
       />
       {isInvalid && <div className="form__error">{errorMessage}</div>}
     </div>

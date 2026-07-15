@@ -30,6 +30,7 @@ export interface CommunityFormFieldsProps {
   placeholderFacebook?: string;
   placeholderOther?: string;
   rows?: number;
+  isDisabled?: boolean;
 }
 
 export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
@@ -50,6 +51,7 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
   placeholderFacebook,
   placeholderOther,
   rows = 5,
+  isDisabled = false,
 }) => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onInputChange(e);
@@ -64,6 +66,7 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
           name="name"
           type="text"
           required
+          disabled={isDisabled}
           value={formData.name}
           onChange={onInputChange}
           placeholder={placeholderName}
@@ -84,6 +87,7 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
           name="description"
           required
           rows={rows}
+          disabled={isDisabled}
           value={formData.description}
           onChange={onInputChange}
           placeholder={placeholderDescription}
@@ -103,6 +107,7 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
           id="whatsapp"
           name="whatsapp"
           label="WhatsApp Link"
+          disabled={isDisabled}
           value={formData.whatsapp}
           onChange={handleInputChange}
           placeholder={placeholderWhatsapp}
@@ -115,6 +120,7 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
         id="discord"
         name="discord"
         label="Discord Link"
+        disabled={isDisabled}
         value={formData.discord}
         onChange={handleInputChange}
         placeholder={placeholderDiscord}
@@ -126,6 +132,7 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
         id="facebook"
         name="facebook"
         label="Facebook Link"
+        disabled={isDisabled}
         value={formData.facebook}
         onChange={handleInputChange}
         placeholder={placeholderFacebook}
@@ -137,6 +144,7 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
         id="other"
         name="other"
         label="Other"
+        disabled={isDisabled}
         value={formData.other}
         onChange={handleInputChange}
         placeholder={placeholderOther}
