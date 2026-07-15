@@ -29,3 +29,28 @@
   border: none !important;
   box-shadow: $shadow-page !important;
 }
+
+.auth-nav-container {
+  padding: 1.25rem 1.5rem 0.25rem 1.5rem;
+  display: flex;
+}
+
+.auth-nav-link {
+  color: var(--amplify-colors-brand-primary-80);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--amplify-colors-brand-primary-100);
+  }
+
+  .community-item__arrow {
+    transform: rotate(90deg);
+    display: inline-block;
+  }
+}

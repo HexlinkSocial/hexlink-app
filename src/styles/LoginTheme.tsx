@@ -43,20 +43,20 @@ export const theme = createTheme({
         },
       },
       tabs: {
-            backgroundColor: { value: "{colors.background.secondary.value}" },
-            item: {
-              color: { value: "#00000080" },
-              backgroundColor: { value: "{colors.background.secondary.value}" },
-              _hover: {
-                color: { value: "#000000b3" },
-                backgroundColor: { value: "{colors.background.primary.value}" },
-              },
-              _active: {
-                color: { value: "{colors.brand.primary.80.value}" },
-                backgroundColor: { value: "{colors.background.primary.value}" },
-              },
-            },
+        backgroundColor: { value: "{colors.background.secondary.value}" },
+        item: {
+          color: { value: "#00000080" },
+          backgroundColor: { value: "{colors.background.secondary.value}" },
+          _hover: {
+            color: { value: "#000000b3" },
+            backgroundColor: { value: "{colors.background.primary.value}" },
           },
+          _active: {
+            color: { value: "{colors.brand.primary.80.value}" },
+            backgroundColor: { value: "{colors.background.primary.value}" },
+          },
+        },
+      },
     },
   },
   overrides: [

@@ -1,11 +1,12 @@
 import { Authenticator, ThemeProvider } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 import { JSX } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import { signUp } from "aws-amplify/auth";
 import { theme } from "../styles/LoginTheme";
 import { logger } from "../helpers/logger";
 import AuthSuccessRedirect from "../components/helpers/AuthSuccessRedirect";
+import ArrowIcon from "../components/icons/ArrowIcon";
 
 const PENDING_KEY = "pendingCommunityPayload";
 const PENDING_TOKEN_KEY = "pendingCaptchaToken";
@@ -68,6 +69,17 @@ async function performSignUp(formData: any) {
   });
 }
 
+function SignUpHeader(): JSX.Element {
+  return (
+    <div className="auth-nav-container">
+      <Link to="/" className="auth-nav-link">
+        <ArrowIcon />
+        Back
+      </Link>
+    </div>
+  );
+}
+
 export default function Join(): JSX.Element {
   if (!hasPendingPayload()) {
     return <Navigate to="/" replace />;
@@ -87,6 +99,14 @@ export default function Join(): JSX.Element {
             formFields={FORM_FIELDS}
             loginMechanisms={["email"]}
             services={services}
+            components={{
+              SignUp: {
+                Header: SignUpHeader,
+              },
+              SignIn: {
+                Header: SignUpHeader,
+              },
+            }}
           >
             {({ user }) => {
               if (user == null) {
