@@ -6,9 +6,8 @@ import { eq } from "drizzle-orm";
 import * as schema from "../database/drizzle/schema";
 import { getDatabase } from "./helpers/db";
 
-const CORS_HEADERS = {
+const RESPONSE_HEADERS = {
   "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*",
 };
 
 function getQueryParam(
@@ -27,13 +26,12 @@ function getQueryParam(
 export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
-
   const cellId = getQueryParam(event, "cellId");
 
   if (cellId === undefined) {
     return {
       statusCode: 400,
-      headers: CORS_HEADERS,
+      headers: RESPONSE_HEADERS,
       body: JSON.stringify({
         error: "Missing required query parameter: cellId",
       }),
@@ -66,14 +64,14 @@ export const handler = async (
 
     return {
       statusCode: 200,
-      headers: CORS_HEADERS,
+      headers: RESPONSE_HEADERS,
       body: JSON.stringify(communities),
     };
   } catch (e) {
     console.error("CommunitiesByCellId error:", e);
     return {
       statusCode: 500,
-      headers: CORS_HEADERS,
+      headers: RESPONSE_HEADERS,
       body: "Internal Server Error",
     };
   }
