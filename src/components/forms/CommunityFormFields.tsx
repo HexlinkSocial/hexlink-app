@@ -58,7 +58,7 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
   return (
     <div className="form__fields">
       <div className="form__group">
-        <label htmlFor="name">Community Name</label>
+        <label htmlFor="name">Community Name *</label>
         <input
           id="name"
           name="name"
@@ -78,7 +78,7 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
       </div>
 
       <div className="form__group">
-        <label htmlFor="description">Description</label>
+        <label htmlFor="description">Description *</label>
         <textarea
           id="description"
           name="description"
@@ -97,16 +97,19 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
         )}
       </div>
 
-      <FormInputField
-        id="whatsapp"
-        name="whatsapp"
-        label="WhatsApp Link"
-        value={formData.whatsapp}
-        onChange={handleInputChange}
-        placeholder={placeholderWhatsapp}
-        isInvalid={isWhatsappInvalid}
-        errorMessage="WhatsApp URL format is incorrect"
-      />
+      <div className="form__group--hinted">
+        <div className="form__hint">Enter at least one community link</div>
+        <FormInputField
+          id="whatsapp"
+          name="whatsapp"
+          label="WhatsApp Link"
+          value={formData.whatsapp}
+          onChange={handleInputChange}
+          placeholder={placeholderWhatsapp}
+          isInvalid={isWhatsappInvalid}
+          errorMessage="WhatsApp URL format is incorrect"
+        />
+      </div>
 
       <FormInputField
         id="discord"

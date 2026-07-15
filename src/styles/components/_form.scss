@@ -114,6 +114,18 @@
   }
 }
 
+// ── Hint wrapper & text ────────────────────────
+.form__group--hinted {
+  display: flex;
+  flex-direction: column;
+}
+
+.form__hint {
+  font-size: 11px;
+  color: $color-muted;
+  margin-bottom: 2px;
+}
+
 // ── Input variations ───────────────────────────
 .form__input--error {
   border-color: $color-error !important;
