@@ -67,6 +67,10 @@ jobs:
         working-directory: lambdas
         run: npm ci
 
+      - name: Run Tests
+        working-directory: lambdas
+        run: npm run test
+
       - name: Compile Email Templates
         working-directory: lambdas
         run: npm run build:emails
