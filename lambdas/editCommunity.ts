@@ -5,7 +5,7 @@ import {
 import { eq, and } from "drizzle-orm";
 import * as schema from "../database/drizzle/schema";
 import { getRequestBody } from "./helpers/request";
-import { getOwnerEmail, getUser } from "./helpers/auth";
+import { getOwnerEmail, getUser, verifyOrigin } from "./helpers/auth";
 import { sendEmail } from "./helpers/ses";
 import { getDatabase, DbInstance, TransactionContext } from "./helpers/db";
 
@@ -140,6 +140,13 @@ async function notifyCommunitySubmission(
 export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
+  if (!verifyOrigin(event)) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ error: "Forbidden" }),
+    };
+  }
+
   try {
     const db = await getDatabase();
 

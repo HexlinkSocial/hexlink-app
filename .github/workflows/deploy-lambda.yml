@@ -44,6 +44,16 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Fetch Origin Verify Secret from SSM
+        run: |
+          SECRET=$(aws ssm get-parameter \
+            --name "/${{ secrets.PROJECT_NAME }}/origin-verify-secret" \
+            --with-decryption \
+            --query 'Parameter.Value' \
+            --output text)
+          echo "::add-mask::$SECRET"
+          echo "ORIGIN_VERIFY_SECRET=$SECRET" >> "$GITHUB_ENV"
+
       - name: Setup AWS SAM CLI
         uses: aws-actions/setup-sam@v2
         with:
@@ -86,4 +96,5 @@ jobs:
               CognitoClientId="${{ secrets.COGNITO_CLIENT }}" \
               FrontendUrl="${{ secrets.FRONTEND_URL }}" \
               SesFromAddress="${{ secrets.SES_FROM_ADDRESS }}" \
-              TurnstileSecretKey="${{ secrets.TURNSTILE_SECRET_KEY }}"
+              TurnstileSecretKey="${{ secrets.TURNSTILE_SECRET_KEY }}" \
+              OriginVerifySecret="${{ env.ORIGIN_VERIFY_SECRET }}"

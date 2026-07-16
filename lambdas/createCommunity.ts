@@ -6,13 +6,19 @@ import * as schema from "../database/drizzle/schema";
 import { getRequestBody } from "./helpers/request";
 import { sendEmail } from "./helpers/ses";
 import { getDatabase } from "./helpers/db";
-import { getUser, getOwnerEmail } from "./helpers/auth";
+import { getUser, getOwnerEmail, verifyOrigin } from "./helpers/auth";
 import { verifyTurnstileToken } from "./helpers/turnstile";
 
 export const handler = async (
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
+  if (!verifyOrigin(event)) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ error: "Forbidden" }),
+    };
+  }
+
   try {
     const isDev = process.env.NODE_ENV === "development";
     const captchaToken =

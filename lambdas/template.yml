@@ -24,7 +24,9 @@ Parameters:
   TurnstileSecretKey:
     Type: String
     NoEcho: true
-
+  OriginVerifySecret:
+    Type: String
+    NoEcho: true
 Globals:
   Function:
     Runtime: nodejs24.x
@@ -41,7 +43,7 @@ Globals:
         DB_CA_CERT_PARAM: "db-ca-cert-1"
         SEND_EMAILS: "true"
         TURNSTILE_SECRET_KEY: !Ref TurnstileSecretKey
-
+        ORIGIN_VERIFY_SECRET: !Ref OriginVerifySecret
 Resources:
 
   HttpApiLogGroup:

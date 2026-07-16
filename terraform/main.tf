@@ -426,6 +426,14 @@ resource "aws_iam_role_policy" "github_policy" {
           "logs:UpdateLogDelivery"
         ]
         Resource = "*"
+      },
+
+      {
+        Effect = "Allow"
+        Action = [
+          "ssm:GetParameter"
+        ]
+        Resource = "arn:aws:ssm:${var.aws_region}:*:parameter/${var.project_name}/origin-verify-secret"
       }
 
     ]

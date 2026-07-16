@@ -5,6 +5,7 @@ import {
 import { eq } from "drizzle-orm";
 import * as schema from "../database/drizzle/schema";
 import { getDatabase } from "./helpers/db";
+import { verifyOrigin } from "./helpers/auth";
 
 const RESPONSE_HEADERS = {
   "Content-Type": "application/json",
@@ -26,6 +27,15 @@ function getQueryParam(
 export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
+
+  if (!verifyOrigin(event)) {
+    return {
+      statusCode: 403,
+      headers: RESPONSE_HEADERS,
+      body: JSON.stringify({ error: "Forbidden" }),
+    };
+  }
+
   const cellId = getQueryParam(event, "cellId");
 
   if (cellId === undefined) {

@@ -1,10 +1,18 @@
-import { APIGatewayProxyStructuredResultV2 } from "aws-lambda";
+import { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2 } from "aws-lambda";
 import { count } from "drizzle-orm";
 import { cellCommunities } from "../database/drizzle/schema";
 import { getDatabase } from "./helpers/db";
+import { verifyOrigin } from "./helpers/auth";
 
-export const handler = async (): Promise<APIGatewayProxyStructuredResultV2> => {
+export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
+    if (!verifyOrigin(event)) {
+        return {
+          statusCode: 403,
+          body: JSON.stringify({ error: "Forbidden" }),
+        };
+    }
+    
     const db = await getDatabase();
 
     const communitiesGrouped = await db

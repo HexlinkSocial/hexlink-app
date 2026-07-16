@@ -5,7 +5,7 @@ import {
 import { eq } from "drizzle-orm";
 import * as schema from "../database/drizzle/schema";
 import { getRequestBody } from "./helpers/request";
-import { isAdmin } from "./helpers/auth";
+import { isAdmin, verifyOrigin } from "./helpers/auth";
 import { sendEmail } from "./helpers/ses";
 import { getDatabase, TransactionContext } from "./helpers/db";
 
@@ -123,6 +123,14 @@ export const handler = async (
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
+
+  if (!verifyOrigin(event)) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ error: "Forbidden" }),
+    };
+  }
+
   try {
     if (!(await isAdmin(event))) {
       return {

@@ -1,4 +1,4 @@
-import { APIGatewayProxyEventV2WithJWTAuthorizer } from "aws-lambda";
+import { APIGatewayProxyEventV2, APIGatewayProxyEventV2WithJWTAuthorizer } from "aws-lambda";
 
 type JwtEvent = APIGatewayProxyEventV2WithJWTAuthorizer;
 
@@ -38,4 +38,13 @@ export function getOwnerEmail(event: AuthorizableEvent): string | null {
   const claims = getClaims(event);
   const email = claims?.email;
   return typeof email === "string" ? email : null;
+}
+
+export function verifyOrigin(event: APIGatewayProxyEventV2): boolean {
+  const expected = process.env.ORIGIN_VERIFY_SECRET;
+  if (!expected) {
+    console.error("ORIGIN_VERIFY_SECRET is not set");
+    return false;
+  }
+  return event.headers["x-origin-verify"] === expected;
 }

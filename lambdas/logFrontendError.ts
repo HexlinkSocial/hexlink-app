@@ -2,6 +2,7 @@ import {
   APIGatewayProxyEventV2,
   APIGatewayProxyStructuredResultV2,
 } from "aws-lambda";
+import { verifyOrigin } from "./helpers/auth";
 
 export interface FrontendErrorPayload {
   message: string;
@@ -14,6 +15,13 @@ export interface FrontendErrorPayload {
 export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
+  if (!verifyOrigin(event)) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ error: "Forbidden" }),
+    };
+  }
+
   try {
     if (!event.body) {
       return {

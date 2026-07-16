@@ -4,12 +4,19 @@ import {
 } from "aws-lambda";
 import { eq } from "drizzle-orm";
 import * as schema from "../database/drizzle/schema";
-import { getUser } from "./helpers/auth";
+import { getUser, verifyOrigin } from "./helpers/auth";
 import { getDatabase } from "./helpers/db";
 
 export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
+  if (!verifyOrigin(event)) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ error: "Forbidden" }),
+    };
+  }
+
   try {
     const userId = await getUser(event);
     if (userId == null) {
