@@ -65,6 +65,15 @@ Resources:
         AllowMethods: [GET, POST, OPTIONS]
         AllowHeaders: [content-type, authorization, x-captcha-token]
         MaxAge: 86400
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            IdentitySource: "$request.header.Authorization"
+            JwtConfiguration:
+              Audience:
+                - !Ref CognitoClientId
+              Issuer: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/${CognitoUserPoolId}"
 
   SesPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -123,6 +132,8 @@ Resources:
             ApiId: !Ref HttpApi
             Path: /CommunitiesByCellId
             Method: GET
+            Auth:
+              Authorizer: NONE
 
   GetCommunityCountsFunction:
     Type: AWS::Serverless::Function
@@ -139,6 +150,8 @@ Resources:
             ApiId: !Ref HttpApi
             Path: /CommunityCounts
             Method: GET
+            Auth:
+              Authorizer: NONE
 
   CreateCommunityFunction:
     Type: AWS::Serverless::Function
@@ -254,6 +267,8 @@ Resources:
             ApiId: !Ref HttpApi
             Path: /LogFrontendError
             Method: POST
+            Auth:
+              Authorizer: NONE
 
 Outputs:
   ApiUrl:

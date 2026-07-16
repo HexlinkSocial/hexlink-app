@@ -1,64 +1,41 @@
-import { CognitoJwtVerifier } from "aws-jwt-verify";
-import { APIGatewayProxyEventV2 } from "aws-lambda";
+import { APIGatewayProxyEventV2WithJWTAuthorizer } from "aws-lambda";
 
-const verifier = CognitoJwtVerifier.create({
-  userPoolId: process.env.COGNITO_USER_POOL_ID!,
-  tokenUse: "id",
-  clientId: process.env.COGNITO_CLIENT_ID!,
-});
+type JwtEvent = APIGatewayProxyEventV2WithJWTAuthorizer;
 
-function extractToken(
-  event: APIGatewayProxyEventV2,
-): string | null | undefined {
-  const authHeader =
-    event.headers?.Authorization ?? event.headers?.authorization;
-  if (!(authHeader?.startsWith("Bearer ") ?? false)) return null;
-  return authHeader?.slice(7);
+type AuthorizableEvent =
+  JwtEvent | { requestContext: Partial<JwtEvent["requestContext"]> };
+
+function getClaims(
+  event: AuthorizableEvent,
+): Record<string, string | number | boolean | string[] | null> | undefined {
+  const authorizer = (event.requestContext as JwtEvent["requestContext"])
+    ?.authorizer;
+  return authorizer?.jwt?.claims;
 }
 
-export async function isAdmin(event: APIGatewayProxyEventV2): Promise<boolean> {
-  const token = extractToken(event);
-  if (token == null) return false;
+export function isAdmin(event: AuthorizableEvent): boolean {
+  const claims = getClaims(event);
+  if (claims == null) return false;
 
-  try {
-    const payload = await verifier.verify(token);
-    const groups = payload["cognito:groups"];
-    return Array.isArray(groups) && groups.includes("Admins");
-  } catch (error) {
-    console.error("Admin verification failed:", error);
-    return false;
+  const groups = claims["cognito:groups"];
+  if (Array.isArray(groups)) return groups.includes("Admins");
+  if (typeof groups === "string") {
+    return groups
+      .split(/[,\s]+/)
+      .filter(Boolean)
+      .includes("Admins");
   }
+  return false;
 }
 
-export async function getUser(
-  event: APIGatewayProxyEventV2,
-): Promise<string | null> {
-  const token = extractToken(event);
-  if (token == null) return null;
-
-  try {
-    const payload = await verifier.verify(token);
-
-    const userId = payload.sub;
-    return typeof userId === "string" ? userId : null;
-  } catch (error) {
-    console.error("User verification failed:", error);
-    return null;
-  }
+export function getUser(event: AuthorizableEvent): string | null {
+  const claims = getClaims(event);
+  const userId = claims?.sub;
+  return typeof userId === "string" ? userId : null;
 }
 
-export async function getOwnerEmail(
-  event: APIGatewayProxyEventV2,
-): Promise<string | null> {
-  const token = extractToken(event);
-  if (token == null) return null;
-
-  try {
-    const payload = await verifier.verify(token);
-    const email = payload.email;
-    return typeof email === "string" ? email : null;
-  } catch (error) {
-    console.error("Email extraction failed:", error);
-    return null;
-  }
+export function getOwnerEmail(event: AuthorizableEvent): string | null {
+  const claims = getClaims(event);
+  const email = claims?.email;
+  return typeof email === "string" ? email : null;
 }
