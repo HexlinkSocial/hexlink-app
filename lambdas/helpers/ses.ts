@@ -8,8 +8,6 @@ import * as communityDeletedTemplate from "../dist/email_templates/communityDele
 
 const ses = new SESClient({ region: process.env.AWS_REGION ?? "eu-west-1" });
 
-const FROM_ADDRESS = process.env.SES_FROM_ADDRESS!;
-
 const templates: Record<string, string> = {
   communitySubmissionConfirmation: communitySubmissionConfirmationTemplate.html,
   communityApproved: communityApprovedTemplate.html,
@@ -46,10 +44,11 @@ export async function sendEmail(params: {
   }
 
   const html = renderTemplate(rawHtml, params.variables);
+  const fromAddress = process.env.SES_FROM_ADDRESS!;
 
   await ses.send(
     new SendEmailCommand({
-      Source: `Hexlink <${FROM_ADDRESS}>`,
+      Source: `Hexlink <${fromAddress}>`,
       Destination: {
         ToAddresses: [params.to],
       },
