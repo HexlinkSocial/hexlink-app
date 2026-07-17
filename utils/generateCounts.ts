@@ -29,6 +29,7 @@ interface Row {
 }
 
 async function fetchCounts(): Promise<Map<H3Index, number>> {
+  console.log("url", API_BASE_URL)
   const res = await fetch(`${API_BASE_URL}/CommunityCounts`);
   if (!res.ok) throw new Error(`API error ${res.status}`);
   const data = (await res.json()) as Row[];
