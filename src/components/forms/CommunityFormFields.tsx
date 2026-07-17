@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { FormInputField } from "./FormInputField";
 
 export interface SharedCommunityFormData {
@@ -53,6 +53,17 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
   rows = 5,
   isDisabled = false,
 }) => {
+  const errorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (errorMessage && errorRef.current) {
+      errorRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, [errorMessage]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onInputChange(e);
   };
@@ -159,7 +170,9 @@ export const CommunityFormFields: React.FC<CommunityFormFieldsProps> = ({
       )}
 
       {errorMessage != null && (
-        <div className="form__error">{errorMessage}</div>
+        <div ref={errorRef} className="form__error">
+          {errorMessage}
+        </div>
       )}
     </div>
   );
