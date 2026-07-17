@@ -28,6 +28,7 @@
     "react-router-dom": "^7.13.0",
     "save": "^2.9.0",
     "tsx": "^4.22.4",
+    "vitest": "^4.1.10",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -36,6 +37,7 @@
     "preview": "vite preview",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
+    "test": "vitest run",
     "tiles:count": "tsx utils/generateCounts.ts",
     "tiles:grid": "tsx utils/generateGrid.ts"
   },

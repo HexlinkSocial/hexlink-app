@@ -20,7 +20,7 @@ export default defineConfig({
         "**/node_modules/**",
         "**/.git/**",
         "**/dist/**",
-        "**/backend/**"
+        "**/lambdas/**"
       ],
     },
   },
