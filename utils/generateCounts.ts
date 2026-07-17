@@ -29,7 +29,15 @@ interface Row {
 }
 
 async function fetchCounts(): Promise<Map<H3Index, number>> {
-  const res = await fetch(`${API_BASE_URL}/CommunityCounts`);
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (process.env.ORIGIN_VERIFY_SECRET) {
+    headers["x-origin-verify"] = process.env.ORIGIN_VERIFY_SECRET;
+  }
+
+  const res = await fetch(`${API_BASE_URL}/CommunityCounts`, { headers });
   if (!res.ok) throw new Error(`API error ${res.status}`);
   const data = (await res.json()) as Row[];
   return new Map(data.map((r) => [r.cellId, r.communityCount]));
