@@ -18,13 +18,22 @@ export function isAdmin(event: AuthorizableEvent): boolean {
   if (claims == null) return false;
 
   const groups = claims["cognito:groups"];
-  if (Array.isArray(groups)) return groups.includes("Admins");
+  return hasAdminGroup(groups);
+}
+
+function hasAdminGroup(groups: unknown): boolean {
+  if (Array.isArray(groups)) {
+    return groups.map(g => String(g).trim()).includes("Admins");
+  }
+  
   if (typeof groups === "string") {
     return groups
       .split(/[,\s]+/)
+      .map(g => g.trim())
       .filter(Boolean)
       .includes("Admins");
   }
+
   return false;
 }
 
