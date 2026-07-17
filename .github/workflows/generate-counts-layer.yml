@@ -75,32 +75,22 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      - name: Install dependencies
+        if: env.should_run == 'true'
+        run: |
+          npm install dotenv
+          npx tsx utils/generateCounts.ts
+
+      - name: Generate PMTiles
+        if: env.should_run == 'true'
+        run: npx tsx utils/generateCounts.ts
+
       - name: Configure AWS Credentials
         if: env.should_run == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Fetch Origin Verify Secret from SSM
-        if: env.should_run == 'true'
-        run: |
-          SECRET=$(aws ssm get-parameter \
-            --name "/${{ secrets.PROJECT_NAME }}/origin-verify-secret" \
-            --with-decryption \
-            --query 'Parameter.Value' \
-            --output text)
-          echo "::add-mask::$SECRET"
-          echo "ORIGIN_VERIFY_SECRET=$SECRET" >> "$GITHUB_ENV"
-
-      - name: Install dependencies
-        if: env.should_run == 'true'
-        run: |
-          npm install dotenv
-
-      - name: Generate PMTiles
-        if: env.should_run == 'true'
-        run: npx tsx utils/generateCounts.ts
 
       - name: Upload PMTiles to S3 tiles folder
         if: env.should_run == 'true'
