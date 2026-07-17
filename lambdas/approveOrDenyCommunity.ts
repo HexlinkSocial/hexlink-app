@@ -59,6 +59,19 @@ async function handleApprove(
   }
 
   await tx
+    .insert(schema.tileGenerationState)
+    .values({
+      id: "singleton",
+      newCommunitiesAdded: true,
+    })
+    .onConflictDoUpdate({
+      target: schema.tileGenerationState.id,
+      set: {
+        newCommunitiesAdded: true,
+      },
+    });
+
+  await tx
     .delete(schema.approvals)
     .where(eq(schema.approvals.id, approvalItem.id));
 

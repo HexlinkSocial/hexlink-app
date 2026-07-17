@@ -1,0 +1,271 @@
+{
+  "id": "351f7d4c-48dd-49cc-b826-6ddb6acd0c9a",
+  "prevId": "7030ca9c-7c67-49eb-abad-023830215924",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.approvals": {
+      "name": "approvals",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "owner": {
+          "name": "owner",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "owner_email": {
+          "name": "owner_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "whatsapp": {
+          "name": "whatsapp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "discord": {
+          "name": "discord",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "facebook": {
+          "name": "facebook",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "other_url": {
+          "name": "other_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cell_ids": {
+          "name": "cell_ids",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "comments": {
+          "name": "comments",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "last_edited": {
+          "name": "last_edited",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.cell_communities": {
+      "name": "cell_communities",
+      "schema": "",
+      "columns": {
+        "cellId": {
+          "name": "cellId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "communityId": {
+          "name": "communityId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "cell_communities_cellId_idx": {
+          "name": "cell_communities_cellId_idx",
+          "columns": [
+            {
+              "expression": "cellId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "cell_communities_communityId_communities_id_fk": {
+          "name": "cell_communities_communityId_communities_id_fk",
+          "tableFrom": "cell_communities",
+          "tableTo": "communities",
+          "columnsFrom": [
+            "communityId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "cell_communities_cellId_communityId_pk": {
+          "name": "cell_communities_cellId_communityId_pk",
+          "columns": [
+            "cellId",
+            "communityId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.communities": {
+      "name": "communities",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "owner": {
+          "name": "owner",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "whatsapp": {
+          "name": "whatsapp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "discord": {
+          "name": "discord",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "facebook": {
+          "name": "facebook",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "other_url": {
+          "name": "other_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tile_generation_state": {
+      "name": "tile_generation_state",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "'singleton'"
+        },
+        "new_communities_added": {
+          "name": "new_communities_added",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

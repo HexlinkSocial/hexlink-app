@@ -5,6 +5,7 @@ import {
   primaryKey,
   index,
   timestamp,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -48,6 +49,11 @@ export const approvals = pgTable("approvals", {
   comments: text("comments"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   lastEdited: timestamp("last_edited"),
+});
+
+export const tileGenerationState = pgTable("tile_generation_state", {
+  id: text("id").primaryKey().default("singleton"),
+  newCommunitiesAdded: boolean("new_communities_added").notNull().default(false),
 });
 
 export const communitiesRelations = relations(communities, ({ many }) => ({

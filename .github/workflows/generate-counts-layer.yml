@@ -1,10 +1,12 @@
 name: Generate and Deploy H3 Counts Tiles
 
 on:
+  schedule:
+    - cron: '0 9 * * 1,4'
   workflow_dispatch:
 
 jobs:
-  generate_tiles:
+  sync_and_deploy:
     runs-on: ubuntu-latest
 
     permissions:
@@ -16,17 +18,48 @@ jobs:
       FRONTEND_S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
       CLOUDFRONT_ID: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
       VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link Supabase project
+        run: |
+          supabase link \
+            --project-ref ${{ secrets.SUPABASE_PROJECT_ID }} \
+            --password "${{ secrets.SUPABASE_DB_PASSWORD }}" \
+            --workdir ./database
+
+      - name: Check flag and reset state
+        id: check_state
+        run: |
+          # Check if generation is required
+          RESULT=$(supabase db query --linked "SELECT new_communities_added FROM tile_generation_state WHERE id = 'singleton';" --workdir ./database)
+          echo "$RESULT"
+          
+          if [[ "$RESULT" != *"t"* ]]; then
+            echo "No new communities added since last generation. Exiting workflow early."
+            exit 0
+          fi
+          
+          # Toggle the flag back to false
+          supabase db query --linked "INSERT INTO tile_generation_state (id, new_communities_added) VALUES ('singleton', false) ON CONFLICT (id) DO UPDATE SET new_communities_added = false;" --workdir ./database
+          echo "should_run=true" >> $GITHUB_ENV
+
       - name: Install Tippecanoe dependencies
+        if: env.should_run == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libsqlite3-dev zlib1g-dev
 
       - name: Install Tippecanoe
+        if: env.should_run == 'true'
         run: |
           git clone https://github.com/felt/tippecanoe.git
           cd tippecanoe
@@ -36,25 +69,30 @@ jobs:
           rm -rf tippecanoe
 
       - name: Setup Node
+        if: env.should_run == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
 
       - name: Install dependencies
+        if: env.should_run == 'true'
         run: |
           npm install dotenv
           npx tsx utils/generateCounts.ts
 
       - name: Generate PMTiles
+        if: env.should_run == 'true'
         run: npx tsx utils/generateCounts.ts
 
       - name: Configure AWS Credentials
+        if: env.should_run == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Upload PMTiles to S3 tiles folder
+        if: env.should_run == 'true'
         run: |
           aws s3 cp public/tiles/h3-counts.pmtiles s3://$FRONTEND_S3_BUCKET/tiles/h3-counts.pmtiles

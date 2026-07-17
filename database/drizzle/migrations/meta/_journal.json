@@ -36,6 +36,13 @@
       "when": 1783685145876,
       "tag": "0004_add_separate_url_platforms",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1784299020292,
+      "tag": "0005_add_flag_to_check_if_tile_generation_needed",
+      "breakpoints": true
     }
   ]
 }
