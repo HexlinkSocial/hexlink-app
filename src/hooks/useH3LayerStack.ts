@@ -36,7 +36,7 @@ export function useH3LayerStack(
 
       const features = map.queryRenderedFeatures({
         layers: activePurpleLayers,
-      });
+      }) ?? [];
 
       const purpleH3Ids = Array.from(
         new Set(

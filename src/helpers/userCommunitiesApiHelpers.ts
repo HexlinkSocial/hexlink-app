@@ -1,6 +1,8 @@
 import { adminHeaders } from "./authHeaders";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "";
+function getBackendUrl(): string {
+  return import.meta.env.VITE_BACKEND_URL ?? "";
+}
 const PENDING_KEY = "pendingCommunityPayload";
 const PENDING_TOKEN_KEY = "pendingCommunityCaptchaToken";
 const REGISTER_TOKEN_KEY = "pendingCaptchaToken";
@@ -86,7 +88,7 @@ export async function postCommunity(
     headers["x-captcha-token"] = captchaToken;
   }
 
-  const res = await fetch(`${BACKEND_URL}/CreateCommunity`, {
+  const res = await fetch(`${getBackendUrl()}/CreateCommunity`, {
     method: "POST",
     headers,
     body: JSON.stringify(payload),
@@ -117,7 +119,7 @@ export function clearPending(): void {
 }
 
 export async function fetchUserCommunities(): Promise<UnifiedCommunityItem[]> {
-  const response = await fetch(`${BACKEND_URL}/GetUserCommunities`, {
+  const response = await fetch(`${getBackendUrl()}/GetUserCommunities`, {
     method: "GET",
     headers: await adminHeaders(),
   });
@@ -179,7 +181,7 @@ export async function editCommunity(
     other: payload.other ? normaliseUrl(payload.other) : payload.other,
   };
 
-  const response = await fetch(`${BACKEND_URL}/EditCommunity`, {
+  const response = await fetch(`${getBackendUrl()}/EditCommunity`, {
     method: "POST",
     headers: await adminHeaders(),
     body: JSON.stringify(normalizedPayload),
@@ -199,7 +201,7 @@ export async function deleteCommunity(
   id: string,
   scope: "approval" | "production",
 ): Promise<{ message: string }> {
-  const response = await fetch(`${BACKEND_URL}/DeleteCommunity`, {
+  const response = await fetch(`${getBackendUrl()}/DeleteCommunity`, {
     method: "POST",
     headers: await adminHeaders(),
     body: JSON.stringify({ id, scope }),

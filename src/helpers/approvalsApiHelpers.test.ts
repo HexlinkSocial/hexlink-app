@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { fetchApprovals, submitAction, ApprovalItem } from "./approvalsApiHelpers";
 
 vi.mock("./authHeaders", () => ({
@@ -6,91 +6,127 @@ vi.mock("./authHeaders", () => ({
     "Content-Type": "application/json",
     Authorization: "Bearer mock-admin-token",
   }),
+  authHeaders: vi.fn().mockResolvedValue({
+    "Content-Type": "application/json",
+    Authorization: "Bearer mock-admin-token",
+  }),
+  userHeaders: vi.fn().mockResolvedValue({
+    "Content-Type": "application/json",
+    Authorization: "Bearer mock-admin-token",
+  }),
+  default: {
+    adminHeaders: vi.fn().mockResolvedValue({
+      "Content-Type": "application/json",
+      Authorization: "Bearer mock-admin-token",
+    }),
+    authHeaders: vi.fn().mockResolvedValue({
+      "Content-Type": "application/json",
+      Authorization: "Bearer mock-admin-token",
+    }),
+    userHeaders: vi.fn().mockResolvedValue({
+      "Content-Type": "application/json",
+      Authorization: "Bearer mock-admin-token",
+    }),
+  },
 }));
 
 describe("approvalsApiHelpers", () => {
-  let globalFetchSpy: any;
+  const mockBaseUrl = "https://api.example.com";
+  const fetchMock = vi.fn();
 
   beforeEach(() => {
-    globalFetchSpy = vi.fn();
-    global.fetch = globalFetchSpy;
-    vi.stubEnv("VITE_BACKEND_URL", "https://api.test");
+    vi.stubEnv("VITE_BACKEND_URL", mockBaseUrl);
+    vi.stubGlobal("fetch", fetchMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+    fetchMock.mockClear();
   });
 
   describe("fetchApprovals", () => {
-    it("should fetch pending communities successfully", async () => {
-      const mockApprovals: ApprovalItem[] = [
+    it("should retrieve pending communities list successfully", async () => {
+      const mockApprovalsList: ApprovalItem[] = [
         {
-          id: "1",
-          name: "Test Community",
-          description: "A test description",
-          owner: "owner-1",
-          ownerEmail: "owner@test.com",
-          cellIds: ["cell-1"],
+          id: "pending-123",
+          name: "Eco Project",
+          description: "A green community initiative",
+          owner: "usr_1",
+          ownerEmail: "test@example.com",
+          cellIds: ["881f1d4885fffff"],
           status: "pending",
           comments: null,
-          createdAt: "2026-01-01T00:00:00Z",
-          lastEdited: "2026-01-01T00:00:00Z",
+          createdAt: "2026-01-01T00:00:00.000Z",
+          lastEdited: "2026-01-01T00:00:00.000Z",
         },
       ];
 
-      globalFetchSpy.mockResolvedValue({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
-        json: async () => mockApprovals,
-      });
+        json: async () => mockApprovalsList,
+      } as Response);
 
       const result = await fetchApprovals();
 
-      expect(globalFetchSpy).toHaveBeenCalledWith("https://api.test/GetPendingCommunities", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer mock-admin-token",
-        },
-        body: JSON.stringify({}),
-      });
-      expect(result).toEqual(mockApprovals);
+      expect(fetchMock).toHaveBeenCalledWith(
+        `${mockBaseUrl}/GetPendingCommunities`,
+        expect.objectContaining({
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer mock-admin-token",
+          },
+          body: JSON.stringify({}),
+        })
+      );
+      expect(result).toEqual(mockApprovalsList);
     });
 
-    it("should throw an error when fetch fails", async () => {
-      globalFetchSpy.mockResolvedValue({
+    it("should throw an error with status if fetch response is not ok", async () => {
+      fetchMock.mockResolvedValueOnce({
         ok: false,
-        status: 500,
-      });
+        status: 403,
+      } as Response);
 
-      await expect(fetchApprovals()).rejects.toThrow("HTTP 500");
+      await expect(fetchApprovals()).rejects.toThrow("HTTP 403");
     });
   });
 
   describe("submitAction", () => {
-    it("should successfully post approval action with comments", async () => {
-      globalFetchSpy.mockResolvedValue({
+    it("should send approval choice and comments to action endpoint", async () => {
+      fetchMock.mockResolvedValueOnce({
         ok: true,
-      });
+      } as Response);
 
-      await submitAction("1", "approve", "Looks excellent");
+      await submitAction("pending-123", "approve", "Approved after review");
 
-      expect(globalFetchSpy).toHaveBeenCalledWith("https://api.test/ApproveOrDenyCommunity", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer mock-admin-token",
-        },
-        body: JSON.stringify({
-          id: "1",
-          action: "approve",
-          comments: "Looks excellent",
-        }),
-      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        `${mockBaseUrl}/ApproveOrDenyCommunity`,
+        expect.objectContaining({
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer mock-admin-token",
+          },
+          body: JSON.stringify({
+            id: "pending-123",
+            action: "approve",
+            comments: "Approved after review",
+          }),
+        })
+      );
     });
 
-    it("should throw an error when action submission fails", async () => {
-      globalFetchSpy.mockResolvedValue({
+    it("should throw an error with status if post response is not ok", async () => {
+      fetchMock.mockResolvedValueOnce({
         ok: false,
         status: 400,
-      });
+      } as Response);
 
-      await expect(submitAction("1", "reject")).rejects.toThrow("HTTP 400");
+      await expect(
+        submitAction("pending-123", "reject", "Missing coordinates")
+      ).rejects.toThrow("HTTP 400");
     });
   });
 });
