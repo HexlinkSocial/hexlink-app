@@ -17,7 +17,7 @@ jobs:
       AWS_REGION: eu-west-2
       FRONTEND_S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
       CLOUDFRONT_ID: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
-      VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
+      VITE_BACKEND_URL: ${{ secrets.DIRECT_BACKEND_URL }}
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
     steps:
