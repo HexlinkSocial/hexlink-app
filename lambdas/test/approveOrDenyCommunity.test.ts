@@ -9,6 +9,7 @@ vi.mock("../../database/drizzle/schema", () => ({
   approvals: { id: "approvals.id" },
   communities: { id: "communities.id" },
   cellCommunities: {},
+  tileGenerationState: { id: "tileGenerationState.id" },
 }));
 
 vi.mock("../helpers/request", () => ({
@@ -256,7 +257,7 @@ describe("approvals handler", () => {
     });
 
     describe("action: approve", () => {
-      it("creates/updates the community, links cells, deletes the approval, and emails the owner", async () => {
+      it("creates/updates the community, links cells, updates tile flag, deletes the approval, and emails the owner", async () => {
         const approval = makeApproval();
         vi.mocked(getRequestBody).mockReturnValue({
           id: approval.id,
@@ -282,13 +283,21 @@ describe("approvals handler", () => {
             owner: approval.owner,
           }),
         );
-        expect(spies.insertOnConflictDoUpdate).toHaveBeenCalled();
 
         expect(spies.insertValues).toHaveBeenCalledWith([
           { cellId: "cell-1", communityId: approval.id },
           { cellId: "cell-2", communityId: approval.id },
         ]);
         expect(spies.insertOnConflictDoNothing).toHaveBeenCalled();
+
+        expect(spies.insert).toHaveBeenCalledWith(
+          expect.objectContaining({ id: "tileGenerationState.id" }),
+        );
+        expect(spies.insertValues).toHaveBeenCalledWith({
+          id: "singleton",
+          newCommunitiesAdded: true,
+        });
+        expect(spies.insertOnConflictDoUpdate).toHaveBeenCalledTimes(2);
 
         expect(spies.del).toHaveBeenCalledWith(
           expect.objectContaining({ id: "approvals.id" }),
@@ -318,7 +327,7 @@ describe("approvals handler", () => {
         const result = await handler(fakeEvent);
 
         expect(result.statusCode).toBe(200);
-        expect(spies.insert).toHaveBeenCalledTimes(1);
+        expect(spies.insert).toHaveBeenCalledTimes(2);
       });
 
       it("does not send an email when ownerEmail is null", async () => {
@@ -497,7 +506,6 @@ describe("approvals handler", () => {
       });
       const { db } = makeMockDb([approval]);
       vi.mocked(getDatabase).mockResolvedValue(db as never);
-      // Throw a non-Error value with no usable message
       vi.mocked(sendEmail).mockImplementationOnce(() => {
         throw "boom";
       });
