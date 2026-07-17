@@ -26,6 +26,23 @@ async function notifyCommunityDeletion(
   });
 }
 
+async function updateTileGenerationState(
+  tx: TransactionContext,
+): Promise<void> {
+  await tx
+    .insert(schema.tileGenerationState)
+    .values({
+      id: "singleton",
+      newCommunitiesAdded: true,
+    })
+    .onConflictDoUpdate({
+      target: schema.tileGenerationState.id,
+      set: {
+        newCommunitiesAdded: true,
+      },
+    });
+}
+
 async function performDeleteWorkflow(
   tx: TransactionContext,
   targetId: string,
@@ -43,6 +60,8 @@ async function performDeleteWorkflow(
         .delete(schema.approvals)
         .where(eq(schema.approvals.id, targetId));
     }
+
+    await updateTileGenerationState(tx);
   } else if ((scope === "approval" || !hasProduction) && hasApproval) {
     await tx.delete(schema.approvals).where(eq(schema.approvals.id, targetId));
   }
@@ -52,12 +71,12 @@ export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
   if (!verifyOrigin(event)) {
-      return {
-        statusCode: 403,
-        body: JSON.stringify({ error: "Forbidden" }),
-      };
-    }
-    
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ error: "Forbidden" }),
+    };
+  }
+
   try {
     const db = await getDatabase();
 
