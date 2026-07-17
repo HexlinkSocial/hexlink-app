@@ -40,10 +40,10 @@ jobs:
         id: check_state
         run: |
           # Check if generation is required
-          RESULT=$(supabase db query --linked "SELECT new_communities_added FROM tile_generation_state WHERE id = 'singleton';" --workdir ./database)
+          RESULT=$(supabase db query --linked "SELECT CASE WHEN new_communities_added THEN 'START_RUN' ELSE 'STOP_RUN' END AS workflow_action FROM tile_generation_state WHERE id = 'singleton';" --workdir ./database)
           echo "$RESULT"
           
-          if [[ "$RESULT" != *"t"* ]]; then
+          if [[ "$RESULT" != *"START_RUN"* ]]; then
             echo "No new communities added since last generation. Exiting workflow early."
             exit 0
           fi
