@@ -18,6 +18,7 @@ export function isAdmin(event: AuthorizableEvent): boolean {
   if (claims == null) return false;
 
   const groups = claims["cognito:groups"];
+  throw new Error(`groups ${groups}`)
   return hasAdminGroup(groups);
 }
 
