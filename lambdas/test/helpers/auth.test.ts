@@ -70,6 +70,13 @@ describe("auth helpers", () => {
       expect(isAdmin(event)).toBe(true);
     });
 
+    it("returns true when cognito:groups is a literal string wrapped in square brackets containing Admins", () => {
+      const event = createFakeEventWithClaims({
+        "cognito:groups": "[Admins]",
+      });
+      expect(isAdmin(event)).toBe(true);
+    });
+
     it("returns false when cognito:groups is a string that does not contain Admins", () => {
       const event = createFakeEventWithClaims({
         "cognito:groups": "Users,Moderators",

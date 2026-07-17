@@ -18,7 +18,6 @@ export function isAdmin(event: AuthorizableEvent): boolean {
   if (claims == null) return false;
 
   const groups = claims["cognito:groups"];
-  throw new Error(`groups ${groups}`)
   return hasAdminGroup(groups);
 }
 
@@ -28,7 +27,10 @@ function hasAdminGroup(groups: unknown): boolean {
   }
   
   if (typeof groups === "string") {
-    return groups
+    // Strip literal JSON-like square brackets if they are wrapped around the string
+    const cleanedGroups = groups.trim().replace(/^\[|\]$/g, "");
+    
+    return cleanedGroups
       .split(/[,\s]+/)
       .map(g => g.trim())
       .filter(Boolean)
