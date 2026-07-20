@@ -9,6 +9,7 @@ vi.mock("drizzle-orm", () => ({
 vi.mock("../../database/drizzle/schema", () => ({
   approvals: { id: "approvals.id", name: "approvals.name", owner: "approvals.owner" },
   communities: { id: "communities.id", name: "communities.name", owner: "communities.owner" },
+  tileGenerationState: { id: "tileGenerationState.id" },
 }));
 
 vi.mock("../helpers/request", () => ({
@@ -54,6 +55,9 @@ interface MockDbSpies {
   selectWhere: any;
   del: any;
   deleteWhere: any;
+  insert: any;
+  insertValues: any;
+  onConflictDoUpdate: any;
   transaction: any;
 }
 
@@ -64,6 +68,7 @@ interface MockDbResult {
   };
   tx: {
     delete: any;
+    insert: any;
   };
   spies: MockDbSpies;
 }
@@ -86,8 +91,11 @@ function makeMockDb(
   const deleteWhere = vi.fn(() => Promise.resolve(undefined));
   const del = vi.fn(() => ({ where: deleteWhere }));
 
-  const tx = { delete: del };
+  const onConflictDoUpdate = vi.fn(() => Promise.resolve(undefined));
+  const insertValues = vi.fn(() => ({ onConflictDoUpdate }));
+  const insert = vi.fn(() => ({ values: insertValues }));
 
+  const tx = { delete: del, insert };
   const transaction = vi.fn(async (cb: (tx: unknown) => Promise<void>) => {
     await cb(tx);
   });
@@ -103,6 +111,9 @@ function makeMockDb(
       selectWhere,
       del,
       deleteWhere,
+      insert,
+      insertValues,
+      onConflictDoUpdate,
       transaction,
     },
   };
@@ -243,6 +254,7 @@ describe("delete community handler", () => {
       });
 
       expect(spies.del).toHaveBeenCalledTimes(2);
+      expect(spies.insert).toHaveBeenCalledTimes(1);
       expect(sendEmail).toHaveBeenCalledWith({
         to: "user@example.com",
         subject: "Community Removal Confirmation",
@@ -263,6 +275,7 @@ describe("delete community handler", () => {
 
       expect(result.statusCode).toBe(200);
       expect(spies.del).toHaveBeenCalledTimes(1);
+      expect(spies.insert).toHaveBeenCalledTimes(1);
     });
 
     it("deletes only approval record when scope is approval and both records exist", async () => {
@@ -274,6 +287,7 @@ describe("delete community handler", () => {
 
       expect(result.statusCode).toBe(200);
       expect(spies.del).toHaveBeenCalledTimes(1);
+      expect(spies.insert).not.toHaveBeenCalled();
       expect(sendEmail).toHaveBeenCalledWith(
         expect.objectContaining({
           variables: {
