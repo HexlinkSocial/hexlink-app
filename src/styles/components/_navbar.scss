@@ -1,0 +1,52 @@
+@use "../abstracts" as *;
+
+.navbar {
+  position: fixed;
+  top: 10px;
+  left: 0;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  background: transparent;
+  pointer-events: none;
+  z-index: 1000;
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+    margin-left: auto;
+    pointer-events: auto;
+  }
+}
+
+.hamburger-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 29px;
+  height: 29px;
+  padding: 0;
+  background-color: #ffffff;
+  color: #333333;
+  border: none;
+  border-radius: $radius-md;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color $transition-fast, box-shadow $transition-fast, transform $transition-fast;
+
+  &:hover {
+    background-color: #f4f4f4;
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
