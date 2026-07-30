@@ -17,14 +17,12 @@ const CommunityDeniedEmail = (): JSX.Element => {
         time.
       </p>
 
-      {"{{#if comments}}"}
       <div className="email-comments-box">
         <p className="email-text">
           <strong>Reason for denial:</strong>
         </p>
         <p className="email-text">{"{{comments}}"}</p>
       </div>
-      {"{{/if}}"}
     </EmailLayout>
   );
 };
