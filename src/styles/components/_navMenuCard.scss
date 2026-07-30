@@ -131,8 +131,8 @@
     border-radius: $radius-md;
     font-size: 14px;
     font-weight: 400;
-    color: $color-text;
-    text-decoration: none;
+    color: $color-text !important;
+    text-decoration: none !important;
     background: transparent;
     border: 1px solid transparent;
     transition: background-color $transition-fast, color $transition-fast;
