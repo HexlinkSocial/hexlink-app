@@ -38,7 +38,7 @@ const FormHelpLink: React.FC = () => {
   const helpUrl = `${getDocsUrl("docs/tips-for-community-runners/creating-your-community")}#title`;
 
   return (
-    <p className="info-card__help">
+    <p className="info-card__help info-card__help--spaced">
       <a
         href={helpUrl}
         target="_blank"

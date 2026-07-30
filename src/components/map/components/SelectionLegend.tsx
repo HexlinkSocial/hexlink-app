@@ -6,13 +6,14 @@ interface SelectionLegendProps {
   onCancel: () => void;
   onNext: () => void;
 }
+
 const getHelpDocUrl = (): string => {
   const baseUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.hexlink.org";
   return `${baseUrl.replace(/\/$/, "")}/docs/tips-for-community-runners/creating-your-community`;
 };
 
 const AreaHelpLink: React.FC = () => (
-  <p className="info-card__help">
+  <p className="info-card__help info-card__help--spaced">
     <a
       href={getHelpDocUrl()}
       target="_blank"

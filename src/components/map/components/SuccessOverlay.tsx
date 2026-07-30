@@ -25,10 +25,7 @@ const SuccessOverlay: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       <p className="success-card__title">Community submitted!</p>
       <p className="success-card__body">
         Thank you for adding your community. It will be reviewed by our internal
-        team before it can appear on the map.
-      </p>
-      <p className="success-card__body">
-        In the meantime,{" "}
+        team before it can appear on the map. In the meantime,{" "}
         <a href={tipsUrl} target="_blank" rel="noopener noreferrer">
           <span>have a look at our community runner tips</span>
           <ExternalLinkIcon />
