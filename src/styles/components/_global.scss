@@ -1,0 +1,16 @@
+@use "./abstracts" as *;
+
+a {
+  color: $color-accent;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:visited {
+    color: $color-accent-dark;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
