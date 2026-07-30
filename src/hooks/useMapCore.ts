@@ -13,7 +13,14 @@ export const europeBounds: maplibregl.LngLatBoundsLike = [
   [-25.0, 34.0],
   [45.0, 72.0],
 ];
-export const mapCenter: LngLatLike = [-0.1276, 51.5072];
+
+// Bounding box covering the UK: [SW Lng, SW Lat, NE Lng, NE Lat]
+export const ukBounds: maplibregl.LngLatBoundsLike = [
+  [-8.5, 49.8],
+  [1.8, 58.7],
+];
+
+export const mapCenter: LngLatLike = [-2.5, 54.5];
 
 export const zoomBreakpoints = [9, 12] as const;
 
@@ -107,7 +114,7 @@ export function useMapCore(
       container: containerRef.current,
       style,
       center: initialCamera?.center ?? mapCenter,
-      zoom: initialCamera?.zoom ?? 8,
+      zoom: initialCamera?.zoom ?? 5.2,
       minZoom: 4,
       maxZoom: 16,
       maxBounds: europeBounds,
@@ -129,13 +136,19 @@ export function useMapCore(
     map.on("load", () => {
       setIsMapReady(true);
       if (!initialCamera) {
-        requestUserLocation((userCenter) => {
-          map.flyTo({
-            center: userCenter,
-            zoom: 12,
-            essential: true,
-          });
-        });
+        requestUserLocation(
+          (userCenter) => {
+            map.flyTo({
+              center: userCenter,
+              zoom: 12,
+              essential: true,
+            });
+          },
+          // Error callback if permission denied/failed: fit the whole UK view
+          () => {
+            map.fitBounds(ukBounds, { padding: 20 });
+          },
+        );
       }
     });
 
