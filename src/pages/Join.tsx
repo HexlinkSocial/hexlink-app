@@ -96,6 +96,7 @@ export default function Join(): JSX.Element {
       <div className="auth-page">
         <div className="auth-flex-overlay">
           <Authenticator
+            initialState="signUp"
             formFields={FORM_FIELDS}
             loginMechanisms={["email"]}
             services={services}
