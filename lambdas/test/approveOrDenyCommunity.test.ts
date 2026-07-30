@@ -5,7 +5,7 @@ vi.mock("drizzle-orm", () => ({
   eq: vi.fn((column: unknown, value: unknown) => ({ column, value })),
 }));
 
-vi.mock("../../database/drizzle/schema", () => ({   
+vi.mock("../../database/drizzle/schema", () => ({
   approvals: { id: "approvals.id" },
   communities: { id: "communities.id" },
   cellCommunities: {},
@@ -369,7 +369,7 @@ describe("approvals handler", () => {
     // -----------------------------------------------------------------
 
     describe("action: reject", () => {
-      it("deletes the approval and emails the owner", async () => {
+      it("deletes the approval and emails the owner without reason comments when none are provided", async () => {
         const approval = makeApproval();
         vi.mocked(getRequestBody).mockReturnValue({
           id: approval.id,
@@ -389,7 +389,36 @@ describe("approvals handler", () => {
           expect.objectContaining({
             to: approval.ownerEmail,
             templateName: "communityDenied",
-            variables: { communityName: approval.name },
+            variables: { communityName: approval.name, comments: "" },
+          }),
+        );
+      });
+
+      it("deletes the approval and emails the owner with denial comments when provided", async () => {
+        const approval = makeApproval();
+        const denialReason = "Does not meet community guidelines.";
+        vi.mocked(getRequestBody).mockReturnValue({
+          id: approval.id,
+          action: "reject",
+          comments: denialReason,
+        });
+        const { db, spies } = makeMockDb([approval]);
+        vi.mocked(getDatabase).mockResolvedValue(db as never);
+
+        const result = await handler(fakeEvent);
+
+        expect(result.statusCode).toBe(200);
+        expect(spies.del).toHaveBeenCalledWith(
+          expect.objectContaining({ id: "approvals.id" }),
+        );
+        expect(sendEmail).toHaveBeenCalledWith(
+          expect.objectContaining({
+            to: approval.ownerEmail,
+            templateName: "communityDenied",
+            variables: {
+              communityName: approval.name,
+              comments: denialReason,
+            },
           }),
         );
       });
