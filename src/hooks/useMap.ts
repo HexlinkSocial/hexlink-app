@@ -47,6 +47,26 @@ type MapInfo = {
   error: string | null;
 };
 
+function setupLayerListeners(
+  map: maplibregl.Map,
+  onBeforeCellSelectRef: React.MutableRefObject<(() => void) | undefined>,
+  setSelectedCellId: React.Dispatch<React.SetStateAction<string | null>>,
+  setSelectedCellHasCommunities: React.Dispatch<React.SetStateAction<boolean>>,
+): void {
+  const coarseLayers = ["h3-counts-r4", "h3-counts-r6"] as const;
+  coarseLayers.forEach((layer) => {
+    map.on("click", layer, (e) => flyToFeature(e, map));
+  });
+
+  const fineLayers = ["h3-counts-r8", "h3-grid-fill"] as const;
+  fineLayers.forEach((layer) => {
+    map.on("click", layer, (e) => {
+      onBeforeCellSelectRef.current?.();
+      openCard(e, map, setSelectedCellId, setSelectedCellHasCommunities);
+    });
+  });
+}
+
 export function useMap(
   containerRef: React.RefObject<HTMLDivElement | null>,
   initialCamera?: CameraState,
@@ -68,18 +88,12 @@ export function useMap(
     map.on("dragstart", () => closeCard(setSelectedCellId));
     map.on("zoomstart", () => closeCard(setSelectedCellId));
 
-    const coarseLayers = ["h3-counts-r4", "h3-counts-r6"] as const;
-    coarseLayers.forEach((layer) => {
-      map.on("click", layer, (e) => flyToFeature(e, map));
-    });
-
-    const fineLayers = ["h3-counts-r8", "h3-grid-fill"] as const;
-    fineLayers.forEach((layer) => {
-      map.on("click", layer, (e) => {
-        onBeforeCellSelectRef.current?.();
-        openCard(e, map, setSelectedCellId, setSelectedCellHasCommunities);
-      });
-    });
+    setupLayerListeners(
+      map,
+      onBeforeCellSelectRef,
+      setSelectedCellId,
+      setSelectedCellHasCommunities,
+    );
   }, [map, isMapReady]);
 
   return {

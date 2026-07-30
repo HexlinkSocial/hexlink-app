@@ -2,13 +2,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useMapCore, getNextZoom, getCentre } from "./useMapCore";
-import * as maplibregl from "maplibre-gl";
+import * as geolocationHelpers from "../helpers/geolocation";
 
 const mockMapInstance = {
   addControl: vi.fn(),
   touchZoomRotate: { disableRotation: vi.fn() },
   doubleClickZoom: { disable: vi.fn() },
   on: vi.fn(),
+  flyTo: vi.fn(),
   remove: vi.fn(),
 };
 
@@ -38,6 +39,10 @@ vi.mock("pmtiles", () => ({
   },
 }));
 
+vi.mock("../helpers/geolocation", () => ({
+  requestUserLocation: vi.fn(),
+}));
+
 describe("useMapCore Helper Utilities", () => {
   describe("getNextZoom", () => {
     it("should correctly bump zoom increments over standard breakpoints", () => {
@@ -53,7 +58,13 @@ describe("useMapCore Helper Utilities", () => {
         geometry: {
           type: "Polygon",
           coordinates: [
-            [[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]],
+            [
+              [0, 0],
+              [10, 0],
+              [10, 10],
+              [0, 10],
+              [0, 0],
+            ],
           ],
         },
       } as any;
@@ -87,13 +98,15 @@ describe("useMapCore Hook", () => {
 
   it("should track the underlying readiness lifecycle via listener triggers", () => {
     const eventHandlers: Record<string, Function> = {};
-    vi.spyOn(mockMapInstance, "on").mockImplementation((event: string, cb: Function) => {
-      eventHandlers[event] = cb;
-      return mockMapInstance as any;
-    });
+    vi.spyOn(mockMapInstance, "on").mockImplementation(
+      (event: string, cb: Function) => {
+        eventHandlers[event] = cb;
+        return mockMapInstance as any;
+      },
+    );
 
     const { result } = renderHook(() => useMapCore(containerRef));
-    
+
     act(() => {
       if (eventHandlers["load"]) {
         eventHandlers["load"]();
@@ -103,12 +116,70 @@ describe("useMapCore Hook", () => {
     expect(result.current.isMapReady).toBe(true);
   });
 
+  it("should trigger geolocation request on load when initialCamera is omitted", () => {
+    const eventHandlers: Record<string, Function> = {};
+    vi.spyOn(mockMapInstance, "on").mockImplementation(
+      (event: string, cb: Function) => {
+        eventHandlers[event] = cb;
+        return mockMapInstance as any;
+      },
+    );
+
+    vi.mocked(geolocationHelpers.requestUserLocation).mockImplementation(
+      (onSuccess) => {
+        onSuccess([-0.1276, 51.5072]);
+      },
+    );
+
+    renderHook(() => useMapCore(containerRef));
+
+    act(() => {
+      if (eventHandlers["load"]) {
+        eventHandlers["load"]();
+      }
+    });
+
+    expect(geolocationHelpers.requestUserLocation).toHaveBeenCalled();
+    expect(mockMapInstance.flyTo).toHaveBeenCalledWith({
+      center: [-0.1276, 51.5072],
+      zoom: 12,
+      essential: true,
+    });
+  });
+
+  it("should not request user geolocation on load when an explicit initialCamera is supplied", () => {
+    const eventHandlers: Record<string, Function> = {};
+    vi.spyOn(mockMapInstance, "on").mockImplementation(
+      (event: string, cb: Function) => {
+        eventHandlers[event] = cb;
+        return mockMapInstance as any;
+      },
+    );
+
+    const initialCamera = {
+      center: [2.3522, 48.8566] as maplibregl.LngLatLike,
+      zoom: 8,
+    };
+    renderHook(() => useMapCore(containerRef, initialCamera));
+
+    act(() => {
+      if (eventHandlers["load"]) {
+        eventHandlers["load"]();
+      }
+    });
+
+    expect(geolocationHelpers.requestUserLocation).not.toHaveBeenCalled();
+    expect(mockMapInstance.flyTo).not.toHaveBeenCalled();
+  });
+
   it("should catch and transform specific engine layer runtime exceptions to strings", () => {
     let errorCallback: Function = () => {};
-    vi.spyOn(mockMapInstance, "on").mockImplementation((event: string, cb: Function) => {
-      if (event === "error") errorCallback = cb;
-      return mockMapInstance as any;
-    });
+    vi.spyOn(mockMapInstance, "on").mockImplementation(
+      (event: string, cb: Function) => {
+        if (event === "error") errorCallback = cb;
+        return mockMapInstance as any;
+      },
+    );
 
     const { result } = renderHook(() => useMapCore(containerRef));
 

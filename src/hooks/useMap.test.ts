@@ -49,7 +49,15 @@ describe("useMap", () => {
 
     expect(mockMap.on).toHaveBeenCalledWith("dragstart", expect.any(Function));
     expect(mockMap.on).toHaveBeenCalledWith("zoomstart", expect.any(Function));
-    expect(mockMap.on).toHaveBeenCalledWith("click", "h3-counts-r4", expect.any(Function));
-    expect(mockMap.on).toHaveBeenCalledWith("click", "h3-grid-fill", expect.any(Function));
+    expect(mockMap.on).toHaveBeenCalledWith(
+      "click",
+      "h3-counts-r4",
+      expect.any(Function),
+    );
+    expect(mockMap.on).toHaveBeenCalledWith(
+      "click",
+      "h3-grid-fill",
+      expect.any(Function),
+    );
   });
 });

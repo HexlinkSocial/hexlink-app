@@ -4,6 +4,7 @@ import type { LngLatLike } from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import "maplibre-gl/dist/maplibre-gl.css";
 import baseStyle from "../../public/style.json";
+import { requestUserLocation } from "../helpers/geolocation";
 
 const protocol = new Protocol();
 maplibregl.addProtocol("pmtiles", protocol.tile);
@@ -56,6 +57,38 @@ type MapCoreInfo = {
   error: string | null;
 };
 
+function createMapStyle(): maplibregl.StyleSpecification {
+  const baseUrl = window.location.origin;
+  return {
+    ...baseStyle,
+    sources: {
+      ...baseStyle.sources,
+      h3_counts: {
+        type: "vector",
+        url: `pmtiles://${baseUrl}/tiles/h3-counts.pmtiles`,
+      },
+      h3_grid_source: {
+        type: "vector",
+        url: `pmtiles://${baseUrl}/tiles/h3-grid.pmtiles`,
+      },
+    },
+  } as maplibregl.StyleSpecification;
+}
+
+function handleMapError(
+  e: maplibregl.ErrorEvent,
+  setError: React.Dispatch<React.SetStateAction<string | null>>,
+): void {
+  if (e != null && "sourceId" in e) {
+    const sourceId = (e as { sourceId: string }).sourceId;
+    if (sourceId === "osm") {
+      setError("Failed to load background base map layer.");
+    } else if (sourceId === "h3_counts" || sourceId === "h3_grid_source") {
+      setError("Failed to load map data layers.");
+    }
+  }
+}
+
 export function useMapCore(
   containerRef: React.RefObject<HTMLDivElement | null>,
   initialCamera?: CameraState,
@@ -68,22 +101,7 @@ export function useMapCore(
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const baseUrl = window.location.origin;
-
-    const style = {
-      ...baseStyle,
-      sources: {
-        ...baseStyle.sources,
-        h3_counts: {
-          type: "vector",
-          url: `pmtiles://${baseUrl}/tiles/h3-counts.pmtiles`,
-        },
-        h3_grid_source: {
-          type: "vector",
-          url: `pmtiles://${baseUrl}/tiles/h3-grid.pmtiles`,
-        },
-      },
-    } as maplibregl.StyleSpecification;
+    const style = createMapStyle();
 
     const map = new maplibregl.Map({
       container: containerRef.current,
@@ -106,19 +124,19 @@ export function useMapCore(
     map.touchZoomRotate.disableRotation();
     map.doubleClickZoom.disable();
 
-    map.on("error", (e) => {
-      if (e != null && "sourceId" in e) {
-        const sourceId = (e as { sourceId: string }).sourceId;
-        if (sourceId === "osm") {
-          setError("Failed to load background base map layer.");
-        } else if (sourceId === "h3_counts" || sourceId === "h3_grid_source") {
-          setError("Failed to load map data layers.");
-        }
-      }
-    });
+    map.on("error", (e) => handleMapError(e, setError));
 
     map.on("load", () => {
       setIsMapReady(true);
+      if (!initialCamera) {
+        requestUserLocation((userCenter) => {
+          map.flyTo({
+            center: userCenter,
+            zoom: 12,
+            essential: true,
+          });
+        });
+      }
     });
 
     return () => {
