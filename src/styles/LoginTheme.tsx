@@ -71,6 +71,7 @@ export const theme = createTheme({
           font: {
             primary: { value: "{colors.white.value}" },
             secondary: { value: "{colors.neutral.40.value}" },
+            interactive: { value: "{colors.brand.primary.60.value}" },
           },
           border: {
             primary: { value: "{colors.neutral.80.value}" },
@@ -84,6 +85,11 @@ export const theme = createTheme({
           },
         },
         components: {
+          button: {
+            link: {
+              color: { value: "{colors.brand.primary.60.value}" },
+            },
+          },
           tabs: {
             backgroundColor: { value: "{colors.background.secondary.value}" },
             item: {

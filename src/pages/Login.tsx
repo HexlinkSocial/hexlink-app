@@ -1,7 +1,7 @@
-import { Authenticator, ThemeProvider } from "@aws-amplify/ui-react";
+import { Authenticator, ThemeProvider, Text, Link as AmplifyLink } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 import { JSX } from "react";
-import { Navigate, Link } from "react-router-dom";
+import { Navigate, Link as RouterLink } from "react-router-dom";
 import { theme } from "../styles/LoginTheme";
 import { logger } from "../helpers/logger";
 import ArrowIcon from "../components/icons/ArrowIcon";
@@ -24,15 +24,34 @@ const LOGIN_FORM_FIELDS = {
   },
 };
 
+function RegistrationInfoNotice(): JSX.Element {
+  return (
+    <div className="auth-info-notice">
+      <Text variation="primary">
+        Looking for the register button? You can only register if you&apos;re
+        adding a community. You can do this by clicking tiles on the{" "}
+        <AmplifyLink as={RouterLink} to="/">
+          map
+        </AmplifyLink>
+        .
+      </Text>
+    </div>
+  );
+}
+
 function SignInHeader(): JSX.Element {
   return (
     <div className="auth-nav-container">
-      <Link to="/" className="auth-nav-link">
+      <RouterLink to="/" className="auth-nav-link">
         <ArrowIcon />
         Home
-      </Link>
+      </RouterLink>
     </div>
   );
+}
+
+function SignInFooter(): JSX.Element {
+  return <RegistrationInfoNotice />;
 }
 
 export default function Login(): JSX.Element {
@@ -47,6 +66,7 @@ export default function Login(): JSX.Element {
             components={{
               SignIn: {
                 Header: SignInHeader,
+                Footer: SignInFooter,
               },
             }}
           >
