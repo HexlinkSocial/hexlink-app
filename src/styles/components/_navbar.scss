@@ -22,6 +22,35 @@
   }
 }
 
+.docs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 29px;
+  height: 29px;
+  padding: 0;
+  background-color: $color-accent;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color $transition-fast, box-shadow $transition-fast, transform $transition-fast;
+
+  &:hover {
+    background-color: $color-accent-light;
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
 .hamburger-btn {
   display: inline-flex;
   align-items: center;

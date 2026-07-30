@@ -1,23 +1,30 @@
 import { JSX, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import NavMenuCard from "./NavMenuCard";
+import HamburgerIcon from "../icons/HamburgerIcon";
+import QuestionMarkIcon from "../icons/QuestionMarkIcon";
 
-const HamburgerIcon = (): JSX.Element => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    width="20"
-    height="20"
-  >
-    <line x1="3" y1="12" x2="21" y2="12" />
-    <line x1="3" y1="6" x2="21" y2="6" />
-    <line x1="3" y1="18" x2="21" y2="18" />
-  </svg>
-);
+const getTutorialUrl = (): string => {
+  const baseUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.hexlink.org";
+  return `${baseUrl.replace(/\/$/, "")}/docs/tutorial`;
+};
+
+const DocsButton = (): JSX.Element => {
+  const handleDocsClick = (): void => {
+    window.open(getTutorialUrl(), "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <button
+      type="button"
+      className="docs-btn"
+      onClick={handleDocsClick}
+      aria-label="Open documentation tutorial"
+    >
+      <QuestionMarkIcon />
+    </button>
+  );
+};
 
 export default function Navbar(): JSX.Element {
   const { isLoggedIn, isAdmin } = useAuth();
@@ -34,6 +41,8 @@ export default function Navbar(): JSX.Element {
   return (
     <div className="navbar">
       <div className="navbar__actions">
+        <DocsButton />
+
         <button
           type="button"
           className="hamburger-btn"
