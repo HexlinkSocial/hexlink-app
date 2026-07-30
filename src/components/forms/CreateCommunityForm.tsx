@@ -28,6 +28,11 @@ interface CreateCommunityFormProps {
   ) => void;
 }
 
+const getDocsUrl = (path: string): string => {
+  const baseUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.hexlink.org";
+  return `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\/|\/#/g, "")}`;
+};
+
 const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
   isOpen,
   isSubmitting,
@@ -92,9 +97,15 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
     }
   };
 
-  const termsUrl = import.meta.env.VITE_TERMS_URL ?? "#";
-  const privacyUrl = import.meta.env.VITE_PRIVACY_URL ?? "#";
-  const guidelinesUrl = import.meta.env.VITE_GUIDELINES_URL ?? "#";
+  const termsUrl =
+    import.meta.env.VITE_TERMS_URL ??
+    getDocsUrl("docs/governance/terms-and-conditions");
+  const privacyUrl =
+    import.meta.env.VITE_PRIVACY_URL ??
+    getDocsUrl("docs/governance/privacy-policy");
+  const guidelinesUrl =
+    import.meta.env.VITE_GUIDELINES_URL ??
+    getDocsUrl("docs/governance/community-guidelines");
 
   return (
     <>
