@@ -299,15 +299,15 @@
     font-size: 14px;
     font-weight: 700;
     color: $color-text;
-    margin: 0 0 18px 0;
-    line-height: 1.5;
+    margin: 0 0 $space-xs 0;
+    line-height: 1.4;
   }
 
   &__legend {
     display: flex;
     flex-direction: column;
-    gap: $space-md;
-    margin-bottom: $space-xl;
+    gap: $space-xs;
+    margin-bottom: $space-xs;
   }
 
   &__legend-item {
@@ -329,6 +329,29 @@
     &--unavailable { background-color: $color-unavailable; }
     &--available   { background-color: $color-success; }
     &--selected    { background-color: $color-accent; }
+  }
+
+  &__help {
+    margin: 0 0 $space-sm 0;
+  }
+
+  &__help-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: $color-muted;
+    text-decoration: none;
+    transition: color $transition-fast;
+
+    svg {
+      flex-shrink: 0;
+    }
+
+    &:hover {
+      color: $color-text;
+      text-decoration: underline;
+    }
   }
 
   &__actions {

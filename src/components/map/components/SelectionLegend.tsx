@@ -1,10 +1,29 @@
 import React from "react";
+import ExternalLinkIcon from "../../icons/ExternalLinkIcon";
 
 interface SelectionLegendProps {
   selectedCount: number;
   onCancel: () => void;
   onNext: () => void;
 }
+const getHelpDocUrl = (): string => {
+  const baseUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.hexlink.org";
+  return `${baseUrl.replace(/\/$/, "")}/docs/tips-for-community-runners/creating-your-community`;
+};
+
+const AreaHelpLink: React.FC = () => (
+  <p className="info-card__help">
+    <a
+      href={getHelpDocUrl()}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="info-card__help-link"
+    >
+      <span>Unsure what to select?</span>
+      <ExternalLinkIcon />
+    </a>
+  </p>
+);
 
 const SelectionLegend: React.FC<SelectionLegendProps> = ({
   selectedCount,
@@ -16,6 +35,7 @@ const SelectionLegend: React.FC<SelectionLegendProps> = ({
       <p className="info-card__title">
         Please select the tiles where you want your community to be based
       </p>
+      <AreaHelpLink />
       <div className="info-card__legend">
         <div className="info-card__legend-item">
           <span className="info-card__color info-card__color--selected" />
