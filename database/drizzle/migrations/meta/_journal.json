@@ -43,6 +43,13 @@
       "when": 1784299020292,
       "tag": "0005_add_flag_to_check_if_tile_generation_needed",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1785402069540,
+      "tag": "0006_add-terms-field",
+      "breakpoints": true
     }
   ]
 }
