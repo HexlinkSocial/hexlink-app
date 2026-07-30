@@ -14,6 +14,7 @@ export interface RequestBodyData {
   other?: string;
   cellIds?: string[];
   scope?: string;
+  termsAccepted?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents

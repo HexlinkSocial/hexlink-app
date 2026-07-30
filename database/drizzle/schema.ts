@@ -18,6 +18,7 @@ export const communities = pgTable("communities", {
   discord: text("discord"),
   facebook: text("facebook"),
   other: text("other_url"),
+  termsAccepted: boolean("terms_accepted").notNull().default(false),
 });
 
 export const cellCommunities = pgTable(
@@ -45,6 +46,7 @@ export const approvals = pgTable("approvals", {
   facebook: text("facebook"),
   other: text("other_url"),
   cellIds: text("cell_ids").array().notNull(),
+  termsAccepted: boolean("terms_accepted").notNull().default(false),
   status: text("status").notNull().default("pending"),
   comments: text("comments"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -53,7 +55,9 @@ export const approvals = pgTable("approvals", {
 
 export const tileGenerationState = pgTable("tile_generation_state", {
   id: text("id").primaryKey().default("singleton"),
-  newCommunitiesAdded: boolean("new_communities_added").notNull().default(false),
+  newCommunitiesAdded: boolean("new_communities_added")
+    .notNull()
+    .default(false),
 });
 
 export const communitiesRelations = relations(communities, ({ many }) => ({

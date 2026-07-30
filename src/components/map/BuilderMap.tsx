@@ -83,25 +83,27 @@ const BuilderMap: React.FC<{
 
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
 
-  const [step, setStep] = useState<"select" | "form">(() => {
+  const [step, setStep] = useState<"select" | "form">((): "select" | "form" => {
     return getStoredDraft() !== null ? "form" : "select";
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [limitBannerDismissed, setLimitBannerDismissed] = useState(false);
-  const [communityData, setCommunityData] = useState<DraftData>(() => {
-    return (
-      getStoredDraft() ?? {
-        name: "",
-        description: "",
-        whatsapp: "",
-        discord: "",
-        facebook: "",
-        other: "",
-        agreedToTerms: false,
-      }
-    );
-  });
+  const [communityData, setCommunityData] = useState<DraftData>(
+    (): DraftData => {
+      return (
+        getStoredDraft() ?? {
+          name: "",
+          description: "",
+          whatsapp: "",
+          discord: "",
+          facebook: "",
+          other: "",
+          agreedToTerms: false,
+        }
+      );
+    },
+  );
 
   const activeError = error != null && error !== dismissedError ? error : null;
   const isAtLimit = selectedIds.size >= MAX_SELECTIONS;

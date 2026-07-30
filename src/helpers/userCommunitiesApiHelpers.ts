@@ -18,6 +18,7 @@ export interface BaseCommunity {
 
 export type CommunityPayload = BaseCommunity & {
   cellIds: string[];
+  termsAccepted: boolean;
 };
 
 export interface UnifiedCommunityItem extends BaseCommunity {
@@ -61,6 +62,7 @@ export function buildPayload(
     discord: string;
     facebook: string;
     other: string;
+    agreedToTerms: boolean;
   },
   selectedIds: Set<string>,
 ): CommunityPayload {
@@ -72,6 +74,7 @@ export function buildPayload(
     facebook: normaliseUrl(communityData.facebook),
     other: normaliseUrl(communityData.other),
     cellIds: Array.from(selectedIds),
+    termsAccepted: communityData.agreedToTerms,
   };
 }
 

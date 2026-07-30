@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import FormOverlay from "./FormOverlay";
 import {
   CommunityFormFields,
@@ -7,6 +7,7 @@ import {
 import { validateCommunityData } from "../../helpers/communityFormValidate";
 import { useTurnstile } from "../../hooks/useTurnstile";
 import { TurnstileOverlay } from "../TurnstileOverlay";
+import { TermsCheckbox } from "./TermsCheckbox";
 
 interface CreateCommunityFormProps {
   isOpen: boolean;
@@ -126,31 +127,14 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
           isDisabled={isPendingSubmission}
         />
 
-        <div className="community-form__legal-checkbox">
-          <label>
-            <input
-              type="checkbox"
-              disabled={isPendingSubmission}
-              checked={agreedToTerms}
-              onChange={(e) => onAgreeChange(e.target.checked)}
-            />
-            <span>
-              I confirm that this group adheres to the{" "}
-              <a href={guidelinesUrl} target="_blank" rel="noopener noreferrer">
-                Community Guidelines
-              </a>
-              . I agree to the{" "}
-              <a href={termsUrl} target="_blank" rel="noopener noreferrer">
-                Terms & Conditions
-              </a>{" "}
-              and acknowledge the{" "}
-              <a href={privacyUrl} target="_blank" rel="noopener noreferrer">
-                Privacy Policy
-              </a>
-              .
-            </span>
-          </label>
-        </div>
+        <TermsCheckbox
+          isDisabled={isPendingSubmission}
+          agreedToTerms={agreedToTerms}
+          onAgreeChange={onAgreeChange}
+          guidelinesUrl={guidelinesUrl}
+          termsUrl={termsUrl}
+          privacyUrl={privacyUrl}
+        />
       </FormOverlay>
 
       {isCommunityTurnstileOpen && (

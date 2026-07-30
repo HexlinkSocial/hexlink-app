@@ -57,8 +57,16 @@ export const handler = async (
     }
 
     const bodyData = getRequestBody(event);
-    const { name, description, whatsapp, discord, facebook, other, cellIds } =
-      bodyData;
+    const {
+      name,
+      description,
+      whatsapp,
+      discord,
+      facebook,
+      other,
+      cellIds,
+      termsAccepted,
+    } = bodyData;
 
     if (name == null || !Array.isArray(cellIds) || cellIds.length === 0) {
       return {
@@ -66,6 +74,15 @@ export const handler = async (
         body: JSON.stringify({
           error:
             "Missing fields. 'name' and a non-empty array of 'cellIds' are required.",
+        }),
+      };
+    }
+
+    if (!termsAccepted) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: "You must accept the terms and conditions to proceed.",
         }),
       };
     }
@@ -115,6 +132,7 @@ export const handler = async (
         facebook: facebook !== undefined ? facebook : null,
         other: other !== undefined ? other : null,
         cellIds: cellIds,
+        termsAccepted: termsAccepted === true,
         status: "pending",
       })
       .returning();

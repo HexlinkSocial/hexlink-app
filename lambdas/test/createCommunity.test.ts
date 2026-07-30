@@ -48,6 +48,7 @@ const baseApproval = {
   facebook: null,
   other: null,
   cellIds: ["cell-1", "cell-2"],
+  termsAccepted: true,
   status: "pending",
 };
 
@@ -143,6 +144,7 @@ describe("community submission handler", () => {
       vi.mocked(getRequestBody).mockReturnValue({
         name: "Dev Comm",
         cellIds: ["cell-1"],
+        termsAccepted: true,
       });
       const { db } = makeMockDb(baseApproval);
       vi.mocked(getDatabase).mockResolvedValue(db as never);
@@ -225,19 +227,22 @@ describe("community submission handler", () => {
     it("returns 400 when name is missing", async () => {
       vi.mocked(getRequestBody).mockReturnValue({
         cellIds: ["cell-1"],
+        termsAccepted: true,
       });
 
       const result = await handler(fakeEvent);
 
       expect(result.statusCode).toBe(400);
       expect(JSON.parse(result.body as string)).toEqual({
-        error: "Missing fields. 'name' and a non-empty array of 'cellIds' are required.",
+        error:
+          "Missing fields. 'name' and a non-empty array of 'cellIds' are required.",
       });
     });
 
     it("returns 400 when cellIds is missing", async () => {
       vi.mocked(getRequestBody).mockReturnValue({
         name: "My Community",
+        termsAccepted: true,
       });
 
       const result = await handler(fakeEvent);
@@ -249,6 +254,7 @@ describe("community submission handler", () => {
       vi.mocked(getRequestBody).mockReturnValue({
         name: "My Community",
         cellIds: [],
+        termsAccepted: true,
       });
 
       const result = await handler(fakeEvent);
@@ -256,11 +262,27 @@ describe("community submission handler", () => {
       expect(result.statusCode).toBe(400);
     });
 
+    it("returns 400 when termsAccepted is missing or false", async () => {
+      vi.mocked(getRequestBody).mockReturnValue({
+        name: "My Community",
+        cellIds: ["cell-1"],
+        termsAccepted: false,
+      });
+
+      const result = await handler(fakeEvent);
+
+      expect(result.statusCode).toBe(400);
+      expect(JSON.parse(result.body as string)).toEqual({
+        error: "You must accept the terms and conditions to proceed.",
+      });
+    });
+
     it("returns 400 when cellIds array has more than 50 elements", async () => {
       const excessCellIds = Array.from({ length: 51 }, (_, i) => `cell-${i}`);
       vi.mocked(getRequestBody).mockReturnValue({
         name: "My Community",
         cellIds: excessCellIds,
+        termsAccepted: true,
       });
 
       const result = await handler(fakeEvent);
@@ -275,6 +297,7 @@ describe("community submission handler", () => {
       vi.mocked(getRequestBody).mockReturnValue({
         name: "A".repeat(101),
         cellIds: ["cell-1"],
+        termsAccepted: true,
       });
 
       const result = await handler(fakeEvent);
@@ -290,6 +313,7 @@ describe("community submission handler", () => {
         name: "Valid Name",
         description: "B".repeat(3001),
         cellIds: ["cell-1"],
+        termsAccepted: true,
       });
 
       const result = await handler(fakeEvent);
@@ -305,6 +329,7 @@ describe("community submission handler", () => {
         name: "Valid Name",
         description: undefined,
         cellIds: ["cell-1"],
+        termsAccepted: true,
       });
       const { db } = makeMockDb(baseApproval);
       vi.mocked(getDatabase).mockResolvedValue(db as never);
@@ -335,6 +360,7 @@ describe("community submission handler", () => {
         description: "A great place",
         whatsapp: "https://wa.me/123",
         cellIds: ["cell-1"],
+        termsAccepted: true,
       };
 
       vi.mocked(getRequestBody).mockReturnValue(payload);
@@ -360,6 +386,7 @@ describe("community submission handler", () => {
         facebook: null,
         other: null,
         cellIds: ["cell-1"],
+        termsAccepted: true,
         status: "pending",
       });
 
@@ -380,6 +407,7 @@ describe("community submission handler", () => {
       vi.mocked(getRequestBody).mockReturnValue({
         name: "Fallback URL Test",
         cellIds: ["cell-1"],
+        termsAccepted: true,
       });
 
       const { db } = makeMockDb(baseApproval);
@@ -412,11 +440,14 @@ describe("community submission handler", () => {
       vi.mocked(getRequestBody).mockReturnValue({
         name: "Erroneous Community",
         cellIds: ["cell-1"],
+        termsAccepted: true,
       });
     });
 
     it("returns 500 when database connectivity throws", async () => {
-      vi.mocked(getDatabase).mockRejectedValue(new Error("Postgres connection timeout"));
+      vi.mocked(getDatabase).mockRejectedValue(
+        new Error("Postgres connection timeout"),
+      );
 
       const result = await handler(fakeEvent);
 
