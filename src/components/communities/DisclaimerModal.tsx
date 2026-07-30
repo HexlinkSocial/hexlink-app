@@ -7,6 +7,28 @@ interface DisclaimerModalProps {
   onConfirm: () => void;
 }
 
+const GovernanceLinks: React.FC = () => (
+  <p className="disclaimer-modal-terms">
+    By accessing this link you agree to our{" "}
+    <a
+      href="/docs/governance/terms-and-conditions"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      terms and conditions
+    </a>{" "}
+    and{" "}
+    <a
+      href="/docs/governance/community-guidelines"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      community guidelines
+    </a>
+    .
+  </p>
+);
+
 export const DisclaimerModal: React.FC<DisclaimerModalProps> = ({
   isOpen,
   onCancel,
@@ -23,6 +45,7 @@ export const DisclaimerModal: React.FC<DisclaimerModalProps> = ({
           externally. We do not screen, monitor, or accept liability for
           interaction, content, or data protection on external applications.
         </p>
+        <GovernanceLinks />
         <div className="disclaimer-modal-actions">
           <button
             type="button"
