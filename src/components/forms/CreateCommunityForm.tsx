@@ -112,15 +112,9 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
     }
   };
 
-  const termsUrl =
-    import.meta.env.VITE_TERMS_URL ??
-    getDocsUrl("docs/governance/terms-and-conditions");
-  const privacyUrl =
-    import.meta.env.VITE_PRIVACY_URL ??
-    getDocsUrl("docs/governance/privacy-policy");
-  const guidelinesUrl =
-    import.meta.env.VITE_GUIDELINES_URL ??
-    getDocsUrl("docs/governance/community-guidelines");
+  const termsUrl = getDocsUrl("docs/governance/terms-and-conditions");
+  const privacyUrl = getDocsUrl("docs/governance/privacy-policy");
+  const guidelinesUrl = getDocsUrl("docs/governance/community-guidelines");
 
   return (
     <>
