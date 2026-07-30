@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { requestUserLocation } from "./geolocation";
 
@@ -12,6 +13,7 @@ describe("requestUserLocation", () => {
     Object.defineProperty(navigator, "geolocation", {
       value: originalGeolocation,
       configurable: true,
+      writable: true,
     });
   });
 
@@ -28,6 +30,7 @@ describe("requestUserLocation", () => {
     Object.defineProperty(navigator, "geolocation", {
       value: { getCurrentPosition: mockGetCurrentPosition },
       configurable: true,
+      writable: true,
     });
 
     const onSuccess = vi.fn();
@@ -52,13 +55,15 @@ describe("requestUserLocation", () => {
     const mockError = new Error(
       "User denied Geolocation",
     ) as unknown as GeolocationPositionError;
-    const mockGetCurrentPosition = vi.fn((_, error) => {
-      error(mockError);
+
+    const mockGetCurrentPosition = vi.fn((_, errorCallback) => {
+      errorCallback(mockError);
     });
 
     Object.defineProperty(navigator, "geolocation", {
       value: { getCurrentPosition: mockGetCurrentPosition },
       configurable: true,
+      writable: true,
     });
 
     const onSuccess = vi.fn();
@@ -74,6 +79,7 @@ describe("requestUserLocation", () => {
     Object.defineProperty(navigator, "geolocation", {
       value: undefined,
       configurable: true,
+      writable: true,
     });
 
     const onSuccess = vi.fn();

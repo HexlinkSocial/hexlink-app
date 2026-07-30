@@ -4,7 +4,8 @@ export function requestUserLocation(
   onSuccess: (center: maplibregl.LngLatLike) => void,
   onError?: (error: GeolocationPositionError) => void,
 ): void {
-  if (typeof window === "undefined" || !("geolocation" in navigator)) {
+  // Check that navigator and navigator.geolocation actually exist
+  if (typeof window === "undefined" || !navigator?.geolocation) {
     return;
   }
 
