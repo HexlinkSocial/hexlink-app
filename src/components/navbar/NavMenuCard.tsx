@@ -42,7 +42,7 @@ function getNavigationItems(
   }
 
   items.push({
-    label: isLoggedIn ? "Manage" : "Log in",
+    label: isLoggedIn ? "Manage" : "Log in to manage your community",
     href: "/login",
   });
 

@@ -130,16 +130,16 @@
     padding: $space-md;
     border-radius: $radius-md;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 400;
     color: $color-text;
     text-decoration: none;
-    background: $color-bg-subtle;
-    border: 1px solid $color-border;
-    transition: background $transition-fast, border-color $transition-fast;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: background-color $transition-fast, color $transition-fast;
 
     &:hover {
-      background: $color-bg-hover;
-      border-color: $color-border-accent;
+      color: $color-text;
+      background-color: $color-bg-hover;
     }
   }
 }
