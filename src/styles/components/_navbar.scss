@@ -22,6 +22,26 @@
   }
 }
 
+.explore-notice-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 29px;
+  padding: 0 $space-md;
+  background-color: $color-accent;
+  color: white;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  user-select: none;
+
+  &__text {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+}
+
 .docs-btn {
   display: inline-flex;
   align-items: center;

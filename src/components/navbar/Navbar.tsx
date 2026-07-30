@@ -4,6 +4,7 @@ import NavMenuCard from "./NavMenuCard";
 import HamburgerIcon from "../icons/HamburgerIcon";
 import QuestionMarkIcon from "../icons/QuestionMarkIcon";
 import { getDocsUrl } from "../../helpers/docsUrl";
+import { ExploreNoticePill } from "./ExploreNoticePill";
 
 const DocsButton = (): JSX.Element => {
   const handleDocsClick = (): void => {
@@ -37,6 +38,7 @@ export default function Navbar(): JSX.Element {
   return (
     <div className="navbar">
       <div className="navbar__actions">
+        <ExploreNoticePill text="Tap any tile to explore local communities" />
         <DocsButton />
 
         <button
