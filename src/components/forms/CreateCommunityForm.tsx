@@ -9,6 +9,7 @@ import { useTurnstile } from "../../hooks/useTurnstile";
 import { TurnstileOverlay } from "../TurnstileOverlay";
 import { TermsCheckbox } from "./TermsCheckbox";
 import ExternalLinkIcon from "../icons/ExternalLinkIcon";
+import { getDocsUrl } from "../../helpers/docsUrl";
 
 interface CreateCommunityFormProps {
   isOpen: boolean;
@@ -28,11 +29,6 @@ interface CreateCommunityFormProps {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
 }
-
-const getDocsUrl = (path: string): string => {
-  const baseUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.hexlink.org";
-  return `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\/|\/#/g, "")}`;
-};
 
 const FormHelpLink: React.FC = () => {
   const helpUrl = `${getDocsUrl("docs/tips-for-community-runners/creating-your-community")}#title`;

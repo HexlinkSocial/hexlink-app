@@ -3,15 +3,11 @@ import { useAuth } from "../../hooks/useAuth";
 import NavMenuCard from "./NavMenuCard";
 import HamburgerIcon from "../icons/HamburgerIcon";
 import QuestionMarkIcon from "../icons/QuestionMarkIcon";
-
-const getTutorialUrl = (): string => {
-  const baseUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.hexlink.org";
-  return `${baseUrl.replace(/\/$/, "")}/docs/tutorial`;
-};
+import { getDocsUrl } from "../../helpers/docsUrl";
 
 const DocsButton = (): JSX.Element => {
   const handleDocsClick = (): void => {
-    window.open(getTutorialUrl(), "_blank", "noopener,noreferrer");
+    window.open(getDocsUrl("docs/tutorial"), "_blank", "noopener,noreferrer");
   };
 
   return (

@@ -1,5 +1,6 @@
 import React from "react";
 import ExternalLinkIcon from "../../icons/ExternalLinkIcon";
+import { getDocsUrl } from "../../../helpers/docsUrl";
 
 interface SelectionLegendProps {
   selectedCount: number;
@@ -7,15 +8,12 @@ interface SelectionLegendProps {
   onNext: () => void;
 }
 
-const getHelpDocUrl = (): string => {
-  const baseUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.hexlink.org";
-  return `${baseUrl.replace(/\/$/, "")}/docs/tips-for-community-runners/creating-your-community`;
-};
-
 const AreaHelpLink: React.FC = () => (
   <p className="info-card__help info-card__help--spaced">
     <a
-      href={getHelpDocUrl()}
+      href={getDocsUrl(
+        "docs/tips-for-community-runners/creating-your-community",
+      )}
       target="_blank"
       rel="noopener noreferrer"
       className="info-card__help-link"

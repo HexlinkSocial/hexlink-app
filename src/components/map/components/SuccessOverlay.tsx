@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 import ExternalLinkIcon from "../../icons/ExternalLinkIcon";
+import { getDocsUrl } from "../../../helpers/docsUrl";
 
 const DISMISS_DURATION_MS = 500;
-
-const getDocsUrl = (path: string): string => {
-  const baseUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.hexlink.org";
-  return `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\/|\/#/g, "")}`;
-};
 
 const SuccessOverlay: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [dismissing, setDismissing] = useState(false);

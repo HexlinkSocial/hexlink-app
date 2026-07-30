@@ -1,5 +1,6 @@
 import React from "react";
 import { createPortal } from "react-dom";
+import { getDocsUrl } from "../../helpers/docsUrl";
 
 interface DisclaimerModalProps {
   isOpen: boolean;
@@ -11,7 +12,7 @@ const GovernanceLinks: React.FC = () => (
   <p className="disclaimer-modal-terms">
     By accessing this link you agree to our{" "}
     <a
-      href="/docs/governance/terms-and-conditions"
+      href={getDocsUrl("docs/governance/terms-and-conditions")}
       target="_blank"
       rel="noopener noreferrer"
     >
@@ -19,11 +20,25 @@ const GovernanceLinks: React.FC = () => (
     </a>{" "}
     and{" "}
     <a
-      href="/docs/governance/community-guidelines"
+      href={getDocsUrl("docs/governance/community-guidelines")}
       target="_blank"
       rel="noopener noreferrer"
     >
       community guidelines
+    </a>
+    .
+  </p>
+);
+
+const MemberTipsLink: React.FC = () => (
+  <p className="disclaimer-modal-tips">
+    Check out our{" "}
+    <a
+      href={getDocsUrl("docs/category/tips-for-community-members")}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      tips for community members
     </a>
     .
   </p>
@@ -46,6 +61,7 @@ export const DisclaimerModal: React.FC<DisclaimerModalProps> = ({
           interaction, content, or data protection on external applications.
         </p>
         <GovernanceLinks />
+        <MemberTipsLink />
         <div className="disclaimer-modal-actions">
           <button
             type="button"

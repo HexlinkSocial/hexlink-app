@@ -1,4 +1,5 @@
 import React from "react";
+import { getDocsUrl } from "../../helpers/docsUrl";
 
 interface TermsCheckboxProps {
   isDisabled: boolean;
@@ -8,11 +9,6 @@ interface TermsCheckboxProps {
   termsUrl?: string;
   privacyUrl?: string;
 }
-
-const getDocsUrl = (path: string): string => {
-  const baseUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.hexlink.org";
-  return `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\/|\/#/g, "")}`;
-};
 
 export const TermsCheckbox: React.FC<TermsCheckboxProps> = ({
   isDisabled,
