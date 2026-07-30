@@ -8,6 +8,7 @@ import { validateCommunityData } from "../../helpers/communityFormValidate";
 import { useTurnstile } from "../../hooks/useTurnstile";
 import { TurnstileOverlay } from "../TurnstileOverlay";
 import { TermsCheckbox } from "./TermsCheckbox";
+import ExternalLinkIcon from "../icons/ExternalLinkIcon";
 
 interface CreateCommunityFormProps {
   isOpen: boolean;
@@ -31,6 +32,24 @@ interface CreateCommunityFormProps {
 const getDocsUrl = (path: string): string => {
   const baseUrl = import.meta.env.VITE_DOCS_URL ?? "https://docs.hexlink.org";
   return `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\/|\/#/g, "")}`;
+};
+
+const FormHelpLink: React.FC = () => {
+  const helpUrl = `${getDocsUrl("docs/tips-for-community-runners/creating-your-community")}#title`;
+
+  return (
+    <p className="info-card__help">
+      <a
+        href={helpUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="info-card__help-link"
+      >
+        <span>Unsure what to put there?</span>
+        <ExternalLinkIcon />
+      </a>
+    </p>
+  );
 };
 
 const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
@@ -118,6 +137,8 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
         onCancel={onCancel}
         onSubmit={handleSubmit}
       >
+        <FormHelpLink />
+
         <CommunityFormFields
           formData={communityData}
           onInputChange={onInputChange}

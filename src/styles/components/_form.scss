@@ -81,6 +81,36 @@
   flex-shrink: 0;
 }
 
+// ── Contextual Help Link ───────────────────────
+.info-card__help {
+  margin: -8px 0 -10px 0;
+  padding: 0;
+  flex-shrink: 0;
+
+  .info-card__help-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: $font-sans;
+    font-size: 13px;
+    font-weight: 500;
+    color: $color-muted;
+    text-decoration: none;
+    transition: color $transition-fast;
+
+    &:hover {
+      text-decoration: underline;
+      color: $color-text;
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+  }
+}
+
 // ── Label + input group ────────────────────────
 .form__group {
   display: flex;
