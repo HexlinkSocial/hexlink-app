@@ -30,6 +30,16 @@ interface DraftData {
   agreedToTerms: boolean;
 }
 
+const DEFAULT_COMMUNITY_DATA: DraftData = {
+  name: "",
+  description: "",
+  whatsapp: "",
+  discord: "",
+  facebook: "",
+  other: "",
+  agreedToTerms: false,
+};
+
 const getStoredDraft = (): DraftData | null => {
   try {
     const data = localStorage.getItem(STORAGE_KEY_FORM);
@@ -83,26 +93,12 @@ const BuilderMap: React.FC<{
 
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
 
-  const [step, setStep] = useState<"select" | "form">((): "select" | "form" => {
-    return getStoredDraft() !== null ? "form" : "select";
-  });
+  const [step, setStep] = useState<"select" | "form">("select");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [limitBannerDismissed, setLimitBannerDismissed] = useState(false);
   const [communityData, setCommunityData] = useState<DraftData>(
-    (): DraftData => {
-      return (
-        getStoredDraft() ?? {
-          name: "",
-          description: "",
-          whatsapp: "",
-          discord: "",
-          facebook: "",
-          other: "",
-          agreedToTerms: false,
-        }
-      );
-    },
+    (): DraftData => getStoredDraft() ?? DEFAULT_COMMUNITY_DATA,
   );
 
   const activeError = error != null && error !== dismissedError ? error : null;
@@ -164,6 +160,13 @@ const BuilderMap: React.FC<{
     });
   };
 
+  const handleFormReset = (): void => {
+    setSubmitError(null);
+    removeStoredDraft();
+    setCommunityData(DEFAULT_COMMUNITY_DATA);
+    setStep("select");
+  };
+
   const handleFormSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
     communityToken?: string,
@@ -218,20 +221,7 @@ const BuilderMap: React.FC<{
         isLoggedIn={isLoggedIn}
         agreedToTerms={communityData.agreedToTerms}
         onAgreeChange={handleAgreeChange}
-        onCancel={() => {
-          setSubmitError(null);
-          removeStoredDraft();
-          setCommunityData({
-            name: "",
-            description: "",
-            whatsapp: "",
-            discord: "",
-            facebook: "",
-            other: "",
-            agreedToTerms: false,
-          });
-          setStep("select");
-        }}
+        onCancel={handleFormReset}
         onSubmit={handleFormSubmit}
         onInputChange={handleInputChange}
       />
