@@ -47,6 +47,7 @@ const baseApproval = {
   facebook: null,
   other: null,
   cellIds: ["cell-1", "cell-2"],
+  termsAccepted: true,
   status: "pending",
   comments: null,
 };
@@ -257,7 +258,7 @@ describe("approvals handler", () => {
     });
 
     describe("action: approve", () => {
-      it("creates/updates the community, links cells, updates tile flag, deletes the approval, and emails the owner", async () => {
+      it("creates/updates the community with termsAccepted, links cells, updates tile flag, deletes the approval, and emails the owner", async () => {
         const approval = makeApproval();
         vi.mocked(getRequestBody).mockReturnValue({
           id: approval.id,
@@ -281,6 +282,14 @@ describe("approvals handler", () => {
             id: approval.id,
             name: approval.name,
             owner: approval.owner,
+            termsAccepted: true,
+          }),
+        );
+        expect(spies.insertOnConflictDoUpdate).toHaveBeenCalledWith(
+          expect.objectContaining({
+            set: expect.objectContaining({
+              termsAccepted: true,
+            }),
           }),
         );
 

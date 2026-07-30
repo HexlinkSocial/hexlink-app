@@ -28,6 +28,7 @@ async function handleApprove(
       discord: approvalItem.discord,
       facebook: approvalItem.facebook,
       other: approvalItem.other,
+      termsAccepted: approvalItem.termsAccepted,
     })
     .onConflictDoUpdate({
       target: schema.communities.id,
@@ -39,6 +40,7 @@ async function handleApprove(
         discord: approvalItem.discord,
         facebook: approvalItem.facebook,
         other: approvalItem.other,
+        termsAccepted: approvalItem.termsAccepted,
       },
     })
     .returning();
