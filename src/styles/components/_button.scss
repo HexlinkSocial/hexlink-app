@@ -28,6 +28,7 @@
   &:hover {
     background: $color-accent-light;
     transform: translateY(-1px);
+    text-decoration: none !important;
   }
 }
 // ── Secondary (ghost / cancel) ─────────────────
