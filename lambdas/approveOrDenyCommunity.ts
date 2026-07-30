@@ -91,6 +91,7 @@ async function handleApprove(
 async function handleReject(
   tx: TransactionContext,
   approvalItem: ApprovalItem,
+  comments?: string,
 ): Promise<void> {
   await tx
     .delete(schema.approvals)
@@ -103,6 +104,7 @@ async function handleReject(
       templateName: "communityDenied",
       variables: {
         communityName: approvalItem.name,
+        comments: comments ?? "",
       },
     });
   }
@@ -136,7 +138,6 @@ export const handler = async (
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
-
   if (!verifyOrigin(event)) {
     return {
       statusCode: 403,
@@ -187,7 +188,7 @@ export const handler = async (
           break;
 
         case "reject":
-          await handleReject(tx, approvalItem);
+          await handleReject(tx, approvalItem, comments);
           break;
 
         case "amend":

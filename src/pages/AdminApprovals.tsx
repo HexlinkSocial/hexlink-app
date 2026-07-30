@@ -46,7 +46,10 @@ export default function AdminApprovals(): JSX.Element {
   const [approvals, setApprovals] = useState<ApprovalItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [apiError, setApiError] = useState<string | null>(null);
-  const [amendTrackId, setAmendTrackId] = useState<string | null>(null);
+  const [activeTrackId, setActiveTrackId] = useState<string | null>(null);
+  const [activeActionType, setActiveActionType] = useState<
+    "amend" | "reject" | null
+  >(null);
   const [commentText, setCommentText] = useState<string>("");
 
   const loadApprovals = useCallback(async (): Promise<void> => {
@@ -83,8 +86,14 @@ export default function AdminApprovals(): JSX.Element {
     }
   }, [isLoggedIn, isAdmin, isAuthLoading, loadApprovals]);
 
-  const toggleAmend = (id: string): void => {
-    setAmendTrackId((prev) => (prev === id ? null : id));
+  const toggleActionPopover = (id: string, type: "amend" | "reject"): void => {
+    if (activeTrackId === id && activeActionType === type) {
+      setActiveTrackId(null);
+      setActiveActionType(null);
+    } else {
+      setActiveTrackId(id);
+      setActiveActionType(type);
+    }
     setCommentText("");
   };
 
@@ -95,7 +104,8 @@ export default function AdminApprovals(): JSX.Element {
   ): Promise<void> => {
     try {
       await submitAction(id, action, comments);
-      setAmendTrackId(null);
+      setActiveTrackId(null);
+      setActiveActionType(null);
       setCommentText("");
       await loadApprovals();
     } catch (error) {
@@ -134,12 +144,18 @@ export default function AdminApprovals(): JSX.Element {
             <ApprovalRow
               key={item.id}
               item={item}
-              isAmending={amendTrackId === item.id}
+              isAmending={
+                activeTrackId === item.id && activeActionType === "amend"
+              }
+              isDenying={
+                activeTrackId === item.id && activeActionType === "reject"
+              }
               commentText={commentText}
               onCommentChange={setCommentText}
               onApprove={() => handleAction(item.id, "approve")}
-              onReject={() => handleAction(item.id, "reject")}
-              onToggleAmend={() => toggleAmend(item.id)}
+              onReject={() => handleAction(item.id, "reject", commentText)}
+              onToggleAmend={() => toggleActionPopover(item.id, "amend")}
+              onToggleDeny={() => toggleActionPopover(item.id, "reject")}
               onSubmitAmend={() => handleAction(item.id, "amend", commentText)}
             />
           ))}

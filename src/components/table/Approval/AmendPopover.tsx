@@ -7,6 +7,9 @@ interface AmendPopoverProps {
   onSubmit: () => void;
   isPending?: boolean;
   isDisabled?: boolean;
+  placeholder?: string;
+  submitText?: string;
+  isOptional?: boolean;
 }
 
 function AmendPopover({
@@ -15,19 +18,25 @@ function AmendPopover({
   onSubmit,
   isPending = false,
   isDisabled = false,
+  placeholder = "Your change request comment...",
+  submitText = "Submit",
+  isOptional = false,
 }: AmendPopoverProps): JSX.Element {
+  const isButtonDisabled =
+    (!isOptional && !commentText.trim()) || isDisabled || isPending;
+
   return (
     <div className="amend-popover">
       <textarea
         className="amend-popover__textarea"
         rows={3}
-        placeholder="Your change request comment..."
+        placeholder={placeholder}
         value={commentText}
         onChange={(e) => onCommentChange(e.target.value as string)}
       />
       <button
         className="btn btn--primary amend-popover__submit"
-        disabled={!commentText.trim() || isDisabled || isPending}
+        disabled={isButtonDisabled}
         onClick={onSubmit}
       >
         {isPending ? (
@@ -36,7 +45,7 @@ function AmendPopover({
             <span>Submitting...</span>
           </div>
         ) : (
-          "Submit"
+          submitText
         )}
       </button>
     </div>

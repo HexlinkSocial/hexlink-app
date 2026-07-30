@@ -14,22 +14,26 @@ type PendingAction = "approve" | "reject" | "amend" | null;
 interface ApprovalRowProps {
   item: ApprovalItem;
   isAmending: boolean;
+  isDenying: boolean;
   commentText: string;
   onCommentChange: (text: string) => void;
   onApprove: () => Promise<void>;
   onReject: () => Promise<void>;
   onToggleAmend: () => void;
+  onToggleDeny: () => void;
   onSubmitAmend: () => Promise<void>;
 }
 
 function ApprovalRow({
   item,
   isAmending,
+  isDenying,
   commentText,
   onCommentChange,
   onApprove,
   onReject,
   onToggleAmend,
+  onToggleDeny,
   onSubmitAmend,
 }: ApprovalRowProps): JSX.Element {
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
@@ -91,10 +95,9 @@ function ApprovalRow({
             icon={<CheckIcon />}
           />
           <ActionButton
-            title="Reject"
-            onClick={handleReject}
+            title="Deny"
+            onClick={onToggleDeny}
             disabled={isDisabled}
-            isPending={pendingAction === "reject"}
             icon={<CrossIcon />}
           />
           <ActionButton
@@ -113,6 +116,22 @@ function ApprovalRow({
             onSubmit={handleSubmitAmend}
             isPending={pendingAction === "amend"}
             isDisabled={isDisabled}
+            placeholder="Your change request comment..."
+            submitText="Submit"
+          />
+        </div>
+      )}
+      {isDenying && (
+        <div className="custom-table-row__amend-container">
+          <AmendPopover
+            commentText={commentText}
+            onCommentChange={onCommentChange}
+            onSubmit={handleReject}
+            isPending={pendingAction === "reject"}
+            isDisabled={isDisabled}
+            placeholder="Reason for denial (optional)..."
+            submitText="Confirm Deny"
+            isOptional
           />
         </div>
       )}

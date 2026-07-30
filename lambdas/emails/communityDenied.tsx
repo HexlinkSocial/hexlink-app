@@ -16,6 +16,15 @@ const CommunityDeniedEmail = (): JSX.Element => {
         We regret to inform you that your submission has been denied at this
         time.
       </p>
+
+      {"{{#if comments}}"}
+      <div className="email-comments-box">
+        <p className="email-text">
+          <strong>Reason for denial:</strong>
+        </p>
+        <p className="email-text">{"{{comments}}"}</p>
+      </div>
+      {"{{/if}}"}
     </EmailLayout>
   );
 };
