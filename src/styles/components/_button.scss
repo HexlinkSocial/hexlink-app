@@ -24,7 +24,7 @@
 // ── Primary (accent filled) ────────────────────
 .btn--primary {
   background: $color-accent;
-  color: #ffffff;
+  color: #ffffff !important;
   &:hover {
     background: $color-accent-light;
     transform: translateY(-1px);
