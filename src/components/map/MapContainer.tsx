@@ -1,9 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import BuilderMap from "./BuilderMap";
 import DisplayMap from "./DisplayMap";
 import type { CameraState } from "../../hooks/useMapCore";
 
-type MapMode = "display" | "building" | "success";
+export type MapMode = "display" | "building" | "success";
+
+interface MapContainerProps {
+  onModeChange?: (mode: MapMode) => void;
+}
 
 const PENDING_KEY = "pendingCommunityPayload";
 
@@ -11,13 +15,17 @@ function hasPendingPayload(): boolean {
   return sessionStorage.getItem(PENDING_KEY) !== null;
 }
 
-const MapContainer: React.FC = () => {
+const MapContainer: React.FC<MapContainerProps> = ({ onModeChange }) => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const [dismissedError, setDismissedError] = useState<unknown>(null);
   const [mode, setMode] = useState<MapMode>(() =>
     hasPendingPayload() ? "building" : "display",
   );
   const [camera, setCamera] = useState<CameraState | undefined>(undefined);
+
+  useEffect(() => {
+    onModeChange?.(mode);
+  }, [mode, onModeChange]);
 
   return (
     <div style={{ width: "100%", height: "100vh", position: "relative" }}>

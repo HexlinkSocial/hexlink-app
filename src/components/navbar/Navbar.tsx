@@ -6,6 +6,12 @@ import QuestionMarkIcon from "../icons/QuestionMarkIcon";
 import { getDocsUrl } from "../../helpers/docsUrl";
 import { ExploreNoticePill } from "./ExploreNoticePill";
 
+export type MapMode = "display" | "building" | "success";
+
+interface NavbarProps {
+  mode?: MapMode;
+}
+
 const DocsButton = (): JSX.Element => {
   const handleDocsClick = (): void => {
     window.open(getDocsUrl("docs/tutorial"), "_blank", "noopener,noreferrer");
@@ -23,7 +29,7 @@ const DocsButton = (): JSX.Element => {
   );
 };
 
-export default function Navbar(): JSX.Element {
+export default function Navbar({ mode = "display" }: NavbarProps): JSX.Element {
   const { isLoggedIn, isAdmin } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
@@ -38,7 +44,9 @@ export default function Navbar(): JSX.Element {
   return (
     <div className="navbar">
       <div className="navbar__actions">
-        <ExploreNoticePill text="Tap any tile to explore local communities" />
+        {mode === "display" && (
+          <ExploreNoticePill text="Tap any tile to explore local communities" />
+        )}
         <DocsButton />
 
         <button
