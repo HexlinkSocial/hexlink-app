@@ -1,0 +1,186 @@
+@use "../abstracts" as *;
+
+.tutorial-modal-backdrop {
+  @include fixed-cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tutorial-modal-container {
+  background: $color-bg;
+  width: 90vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+  position: relative;
+  z-index: 1;
+
+  @include desktop {
+    max-width: 720px;
+    height: 85vh;
+    max-height: 800px;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-dialog;
+    padding: $space-2xl;
+  }
+
+  @include mobile {
+    width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding: $space-xl;
+  }
+}
+
+@include mobile {
+  .tutorial-modal-backdrop {
+    background-color: $color-bg;
+    backdrop-filter: none;
+  }
+}
+
+.tutorial-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-md;
+  flex-shrink: 0;
+}
+
+.tutorial-modal__heading {
+  margin: 0;
+  font-family: $font-sans;
+  font-size: 20px;
+  font-weight: 700;
+  color: $color-text;
+}
+
+.tutorial-modal__close-btn {
+  background: transparent;
+  border: none;
+  padding: $space-xs;
+  cursor: pointer;
+  color: $color-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  transition: color $transition-fast, background-color $transition-fast;
+
+  &:hover {
+    color: $color-text;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+.tutorial-modal__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.tutorial-modal__video-wrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background-color: $color-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tutorial-modal__video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.tutorial-modal__footer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  gap: $space-md;
+  min-height: 36px;
+}
+
+.tutorial-modal__indicators {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+}
+
+.tutorial-modal__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background-color: $color-border;
+  cursor: pointer;
+  transition: background-color $transition-fast, transform $transition-fast;
+
+  &--active {
+    background-color: $color-accent;
+    transform: scale(1.2);
+  }
+}
+
+.tutorial-modal__actions {
+  display: flex;
+  gap: $space-md;
+}
+
+.tutorial-modal__btn {
+  font-family: $font-sans;
+  font-size: 14px;
+  font-weight: 600;
+  padding: $space-xs $space-md;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: opacity $transition-fast, background-color $transition-fast;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &--secondary {
+    background: transparent;
+    border: 1px solid $color-border;
+    color: $color-text;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  &--primary {
+    background: $color-accent;
+    border: 1px solid $color-accent;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+  }
+}
