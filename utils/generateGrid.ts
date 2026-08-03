@@ -9,7 +9,7 @@ import {
   H3Index,
 } from "h3-js";
 
-const ALLOWLIST_PATH = path.resolve(process.cwd(), "res8_hex_ids.txt");
+const ALLOWLIST_PATH = path.resolve(process.cwd(), "utils/res8_hex_ids.txt");
 
 // CRITICAL SPEED FIX: Put the temp directory directly in native Linux virtual memory storage (/tmp)
 const TMP_DIR = "/tmp/h3-combined-build";

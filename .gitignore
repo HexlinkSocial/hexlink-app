@@ -41,3 +41,5 @@ lambdas/dist
 lambdas/node_modules
 lambdas/.aws-sam
 lambdas/sam-env.json
+utils/big-ids-uk-and-ireland.txt
+utils/res8_hex_ids-big.txt
