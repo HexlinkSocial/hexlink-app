@@ -74,6 +74,7 @@ resource "aws_cloudfront_distribution" "frontend" {
 
   enabled             = true
   default_root_object = "index.html"
+  aliases             = ["hexlink.org"]
 
   origin {
 
@@ -124,7 +125,9 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = "arn:aws:acm:us-east-1:662271354855:certificate/6a92e2c6-3080-48b1-9c00-2c6a514c5da2"
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 
 }

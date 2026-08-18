@@ -50,6 +50,7 @@ resource "aws_cloudfront_distribution" "api" {
   enabled     = true
   web_acl_id  = aws_wafv2_web_acl.api.arn
   comment     = "${var.project_name} API edge (WAF + Shield)"
+  aliases     = ["api.hexlink.org"]
 
   origin {
     # data.aws_lambda_function doesn't give you the API URL — pull it from
@@ -63,9 +64,9 @@ resource "aws_cloudfront_distribution" "api" {
 
     custom_origin_config {
       http_port              = 80
-      https_port              = 443
-      origin_protocol_policy  = "https-only"
-      origin_ssl_protocols    = ["TLSv1.2"]
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
     }
 
     # Shared secret so API Gateway can be locked to only accept traffic
@@ -79,8 +80,8 @@ resource "aws_cloudfront_distribution" "api" {
   default_cache_behavior {
     target_origin_id       = "api-gateway-origin"
     viewer_protocol_policy = "https-only"
-    allowed_methods         = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
-    cached_methods           = ["GET", "HEAD"]
+    allowed_methods        = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+    cached_methods         = ["GET", "HEAD"]
 
     cache_policy_id             = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # AWS managed: CachingDisabled
     origin_request_policy_id    = "b689b0a8-53d0-40ab-baf2-68738e2966ac" # AWS managed: AllViewerExceptHostHeader
@@ -94,7 +95,9 @@ resource "aws_cloudfront_distribution" "api" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = "arn:aws:acm:us-east-1:662271354855:certificate/6a92e2c6-3080-48b1-9c00-2c6a514c5da2"
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 }
 
