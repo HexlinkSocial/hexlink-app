@@ -48,8 +48,7 @@ resource "aws_cloudfront_response_headers_policy" "api_security_headers" {
 #################################
 resource "aws_cloudfront_distribution" "api" {
   enabled     = true
-  web_acl_id  = aws_wafv2_web_acl.api.arn
-  comment     = "${var.project_name} API edge (WAF + Shield)"
+  comment     = "${var.project_name} API edge"
   aliases     = ["api.hexlink.org"]
 
   origin {
